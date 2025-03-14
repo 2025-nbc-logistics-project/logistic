@@ -1,8 +1,15 @@
 package com.logistic.client.order.domain.model;
 
+import jakarta.persistence.Embeddable;
+
+@Embeddable
 public class Money {
     public static final Money ZERO = new Money(0);
     private final Integer amount;
+
+    protected Money() {
+        this.amount = null;
+    }
 
     public Money(Integer amount) {
         if (amount == null || amount < 0) {

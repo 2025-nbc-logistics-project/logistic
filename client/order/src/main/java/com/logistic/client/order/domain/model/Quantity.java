@@ -1,7 +1,14 @@
 package com.logistic.client.order.domain.model;
 
+import jakarta.persistence.Embeddable;
+
+@Embeddable
 public class Quantity {
     private final Integer quantity;
+
+    protected Quantity() {
+        this.quantity = null;
+    }
 
     public Quantity(Integer quantity) {
         if (quantity == null || quantity <= 0) {
