@@ -31,7 +31,7 @@ public class Order {
         this.companyInfo = companyInfo;
         this.orderItems = orderItems;
         this.orderRequest = orderRequest;
-        this.totalPrice = orderItems.stream()
+        this.totalPrice = orderItems.stream() // 총 합계 계산
             .map(OrderItem::getSubTotal)
             .reduce(Money.ZERO, Money::add);
     }

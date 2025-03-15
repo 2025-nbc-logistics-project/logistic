@@ -6,8 +6,8 @@ import java.util.UUID;
 
 @Embeddable
 public class CompanyInfo {
-    private final UUID receiverCompanyId;
-    private final UUID supplierCompanyId;
+    private final UUID receiverCompanyId; // 공급 업체 Id
+    private final UUID supplierCompanyId; // 수령 업체 Id
 
     protected CompanyInfo() {
         this.receiverCompanyId = null;

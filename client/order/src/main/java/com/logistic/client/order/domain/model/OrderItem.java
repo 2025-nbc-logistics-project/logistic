@@ -31,6 +31,6 @@ public class OrderItem {
         this.productId = productId;
         this.quantity = quantity;
         this.price = price;
-        this.subTotal = price.multiply(quantity.getQuantity());
+        this.subTotal = price.multiply(quantity.getQuantity()); // 소계 계산
     }
 }

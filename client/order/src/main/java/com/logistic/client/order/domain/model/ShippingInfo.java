@@ -6,18 +6,21 @@ import java.util.UUID;
 
 @Embeddable
 public class ShippingInfo {
-    private final Address deliveryAddress;
-    private final String recipientName;
-    private final UUID recipientSlackId;
+    private final Address supplierAddress; // 수령 업체 주소
+    private final Address receiverAddress; // 공급 업체 주소
+    private final String recipientName; // 수령인
+    private final UUID recipientSlackId; // 수령인 슬랙 ID
 
     protected ShippingInfo() {
-        this.deliveryAddress = null;
+        this.supplierAddress = null;
+        this.receiverAddress = null;
         this.recipientName = null;
         this.recipientSlackId = null;
     }
 
-    public ShippingInfo(Address deliveryAddress, String recipientName, UUID recipientSlackId) {
-        this.deliveryAddress = deliveryAddress;
+    public ShippingInfo(Address supplierAddress, Address receiverAddress, String recipientName, UUID recipientSlackId) {
+        this.supplierAddress = supplierAddress;
+        this.receiverAddress = receiverAddress;
         this.recipientName = recipientName;
         this.recipientSlackId = recipientSlackId;
     }

@@ -17,7 +17,9 @@ public class Delivery {
     private UUID deliveryId;
 
     private UUID orderId;
-    private UUID deliveryManagerId;
+
+    @Embedded
+    private DeliveryManagerId deliveryManagerId;
 
     @Enumerated(EnumType.STRING)
     private DeliveryStatus status;
@@ -31,15 +33,16 @@ public class Delivery {
     @OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DeliveryRoute> deliveryRoutes = new ArrayList<>();
 
-    public Delivery(UUID orderId, UUID deliveryManagerId, DeliveryHubInfo hubInfo, ShippingInfo shippingInfo) {
+    public Delivery(UUID orderId, DeliveryManagerId deliveryManagerId, DeliveryHubInfo hubInfo, ShippingInfo shippingInfo) {
         this.deliveryId = UUID.randomUUID();
         this.orderId = orderId;
         this.deliveryManagerId = deliveryManagerId;
+        this.status = DeliveryStatus.PENDING;
         this.deliveryHubInfo = hubInfo;
         this.shippingInfo = shippingInfo;
     }
 
-    public void updateStatus(DeliveryStatus newStatus) {
+    public void updateStatus(DeliveryStatus newStatus) { // 배송 상태 업데이트 메서드
         int currentSeq = this.status.getSequence();
         int newSeq = newStatus.getSequence();
         if (newSeq < currentSeq) {
@@ -48,7 +51,7 @@ public class Delivery {
         this.status = newStatus;
     }
 
-    public void addRoute(DeliveryRoute route) {
+    public void addRoute(DeliveryRoute route) { // 배송 경로 추가 메서드
         this.deliveryRoutes.add(route);
         route.setDelivery(this);
     }

@@ -28,14 +28,14 @@ public class DeliveryRoute {
 //        @AttributeOverride(name = "distance", column = @Column(name = "estimated_distance")),
 //        @AttributeOverride(name = "time", column = @Column(name = "estimated_time"))
 //    })
-    private DistanceTime estimated;
+    private DistanceTime estimated; // 예상 거리 및 소요 시간
     @Embedded
-    private DistanceTime actual;
+    private DistanceTime actual; // 실제 거리 및 소요 시간
 
     @Enumerated(EnumType.STRING)
     private DeliveryRouteStatus routeStatus;
 
-    private UUID deliveryManagerId;
+    private UUID deliveryManagerId; // 허브 배송 담당자 ID
 
     public DeliveryRoute(int sequence, DeliveryHubInfo hubInfo, DistanceTime estimated, UUID deliveryManagerId) {
         this.deliveryRouteId = UUID.randomUUID();
@@ -43,18 +43,18 @@ public class DeliveryRoute {
         this.deliveryHubInfo = hubInfo;
         this.estimated = estimated;
         this.routeStatus = DeliveryRouteStatus.HUB_WAITING;
-        this.deliveryManagerId =deliveryManagerId;
+        this.deliveryManagerId = deliveryManagerId;
     }
 
     public void setDelivery(Delivery delivery) {
         this.delivery = delivery;
     }
 
-    public void updateActualDistanceTime(Double distance, Integer time) {
+    public void updateActualDistanceTime(Integer distance, Integer time) { // 실제 거리 및 소요 시간 업데이트 메서드
         this.actual = new DistanceTime(distance, time);
     }
 
-    public void updateRouteStatus(DeliveryRouteStatus newStatus) {
+    public void updateRouteStatus(DeliveryRouteStatus newStatus) { // 배송 상태 업데이트 메서드
         int currentSeq = this.routeStatus.getSequence();
         int newSeq = newStatus.getSequence();
         if (newSeq < currentSeq) {

@@ -6,8 +6,8 @@ import java.util.UUID;
 
 @Embeddable
 public class DeliveryHubInfo {
-    private final UUID departureHubId;
-    private final UUID destinationHubId;
+    private final UUID departureHubId; // 출발 허브 ID
+    private final UUID destinationHubId; // 최종 목적지 허브 ID
 
     protected DeliveryHubInfo() {
         this.departureHubId = null;
