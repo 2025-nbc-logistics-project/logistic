@@ -15,7 +15,7 @@ public class CompanyInfo {
     }
 
     public CompanyInfo(UUID receiverCompanyId, UUID supplierCompanyId) {
-        if (receiverCompanyId == null || supplierCompanyId == null || receiverCompanyId == supplierCompanyId) {
+        if (receiverCompanyId == null || supplierCompanyId == null || receiverCompanyId.equals(supplierCompanyId)) {
             throw new IllegalArgumentException("업체 Id를 다시 확인해주세요.");
         }
         this.receiverCompanyId = receiverCompanyId;
