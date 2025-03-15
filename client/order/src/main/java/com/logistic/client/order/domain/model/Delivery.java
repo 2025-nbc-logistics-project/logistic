@@ -38,4 +38,18 @@ public class Delivery {
         this.deliveryHubInfo = hubInfo;
         this.shippingInfo = shippingInfo;
     }
+
+    public void updateStatus(DeliveryStatus newStatus) {
+        int currentSeq = this.status.getSequence();
+        int newSeq = newStatus.getSequence();
+        if (newSeq < currentSeq) {
+            throw new IllegalArgumentException("잘못된 배송 상태(이전 상태)가 입력되었습니다.");
+        }
+        this.status = newStatus;
+    }
+
+    public void addRoute(DeliveryRoute route) {
+        this.deliveryRoutes.add(route);
+        route.setDelivery(this);
+    }
 }

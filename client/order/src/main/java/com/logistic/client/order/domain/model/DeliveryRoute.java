@@ -45,4 +45,21 @@ public class DeliveryRoute {
         this.routeStatus = DeliveryRouteStatus.HUB_WAITING;
         this.deliveryManagerId =deliveryManagerId;
     }
+
+    public void setDelivery(Delivery delivery) {
+        this.delivery = delivery;
+    }
+
+    public void updateActualDistanceTime(Double distance, Integer time) {
+        this.actual = new DistanceTime(distance, time);
+    }
+
+    public void updateRouteStatus(DeliveryRouteStatus newStatus) {
+        int currentSeq = this.routeStatus.getSequence();
+        int newSeq = newStatus.getSequence();
+        if (newSeq < currentSeq) {
+            throw new IllegalArgumentException("잘못된 배송 상태(이전 상태)가 입력되었습니다.");
+        }
+        this.routeStatus = newStatus;
+    }
 }
