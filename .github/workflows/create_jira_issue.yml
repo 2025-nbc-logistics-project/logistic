@@ -2,7 +2,7 @@ name: Create Jira issue
 on:
   issues:
     types:
-      - open
+      - opened
 jobs:
   create-jira-issue:
     runs-on: ubuntu-latest
