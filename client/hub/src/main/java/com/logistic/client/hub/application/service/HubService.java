@@ -67,7 +67,13 @@ public class HubService {
     return hubRepository.findAll();
   }
 
+  @Transactional(readOnly = true)
+  public Page<Hub> searchHubs(String keyword, int page, int size){
+    Pageable pageable = PageRequest.of(page, size);
+    Specification<Hub> spec = Specification.where(HubSpecifications.nameOrLocationContains(keyword));
 
+    return hubRepository.findAll(spec, pageable);
+  }
 
 
   private Hub toHubEntity(HubDto hubDto) {
