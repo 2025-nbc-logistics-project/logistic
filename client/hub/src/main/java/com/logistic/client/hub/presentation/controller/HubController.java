@@ -44,5 +44,11 @@ public class HubController {
 
   }
 
+  @PatchMapping("/{hubId}")
+  public ResponseEntity<ApiResponse<Hub>> updateHub(@PathVariable Long hubId, @Valid @RequestBody HubDto hubDto){
+    Hub updatedHub = hubService.updateHub(hubId, hubDto);
+    return ResponseUtil.success(updatedHub);
+  }
+
 
 }

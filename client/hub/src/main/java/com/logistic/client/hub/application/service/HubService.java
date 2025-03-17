@@ -51,7 +51,16 @@ public class HubService {
     return getHubOrThrow(hubId);
   }
 
+  public Hub updateHub(Long hubId, HubDto hubDto) {
+    Hub hub = getHubOrThrow(hubId);
+    hub.updateInfo(
+        hubDto.getName(),
+        new HubAddress(hubDto.getPostalCode(),hubDto.getStreetAddress(), hubDto.getDetailAddress()),
+        new HubLocation(hubDto.getLatitude(),hubDto.getLongitude())
+    );
 
+    return hubRepository.save(hub);
+  }
 
   @Transactional(readOnly = true)
   public List<Hub> getAllHubs() {
