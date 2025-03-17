@@ -37,5 +37,12 @@ public class HubController {
     return ResponseUtil.success(hub);
   }
 
+  @GetMapping()
+  public ResponseEntity<ApiResponse<List<Hub>>> getAllHubs(){
+    List<Hub> hubs = hubService.getAllHubs();
+    return ResponseUtil.success(hubs);
+
+  }
+
 
 }

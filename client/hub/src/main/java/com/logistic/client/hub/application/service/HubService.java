@@ -53,6 +53,13 @@ public class HubService {
 
 
 
+  @Transactional(readOnly = true)
+  public List<Hub> getAllHubs() {
+    return hubRepository.findAll();
+  }
+
+
+
 
   private Hub toHubEntity(HubDto hubDto) {
     return Hub.builder()
