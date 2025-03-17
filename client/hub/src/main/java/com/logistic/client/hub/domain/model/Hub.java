@@ -24,8 +24,7 @@ import org.hibernate.annotations.Where;
 @SQLDelete(sql = """
     UPDATE hub
     SET is_deleted = true,
-        deleted_at = now(),
-        deleted_by = ?
+        deleted_at = now()
     WHERE id = ?
 """)
 @Where(clause = "is_deleted = false")
