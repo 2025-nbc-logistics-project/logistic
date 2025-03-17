@@ -25,4 +25,10 @@ public class HubController {
     return ResponseUtil.success(hub);
   }
 
+  @DeleteMapping("/{hubId}")
+  public ResponseEntity<ApiResponse<Void>> deleteHub(@PathVariable Long hubId){
+    hubService.deleteHub(hubId);
+    return ResponseUtil.noContent();
+  }
+
 }

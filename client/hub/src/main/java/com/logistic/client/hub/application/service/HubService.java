@@ -35,6 +35,18 @@ public class HubService {
     return hubRepository.save(hub);
   }
 
+  public void deleteHub(Long hubId) {
+    Hub hub = getHubOrThrow(hubId);
+
+    if(hub.isDeleted()){
+      throw new HubAlreadyDeletedException(HubExceptionCode.HUB_ALREADY_DELETED);
+    }
+    // TODO : SecurityContext에서 userId 가져오기
+    Long currentUserId = 0L;
+    hub.deleteHub(currentUserId);
+    hubRepository.delete(hub);
+  }
+
 
 
 
