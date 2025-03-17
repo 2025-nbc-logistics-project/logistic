@@ -31,4 +31,11 @@ public class HubController {
     return ResponseUtil.noContent();
   }
 
+  @GetMapping("/{hubId}")
+  public ResponseEntity<ApiResponse<Hub>> getHubById(@PathVariable Long hubId){
+    Hub hub = hubService.getHub(hubId);
+    return ResponseUtil.success(hub);
+  }
+
+
 }

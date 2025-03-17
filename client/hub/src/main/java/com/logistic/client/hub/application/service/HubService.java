@@ -47,6 +47,10 @@ public class HubService {
     hubRepository.delete(hub);
   }
 
+  public Hub getHub(Long hubId) {
+    return getHubOrThrow(hubId);
+  }
+
 
 
 
