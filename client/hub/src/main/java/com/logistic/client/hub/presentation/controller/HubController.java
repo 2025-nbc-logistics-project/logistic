@@ -50,5 +50,13 @@ public class HubController {
     return ResponseUtil.success(updatedHub);
   }
 
-
+  @GetMapping("/search")
+  public ResponseEntity<ApiResponse<Page<Hub>>> searchHubs(
+      @RequestParam(required = false) String key,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size
+  ){
+    Page<Hub> hubs = hubService.searchHubs(key, page,size);
+    return ResponseUtil.success(hubs);
+  }
 }
