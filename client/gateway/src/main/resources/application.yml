@@ -1,0 +1,54 @@
+spring:
+  main:
+    web-application-type: reactive
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: users
+          uri: lb://users
+          predicates:
+            - Path=/users/**
+
+        - id: orders
+          uri: lb://orders
+          predicates:
+            - Path=/orders/**
+
+        - id: company
+          uri: lb://company
+          predicates:
+            - Path=/company/**
+
+        - id: hub
+          uri: lb://hub
+          predicates:
+            - Path=/hub/**
+
+        - id: ai
+          uri: lb://ai
+          predicates:
+            - Path=/ai/**
+
+        - id: alarm
+          uri: lb://alarm
+          predicates:
+            - Path=/alarm/**
+
+server:
+  port: 18081
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+
+
+
+
+
