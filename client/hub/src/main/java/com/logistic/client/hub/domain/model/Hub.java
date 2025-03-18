@@ -22,7 +22,7 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor
 @AllArgsConstructor
 @SQLDelete(sql = """
-    UPDATE hub
+    UPDATE p_hub
     SET is_deleted = true,
         deleted_at = now()
     WHERE id = ?
