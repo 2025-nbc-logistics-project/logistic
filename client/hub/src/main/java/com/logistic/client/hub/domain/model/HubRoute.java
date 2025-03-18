@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "hub_route")
+@Table(name = "p_hub_route")
 public class HubRoute extends BaseEntity {
 
   @Id

@@ -16,7 +16,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 @Entity
-@Table(name = "hub")
+@Table(name = "p_hub")
 @Builder(toBuilder = true)
 @Getter
 @NoArgsConstructor
