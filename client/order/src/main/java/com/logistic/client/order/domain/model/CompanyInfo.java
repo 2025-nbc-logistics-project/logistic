@@ -1,10 +1,12 @@
 package com.logistic.client.order.domain.model;
 
 import jakarta.persistence.Embeddable;
+import lombok.Getter;
 
 import java.util.UUID;
 
 @Embeddable
+@Getter
 public class CompanyInfo {
     private final UUID receiverCompanyId; // 공급 업체 Id
     private final UUID supplierCompanyId; // 수령 업체 Id

@@ -19,9 +19,8 @@ public class DeliveryApplicationService {
 
     private final DeliveryRepository deliveryRepository;
     private final HubClient hubClient;
-    private final SlackClient slackClient;
 
-    public void createDelivery(CreateDeliveryRequest request) {
+    public Delivery createDelivery(CreateDeliveryRequest request) {
 
         // (1). request 를 기반으로 delivery 엔티티 생성
         Delivery delivery = new Delivery(
@@ -51,7 +50,8 @@ public class DeliveryApplicationService {
         // (4). DB에 저장
         deliveryRepository.save(delivery);
 
-        // 슬랙 메시지 발송 요청 코드 추가...
+        // 이벤트 발행 또는 Order 서비스를 호출하여 배송 데이터 업데이트 및 슬랙 메시지 발송 요청 (추후 반영 예정)
+        return delivery;
     }
 
     private ShippingInfo buildShippingInfo(AddressResponse receiver, AddressResponse supplier) {

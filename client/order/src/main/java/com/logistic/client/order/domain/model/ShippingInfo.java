@@ -1,10 +1,12 @@
 package com.logistic.client.order.domain.model;
 
 import jakarta.persistence.Embeddable;
+import lombok.Getter;
 
 import java.util.UUID;
 
 @Embeddable
+@Getter
 public class ShippingInfo {
     private final Address supplierAddress; // 수령 업체 주소
     private final Address receiverAddress; // 공급 업체 주소

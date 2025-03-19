@@ -1,8 +1,10 @@
 package com.logistic.client.order.domain.model;
 
 import jakarta.persistence.Embeddable;
+import lombok.Getter;
 
 @Embeddable
+@Getter
 public class Address {
     private final String postalCode;
     private final String detailAddress;

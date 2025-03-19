@@ -4,6 +4,7 @@ import com.logistic.client.order.application.dto.*;
 import com.logistic.client.order.domain.model.*;
 import com.logistic.client.order.domain.repository.OrderRepository;
 import com.logistic.client.order.infrastructure.client.CompanyClient;
+import com.logistic.client.order.infrastructure.client.SlackClient;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 public class OrderApplicationService {
 
     private final CompanyClient companyClient;
+    private final SlackClient slackClient;
     private final DeliveryApplicationService deliveryApplicationService;
     private final OrderRepository orderRepository;
 
@@ -63,6 +65,18 @@ public class OrderApplicationService {
 
         // (6). 배송 엔티티 생성 요청
         deliveryApplicationService.createDelivery(createDeliveryRequest);
+        Delivery delivery = deliveryApplicationService.createDelivery(createDeliveryRequest); // 나중에 ResponseDto로 수정하자
+
+        // (7). 배송 데이터 업데이트
+        order.addDelivery(delivery.getDeliveryId());
+
+        // (8). 슬랙 메시지 생성 요청
+        SlackRequestDto slackRequestDto = buildSlackMessageRequest(
+            order,
+            delivery,
+            orderItems
+        );
+        slackClient.createSlackMessage(slackRequestDto);
 
         return order;
     }
@@ -91,5 +105,44 @@ public class OrderApplicationService {
                );
            })
            .collect(Collectors.toList());
+    }
+
+    private SlackRequestDto buildSlackMessageRequest(Order order, Delivery delivery, List<OrderItem> orderItems) {
+        // 주문자 정보 (User 도메인이 구현되면 반영할 예정)
+        String username = "mock username";
+        String email = "mock@email.com";
+
+        // 주문 상품 목록
+        List<SlackOrderItem> slackOrderItems = orderItems.stream()
+            .map(oi -> new SlackOrderItem(
+                oi.getProductId(),
+                oi.getQuantity().getQuantity()
+            ))
+            .toList();
+
+        // 경유 허브 Id 리스트
+        List<UUID> transitHubs = delivery.getDeliveryRoutes().stream()
+            .map(route -> route.getDeliveryHubInfo().getDestinationHubId())
+            .toList();
+
+        // 수령 업체의 주소
+        Address receiverAddress = delivery.getShippingInfo().getReceiverAddress();
+        AddressResponse destinationAddress = new AddressResponse(
+            receiverAddress.getPostalCode(),
+            receiverAddress.getDetailAddress(),
+            receiverAddress.getStreetAddress()
+        );
+
+        return new SlackRequestDto(
+            order.getOrderId(),
+            username,
+            email,
+            slackOrderItems,
+            order.getOrderRequest(),
+            delivery.getDeliveryHubInfo().getDepartureHubId(),
+            transitHubs,
+            destinationAddress,
+            order.getCompanyInfo().getSupplierCompanyId()
+        );
     }
 }

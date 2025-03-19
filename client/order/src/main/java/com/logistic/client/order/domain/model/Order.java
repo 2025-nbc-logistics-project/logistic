@@ -14,6 +14,10 @@ public class Order {
     @Id
     private UUID orderId;
 
+    private UUID deliveryId;
+
+//    private Orderer orderer;
+
     @Embedded
     private CompanyInfo companyInfo;
 
@@ -34,5 +38,9 @@ public class Order {
         this.totalPrice = orderItems.stream() // 총 합계 계산
             .map(OrderItem::getSubTotal)
             .reduce(Money.ZERO, Money::add);
+    }
+
+    public void addDelivery(UUID deliveryId) {
+        this.deliveryId = deliveryId;
     }
 }
