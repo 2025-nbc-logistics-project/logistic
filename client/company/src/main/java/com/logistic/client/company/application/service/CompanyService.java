@@ -62,12 +62,6 @@ public class CompanyService {
         return companies.map(CompanyListResponseDto::new);
     }
 
-    public Company findByCompanyId(UUID companyId) {
-        return companyRepository
-                .findByCompanyIdAndDeletedAtIsNull(companyId)
-                .orElseThrow(CompanyNotFoundException::new);
-    }
-
     public Page<CompanyListResponseDto> getSearchCompanies(String key, int page, int limit, String sortBy, String order) {
         if(limit != 10 && limit != 30 && limit != 50) {
             limit = 10;
@@ -89,6 +83,21 @@ public class CompanyService {
 
         return new CompanyUpdateResponseDto(company);
 
+    }
+
+    @Transactional
+    public CompanyDeleteResponseDto deleteCompany(UUID companyId) {
+        Company company = findByCompanyId(companyId);
+        //
+        company.delete(1L);
+
+        return new CompanyDeleteResponseDto(company);
+    }
+
+    public Company findByCompanyId(UUID companyId) {
+        return companyRepository
+                .findByCompanyIdAndDeletedAtIsNull(companyId)
+                .orElseThrow(CompanyNotFoundException::new);
     }
 
 }

@@ -67,4 +67,11 @@ public class CompanyController {
         return ResponseEntity.ok(responseDto);
     }
 
+    //업체 삭제
+    @DeleteMapping("/companies/{companyId}")
+    public ResponseEntity<CompanyDeleteResponseDto> deleteCompany(@PathVariable UUID companyId) {
+        CompanyDeleteResponseDto responseDto = companyService.deleteCompany(companyId);
+        return ResponseEntity.ok(responseDto);
+    }
+
 }
