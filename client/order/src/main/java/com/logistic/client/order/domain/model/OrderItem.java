@@ -3,6 +3,7 @@ package com.logistic.client.order.domain.model;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @Entity
+@Table(name = "p_order_item")
 public class OrderItem {
     @Id
     private UUID orderItemId;

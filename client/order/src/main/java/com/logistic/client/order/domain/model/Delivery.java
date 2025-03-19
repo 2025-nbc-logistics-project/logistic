@@ -12,6 +12,7 @@ import java.util.UUID;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Table(name = "p_delivery")
 public class Delivery {
     @Id
     private UUID deliveryId;

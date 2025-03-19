@@ -10,6 +10,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Entity
+@Table(name = "p_order")
 public class Order {
     @Id
     private UUID orderId;
