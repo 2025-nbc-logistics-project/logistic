@@ -67,4 +67,13 @@ public class CompanyService {
                 .orElseThrow(CompanyNotFoundException::new);
     }
 
+    public Page<CompanyListResponseDto> getSearchCompanies(String key, int page, int limit, String sortBy, String order) {
+        if(limit != 10 && limit != 30 && limit != 50) {
+            limit = 10;
+        }
+        Pageable pageable = PageRequest.of(page, limit);
+        Page<Company> companies = companyRepository.getSearchCompanies(key, pageable, sortBy, order);
+        return companies.map(CompanyListResponseDto::new);
+    }
+
 }

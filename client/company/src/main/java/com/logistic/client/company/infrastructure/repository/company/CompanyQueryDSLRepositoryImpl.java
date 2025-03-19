@@ -1,6 +1,7 @@
 package com.logistic.client.company.infrastructure.repository.company;
 
 import com.logistic.client.company.domain.model.Company;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -48,6 +49,30 @@ public class CompanyQueryDSLRepositoryImpl {
                 .select(company.count())
                 .from(company)
                 .where(company.deletedAt.isNull())
+                .fetchOne();
+
+        return new PageImpl<>(companyList, pageable, total);
+    }
+
+    public Page<Company> getSearchCompanies(String key, Pageable pageable, String sortBy, String order) {
+        OrderSpecifier<?> orderSpecifier = getOrderSpecifier(sortBy, order);
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(company.deletedAt.isNull());
+        if(key != null && !key.isEmpty()) {
+            builder.and(company.companyName.containsIgnoreCase(key));
+        }
+
+        List<Company> companyList = jpaQueryFactory
+                .selectFrom(company)
+                .where(builder)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(orderSpecifier)
+                .fetch();
+        long total = jpaQueryFactory
+                .select(company.count())
+                .from(company)
+                .where(builder)
                 .fetchOne();
 
         return new PageImpl<>(companyList, pageable, total);

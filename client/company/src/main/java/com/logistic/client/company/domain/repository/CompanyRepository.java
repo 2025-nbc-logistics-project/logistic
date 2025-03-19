@@ -12,4 +12,5 @@ public interface CompanyRepository {
     boolean isDuplicateStore(String companyName, String companyTel);
     Optional<Company> findByCompanyIdAndDeletedAtIsNull(UUID companyId);
     Page<Company> getCompanies(Pageable pageable, String sortBy, String order);
+    Page<Company> getSearchCompanies(String key, Pageable pageable, String sortBy, String order);
 }

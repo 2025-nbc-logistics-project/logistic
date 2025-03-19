@@ -37,4 +37,9 @@ public class CompanyRepositoryImpl implements CompanyRepository {
         return companyQueryDSLRepository.getCompanies(pageable, sortBy, order);
     }
 
+    @Override
+    public Page<Company> getSearchCompanies(String key, Pageable pageable, String sortBy, String order) {
+        return companyQueryDSLRepository.getSearchCompanies(key, pageable, sortBy, order);
+    }
+
 }

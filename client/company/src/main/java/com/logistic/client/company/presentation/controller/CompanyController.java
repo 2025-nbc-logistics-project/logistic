@@ -45,4 +45,16 @@ public class CompanyController {
         return companyService.getCompanies(page-1, limit, sortBy, order);
     }
 
+    //업체 검색 조회 (이름)
+    @GetMapping("/companies/search")
+    public Page<CompanyListResponseDto> getSearchCompanies(
+            @RequestParam(value = "key", required = false, defaultValue = "") String key,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+            @RequestParam(value = "sortBy", required = false, defaultValue = "createdAt") String sortBy,
+            @RequestParam(value = "order", required = false, defaultValue = "asc") String order
+    ) {
+        return companyService.getSearchCompanies(key, page-1, limit, sortBy, order);
+    }
+
 }
