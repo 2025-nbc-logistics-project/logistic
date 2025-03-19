@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(name = "p_delivery")
-public class Delivery {
+public class Delivery extends BaseEntity {
     @Id
     private UUID deliveryId;
 

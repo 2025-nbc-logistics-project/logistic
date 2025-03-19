@@ -11,7 +11,7 @@ import java.util.UUID;
 @Getter
 @Entity
 @Table(name = "p_order")
-public class Order {
+public class Order extends BaseEntity {
     @Id
     private UUID orderId;
 
