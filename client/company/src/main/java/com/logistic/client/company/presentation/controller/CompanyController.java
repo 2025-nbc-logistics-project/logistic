@@ -57,4 +57,14 @@ public class CompanyController {
         return companyService.getSearchCompanies(key, page-1, limit, sortBy, order);
     }
 
+    //업체 수정
+    @PutMapping("/companies/{companyId}")
+    public ResponseEntity<CompanyUpdateResponseDto> updateCompany(
+            @PathVariable UUID companyId,
+            @RequestBody CompanyUpdateRequestDto requestDto
+    ) {
+        CompanyUpdateResponseDto responseDto = companyService.updateCompany(companyId, requestDto);
+        return ResponseEntity.ok(responseDto);
+    }
+
 }

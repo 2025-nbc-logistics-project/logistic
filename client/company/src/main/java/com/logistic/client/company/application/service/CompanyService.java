@@ -3,6 +3,7 @@ package com.logistic.client.company.application.service;
 import com.logistic.client.company.application.dto.company.*;
 import com.logistic.client.company.domain.exception.company.CompanyDuplicatedException;
 import com.logistic.client.company.domain.exception.company.CompanyNotFoundException;
+import com.logistic.client.company.domain.exception.company.CompanyUpdateException;
 import com.logistic.client.company.domain.model.Company;
 import com.logistic.client.company.domain.repository.CompanyRepository;
 import com.logistic.client.company.infrastructure.client.HubClient;
@@ -74,6 +75,20 @@ public class CompanyService {
         Pageable pageable = PageRequest.of(page, limit);
         Page<Company> companies = companyRepository.getSearchCompanies(key, pageable, sortBy, order);
         return companies.map(CompanyListResponseDto::new);
+    }
+
+    @Transactional
+    public CompanyUpdateResponseDto updateCompany(UUID companyId, CompanyUpdateRequestDto requestDto) {
+        Company company = findByCompanyId(companyId);
+        long count = companyRepository.updateCompany(companyId, requestDto);
+
+        //
+        if (count == 0) {
+            throw new CompanyUpdateException();
+        }
+
+        return new CompanyUpdateResponseDto(company);
+
     }
 
 }

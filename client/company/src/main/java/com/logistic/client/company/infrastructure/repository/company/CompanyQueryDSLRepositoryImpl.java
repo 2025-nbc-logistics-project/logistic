@@ -1,10 +1,13 @@
 package com.logistic.client.company.infrastructure.repository.company;
 
+import com.logistic.client.company.application.dto.company.CompanyUpdateRequestDto;
 import com.logistic.client.company.domain.model.Company;
+import com.logistic.client.company.domain.model.QCompany;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.querydsl.jpa.impl.JPAUpdateClause;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.logistic.client.company.domain.model.QCompany.company;
 
@@ -76,6 +80,43 @@ public class CompanyQueryDSLRepositoryImpl {
                 .fetchOne();
 
         return new PageImpl<>(companyList, pageable, total);
+    }
+
+    public long updateCompany(UUID companyId, CompanyUpdateRequestDto requestDto) {
+        QCompany company = QCompany.company;
+        JPAUpdateClause updateClause = new JPAUpdateClause(entityManager, company);
+
+        if(requestDto.getHudId() != null) {
+            updateClause.set(company.hudId, requestDto.getHudId());
+        }
+
+        if(requestDto.getCompanyType() != null) {
+            updateClause.set(company.companyType, requestDto.getCompanyType());
+        }
+
+        if(requestDto.getCompanyName() != null && !requestDto.getCompanyName().isEmpty()) {
+            updateClause.set(company.companyName, requestDto.getCompanyName());
+        }
+
+        if(requestDto.getCompanyTel() != null && !requestDto.getCompanyTel().isEmpty()) {
+            updateClause.set(company.companyTel, requestDto.getCompanyTel());
+        }
+
+        if(requestDto.getPostalCode() != null && !requestDto.getPostalCode().isEmpty()) {
+            updateClause.set(company.address.postalCode, requestDto.getPostalCode());
+        }
+
+        if(requestDto.getStreetAddress() != null && !requestDto.getStreetAddress().isEmpty()) {
+            updateClause.set(company.address.detailAddress, requestDto.getStreetAddress());
+        }
+
+        if(requestDto.getDetailAddress() != null && !requestDto.getDetailAddress().isEmpty()) {
+            updateClause.set(company.address.detailAddress, requestDto.getDetailAddress());
+        }
+
+        return updateClause
+                .where(company.companyId.eq(companyId))
+                .execute();
     }
 
     private OrderSpecifier<?> getOrderSpecifier(String sortBy, String order) {

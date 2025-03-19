@@ -1,5 +1,6 @@
 package com.logistic.client.company.domain.repository;
 
+import com.logistic.client.company.application.dto.company.CompanyUpdateRequestDto;
 import com.logistic.client.company.domain.model.Company;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,4 +14,5 @@ public interface CompanyRepository {
     Optional<Company> findByCompanyIdAndDeletedAtIsNull(UUID companyId);
     Page<Company> getCompanies(Pageable pageable, String sortBy, String order);
     Page<Company> getSearchCompanies(String key, Pageable pageable, String sortBy, String order);
+    long updateCompany(UUID companyId, CompanyUpdateRequestDto requestDto);
 }

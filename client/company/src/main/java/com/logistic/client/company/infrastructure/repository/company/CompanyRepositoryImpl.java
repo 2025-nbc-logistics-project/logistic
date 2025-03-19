@@ -1,5 +1,6 @@
 package com.logistic.client.company.infrastructure.repository.company;
 
+import com.logistic.client.company.application.dto.company.CompanyUpdateRequestDto;
 import com.logistic.client.company.domain.model.Company;
 import com.logistic.client.company.domain.repository.CompanyRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,11 @@ public class CompanyRepositoryImpl implements CompanyRepository {
     @Override
     public Page<Company> getSearchCompanies(String key, Pageable pageable, String sortBy, String order) {
         return companyQueryDSLRepository.getSearchCompanies(key, pageable, sortBy, order);
+    }
+
+    @Override
+    public long updateCompany(UUID companyId, CompanyUpdateRequestDto requestDto) {
+        return companyQueryDSLRepository.updateCompany(companyId, requestDto);
     }
 
 }
