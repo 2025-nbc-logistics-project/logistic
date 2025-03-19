@@ -6,7 +6,6 @@ import com.logistic.client.order.application.dto.HubRouteResponse;
 import com.logistic.client.order.domain.model.*;
 import com.logistic.client.order.domain.repository.DeliveryRepository;
 import com.logistic.client.order.infrastructure.client.HubClient;
-import com.logistic.client.order.infrastructure.client.SlackClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

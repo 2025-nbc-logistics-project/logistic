@@ -5,12 +5,14 @@ import com.logistic.client.order.domain.model.*;
 import com.logistic.client.order.domain.repository.OrderRepository;
 import com.logistic.client.order.infrastructure.client.CompanyClient;
 import com.logistic.client.order.infrastructure.client.SlackClient;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -24,7 +26,7 @@ public class OrderApplicationService {
     private final OrderRepository orderRepository;
 
     @Transactional
-    public Order createOrder(OrderRequestDto requestDto) {
+    public OrderResponseDto createOrder(OrderRequestDto requestDto) {
         /* (1).
         입력받은 상품들의 상품 Id가 유효한 지, 재고가 충분한 지 검증,
         문제가 없다면 입력받은 수량만큼 상품 재고 차감 요청,
@@ -78,7 +80,20 @@ public class OrderApplicationService {
         );
         slackClient.createSlackMessage(slackRequestDto);
 
-        return order;
+        return new OrderResponseDto(order);
+    }
+
+    @Transactional(readOnly = true)
+    public OrderResponseDto readOrder(UUID orderId) {
+        Order order = orderRepository.findById(orderId)
+            .orElseThrow(() -> new NoSuchElementException("해당 Id를 가진 주문 정보를 찾지 못했습니다."));
+        return new OrderResponseDto(order);
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponseDto<OrderResponseDto> searchOrders(OrderSearchDto searchDto) {
+        Page<OrderResponseDto> mappedPage = orderRepository.searchOrders(searchDto).map(OrderResponseDto::new);
+        return new PageResponseDto<>(mappedPage);
     }
 
     private List<OrderItem> buildOrderItems(
