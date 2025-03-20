@@ -10,15 +10,18 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ProductListResponseDto {
 
-    private UUID productId;
     private UUID companyId;
+    private UUID hubId;
     private String productName;
+    private int price;
+    private int quantity;
 
     public ProductListResponseDto(Product product) {
-       this.productId = product.getProductId();
        this.companyId = product.getCompanyId();
+       this.hubId = product.getHubId();
        this.productName = product.getProductInfo().getProductName();
-
+       this.price = product.getProductInfo().getPrice();
+       this.quantity = product.getQuantity().getQuantity();
     }
 
 }

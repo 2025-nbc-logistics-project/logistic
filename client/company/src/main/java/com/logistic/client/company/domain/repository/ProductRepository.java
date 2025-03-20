@@ -11,4 +11,5 @@ public interface ProductRepository {
     void save(Product product);
     Optional<Product> findByProductIdAndDeletedAtIsNull(UUID productId);
     Page<Product> getProducts(Pageable pageable, String sortBy, String order);
+    Page<Product> getSearchProducts(String key, UUID company, UUID hub, Pageable pageable, String sortBy, String order);
 }

@@ -43,6 +43,21 @@ public class ProductController {
         return productService.getProducts(page-1, limit, sortBy, order);
     }
 
+    //상품 검색 조회 (상품 이름, 업체, 허브)
+    //
+    @GetMapping("/search")
+    public Page<ProductListResponseDto> getSearchProducts(
+            @RequestParam(value = "key", required = false, defaultValue = "") String key,
+            @RequestParam(value = "company", required = false, defaultValue = "") UUID company,
+            @RequestParam(value = "hub", required = false, defaultValue = "") UUID hub,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+            @RequestParam(value = "sortBy", required = false, defaultValue = "createdAt") String sortBy,
+            @RequestParam(value = "order", required = false, defaultValue = "asc") String order
+    ){
+        return productService.getSearchProducts(key, company, hub, page-1, limit, sortBy, order);
+    }
+
     //주문 상품 검증 및 처리
     @PostMapping("/deduct-stock")
     public List<ProductPriceResponseDto> checkAndDeductStock(@RequestBody List<OrderItemRequestDto> orderItems) {

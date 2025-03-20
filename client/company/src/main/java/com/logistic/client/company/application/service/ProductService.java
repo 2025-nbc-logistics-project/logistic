@@ -52,16 +52,31 @@ public class ProductService {
     }
 
     public ProductResponseDto getProduct(UUID productId) {
+
         Product product = findByProductId(productId);
+
         return new ProductResponseDto(product);
     }
 
     public Page<ProductListResponseDto> getProducts(int page, int limit, String sortBy, String order) {
+
         if(limit != 10 && limit != 30 && limit != 50) {
             limit = 10;
         }
         Pageable pageable = PageRequest.of(page, limit);
         Page<Product> products = productRepository.getProducts(pageable, sortBy, order);
+
+        return products.map(ProductListResponseDto::new);
+    }
+
+    public Page<ProductListResponseDto> getSearchProducts(String key, UUID company, UUID hub, int page, int limit, String sortBy, String order) {
+
+        if(limit != 10 && limit != 30 && limit != 50) {
+            limit = 10;
+        }
+        Pageable pageable = PageRequest.of(page, limit);
+        Page<Product> products = productRepository.getSearchProducts(key, company, hub, pageable, sortBy, order);
+
         return products.map(ProductListResponseDto::new);
     }
 

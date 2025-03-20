@@ -32,4 +32,9 @@ public class ProductRepositoryImpl implements ProductRepository {
         return productQueryDSLRepository.getProducts(pageable, sortBy, order);
     }
 
+    @Override
+    public Page<Product> getSearchProducts(String key, UUID company, UUID hub, Pageable pageable, String sortBy, String order) {
+        return productQueryDSLRepository.getSearchProducts(key, company, hub, pageable, sortBy, order);
+    }
+
 }
