@@ -1,8 +1,10 @@
 package com.logistic.client.order.domain.model;
 
 import jakarta.persistence.Embeddable;
+import lombok.Getter;
 
 @Embeddable
+@Getter
 public class Money {
     public static final Money ZERO = new Money(0);
     private final Integer amount;

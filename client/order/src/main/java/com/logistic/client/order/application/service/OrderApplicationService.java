@@ -10,10 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -94,6 +91,109 @@ public class OrderApplicationService {
     public PageResponseDto<OrderResponseDto> searchOrders(OrderSearchDto searchDto) {
         Page<OrderResponseDto> mappedPage = orderRepository.searchOrders(searchDto).map(OrderResponseDto::new);
         return new PageResponseDto<>(mappedPage);
+    }
+
+    @Transactional
+    public OrderResponseDto updateOrder(UUID orderId, OrderUpdateRequestDto requestDto) {
+
+        // (1). 기존 Order 조회 및 업데이트 가능 여부 확인 (배송 중이면 X)
+        Order order = orderRepository.findById(orderId)
+            .orElseThrow(() -> new NoSuchElementException("해당 Id를 가진 주문 정보를 찾지 못했습니다."));
+        order.checkUpdateAvailable();
+
+        // (2). 기존 OrderItem 을 맵으로 변환
+        Map<UUID, Integer> oldQtyMap = new HashMap<>();
+        Map<UUID, Integer> oldPriceMap = new HashMap<>();
+        for (OrderItem oi : order.getOrderItems()) {
+            oldQtyMap.put(oi.getProductId(), oi.getQuantity().getQuantity());
+            oldPriceMap.put(oi.getProductId(), oi.getPrice().getAmount());
+        }
+
+        // (3). 새로 들어온 요청 Item 을 맵으로 구성
+        Map<UUID, Integer> newQtyMap = requestDto.getOrderItems().stream()
+            .collect(Collectors.toMap(
+                OrderItemRequestDto::getProductId,
+                OrderItemRequestDto::getQuantity
+            ));
+
+        // (4). old + new 전체 productId 합집합을 대상으로 diff 계산
+        Set<UUID> ProductIds = new HashSet<>();
+        ProductIds.addAll(oldQtyMap.keySet());
+        ProductIds.addAll(newQtyMap.keySet());
+
+        List<OrderItemRequestDto> restoreList = new ArrayList<>();
+        List<OrderItemRequestDto> deductList = new ArrayList<>();
+
+        for (UUID productId : ProductIds) {
+            int oldQty = oldQtyMap.getOrDefault(productId, 0);
+            int newQty = newQtyMap.getOrDefault(productId, 0);
+            int diff = newQty - oldQty;
+
+            if (diff > 0) {
+                // 새로 늘어난 만큼 차감 필요
+                deductList.add(new OrderItemRequestDto(productId, diff));
+            } else if (diff < 0) {
+                // 줄어든 만큼 복원 필요
+                restoreList.add(new OrderItemRequestDto(productId, Math.abs(diff)));
+            }
+        }
+
+        // (5). 줄어든(없어진) 상품 재고 복원 요청
+        if (!restoreList.isEmpty()) {
+            companyClient.restoreStock(restoreList);
+        }
+
+        // (6). 늘어난(추가된) 상품 재고 차감 요청, 새로운 Price 맵에 저장
+        Map<UUID, Integer> updatedPriceMap = new HashMap<>();
+        if (!deductList.isEmpty()) {
+            List<ProductPriceResponse> productPrices =
+                companyClient.checkAndDeductStock(deductList);
+
+            for (ProductPriceResponse ppr : productPrices) {
+                updatedPriceMap.put(ppr.getProductId(), ppr.getPrice());
+            }
+        }
+
+        /*
+        (7). 최종적으로 새로운 OrderItem 목록을 재구성
+             - 입력된 productId가 updatePriceMap 에 있다면 거기서 price 를 꺼내고, 없으면(oldPriceMap 에 있으면) 그대로 사용
+         */
+        List<OrderItem> newOrderItems = new ArrayList<>();
+        for (Map.Entry<UUID, Integer> entry : newQtyMap.entrySet()) {
+            UUID productId = entry.getKey();
+            int quantity = entry.getValue();
+
+            Integer newPrice = updatedPriceMap.get(productId);
+            if (newPrice == null) {
+                newPrice = oldPriceMap.get(productId);
+            }
+
+            newOrderItems.add(
+                new OrderItem(
+                    productId,
+                    new Quantity(quantity),
+                    new Money(newPrice)
+                )
+            );
+        }
+
+        // (8). Order 도메인에 최종 업데이트
+        order.updateItems(newOrderItems);
+        if (requestDto.getOrderRequest() != null) {
+            order.updateRequest(requestDto.getOrderRequest());
+        }
+
+        return new OrderResponseDto(order);
+    }
+
+    @Transactional
+    public OrderResponseDto updateOrderStatus(UUID orderId, OrderStatus newStatus) {
+        Order order = orderRepository.findById(orderId)
+            .orElseThrow(() -> new NoSuchElementException("해당 Id를 가진 주문 정보를 찾지 못했습니다."));
+
+        order.updateStatus(newStatus);
+
+        return new OrderResponseDto(order);
     }
 
     private List<OrderItem> buildOrderItems(
