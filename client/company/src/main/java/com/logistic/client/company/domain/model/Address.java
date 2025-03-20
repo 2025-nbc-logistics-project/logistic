@@ -1,5 +1,6 @@
 package com.logistic.client.company.domain.model;
 
+import com.logistic.client.company.domain.exception.company.CompanyValidationException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
@@ -21,7 +22,7 @@ public class Address {
 
     public Address(String postalCode, String streetAddress, String detailAddress) {
         if (postalCode == null || streetAddress == null) {
-            throw new IllegalArgumentException("우편번호 혹은 기본주소는 비어 있을 수 없습니다.");
+            throw new CompanyValidationException();
         }
         this.postalCode = postalCode;
         this.streetAddress = streetAddress;
