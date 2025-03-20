@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,7 +26,7 @@ public class Order extends BaseEntity {
     @Embedded
     private CompanyInfo companyInfo;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems;
 
     @Embedded
@@ -39,7 +40,10 @@ public class Order extends BaseEntity {
     public Order(CompanyInfo companyInfo, List<OrderItem> orderItems, String orderRequest) {
         this.orderId = UUID.randomUUID();
         this.companyInfo = companyInfo;
-        this.orderItems = orderItems;
+        this.orderItems = new ArrayList<>();
+        for (OrderItem item : orderItems) {
+            this.addOrderItem(item);
+        }
         this.orderRequest = orderRequest;
         this.orderStatus = OrderStatus.PENDING;
         this.totalPrice = orderItems.stream() // 총 합계 계산
@@ -71,6 +75,11 @@ public class Order extends BaseEntity {
 
     public void addDelivery(UUID deliveryId) {
         this.deliveryId = deliveryId;
+    }
+
+    public void addOrderItem(OrderItem item) {
+        this.orderItems.add(item);
+        item.setOrder(this);
     }
 
     @Override

@@ -19,6 +19,10 @@ public class OrderItem extends BaseEntity {
     @Embedded
     private Quantity quantity;
 
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
+
     @Embedded
     @AttributeOverrides({
         @AttributeOverride(name = "amount", column = @Column(name = "price_amount"))
@@ -38,4 +42,6 @@ public class OrderItem extends BaseEntity {
         this.price = price;
         this.subTotal = price.multiply(quantity.getQuantity()); // 소계 계산
     }
+
+    public void setOrder(Order order) { this.order = order; }
 }
