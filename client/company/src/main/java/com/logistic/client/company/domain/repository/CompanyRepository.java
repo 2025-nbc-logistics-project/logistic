@@ -14,5 +14,4 @@ public interface CompanyRepository {
     Optional<Company> findByCompanyIdAndDeletedAtIsNull(UUID companyId);
     Page<Company> getCompanies(Pageable pageable, String sortBy, String order);
     Page<Company> getSearchCompanies(String key, Pageable pageable, String sortBy, String order);
-    long updateCompany(UUID companyId, CompanyUpdateRequestDto requestDto);
 }

@@ -89,45 +89,6 @@ public class CompanyQueryDSLRepositoryImpl {
         return new PageImpl<>(companyList, pageable, total);
     }
 
-    public long updateCompany(UUID companyId, CompanyUpdateRequestDto requestDto) {
-
-        QCompany company = QCompany.company;
-
-        JPAUpdateClause updateClause = new JPAUpdateClause(entityManager, company);
-
-        if(requestDto.getHudId() != null) {
-            updateClause.set(company.hudId, requestDto.getHudId());
-        }
-
-        if(requestDto.getCompanyType() != null) {
-            updateClause.set(company.companyType, requestDto.getCompanyType());
-        }
-
-        if(requestDto.getCompanyName() != null && !requestDto.getCompanyName().isEmpty()) {
-            updateClause.set(company.companyName, requestDto.getCompanyName());
-        }
-
-        if(requestDto.getCompanyTel() != null && !requestDto.getCompanyTel().isEmpty()) {
-            updateClause.set(company.companyTel, requestDto.getCompanyTel());
-        }
-
-        if(requestDto.getPostalCode() != null && !requestDto.getPostalCode().isEmpty()) {
-            updateClause.set(company.address.postalCode, requestDto.getPostalCode());
-        }
-
-        if(requestDto.getStreetAddress() != null && !requestDto.getStreetAddress().isEmpty()) {
-            updateClause.set(company.address.detailAddress, requestDto.getStreetAddress());
-        }
-
-        if(requestDto.getDetailAddress() != null && !requestDto.getDetailAddress().isEmpty()) {
-            updateClause.set(company.address.detailAddress, requestDto.getDetailAddress());
-        }
-
-        return updateClause
-                .where(company.companyId.eq(companyId))
-                .execute();
-    }
-
     private OrderSpecifier<?> getOrderSpecifier(String sortBy, String order) {
 
         Order direction = order.equalsIgnoreCase("asc") ? Order.ASC : Order.DESC;

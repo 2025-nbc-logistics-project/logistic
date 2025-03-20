@@ -41,11 +41,22 @@ public class Product extends BaseEntity {
     }
 
     //
-    public void changeQuantity(Integer quantity){
+    public void changeStock(Integer quantity){
         if (quantity == null || this.quantity.getQuantity() - quantity < 0){
             throw new ProductValidationException();
         }
         this.quantity = new Quantity(this.quantity.getQuantity() - quantity);
+    }
+
+    public void changeProductInfo(ProductInfo productInfo){
+        this.productInfo = productInfo;
+    }
+
+    public void changeQuantity(Integer quantity){
+        if (quantity == null || quantity < 0){
+            throw new ProductValidationException();
+        }
+        this.quantity = new Quantity(quantity);
     }
 
 }

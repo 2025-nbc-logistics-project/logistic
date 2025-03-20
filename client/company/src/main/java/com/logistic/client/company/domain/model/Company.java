@@ -47,4 +47,20 @@ public class Company extends BaseEntity {
         this.address = new Address(requestDto.getPostalCode(), requestDto.getStreetAddress(), requestDto.getDetailAddress());
     }
 
+    public void changeCompanyType(CompanyType companyType) {
+        this.companyType = companyType;
+    }
+
+    public void changeCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public void changeCompanyTel(String companyTel) {
+        this.companyTel = companyTel;
+    }
+
+    public void changeAddress(Address address) {
+        this.address = address;
+    }
+
 }

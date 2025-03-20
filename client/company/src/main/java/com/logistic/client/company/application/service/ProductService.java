@@ -3,6 +3,8 @@ package com.logistic.client.company.application.service;
 import com.logistic.client.company.application.dto.product.*;
 import com.logistic.client.company.domain.exception.product.ProductNotFoundException;
 import com.logistic.client.company.domain.model.Product;
+import com.logistic.client.company.domain.model.ProductInfo;
+import com.logistic.client.company.domain.model.Quantity;
 import com.logistic.client.company.domain.repository.ProductRepository;
 import com.logistic.client.company.infrastructure.client.HubClient;
 import jakarta.persistence.EntityManager;
@@ -97,7 +99,7 @@ public class ProductService {
             log.debug("원래 상품 개수: {}", product.getQuantity().getQuantity());
 
             //재고 확인 후 차감
-            product.changeQuantity(orderItem.getQuantity());
+            product.changeStock(orderItem.getQuantity());
 
             entityManager.flush();
 
@@ -112,6 +114,38 @@ public class ProductService {
 
         return responseDtoList;
 
+    }
+
+    @Transactional
+    public ProductUpdateResponseDto updateProduct(UUID productId, ProductUpdateRequestDto requestDto) {
+
+        //존재하는 상품인지
+        Product product = findByProductId(productId);
+
+        //허브
+
+        String productName = product.getProductInfo().getProductName();
+        Integer price = product.getProductInfo().getPrice();
+
+        if(requestDto.getProductName() != null && !requestDto.getProductName().isBlank()) {
+            productName = requestDto.getProductName();
+        }
+
+        if(requestDto.getPrice() != null) {
+            price = requestDto.getPrice();
+        }
+
+        ProductInfo newProductInfo = new ProductInfo(productName, price);
+
+        if(!product.getProductInfo().equals(newProductInfo)) {
+            product.changeProductInfo(newProductInfo);
+        }
+
+        if(requestDto.getQuantity() != null && !product.getQuantity().equals(new Quantity(requestDto.getQuantity()))) {
+            product.changeQuantity(requestDto.getQuantity());
+        }
+
+        return new ProductUpdateResponseDto(product);
     }
 
     public Product findByProductId(UUID productId) {

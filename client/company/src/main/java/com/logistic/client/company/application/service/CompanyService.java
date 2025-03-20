@@ -3,7 +3,7 @@ package com.logistic.client.company.application.service;
 import com.logistic.client.company.application.dto.company.*;
 import com.logistic.client.company.domain.exception.company.CompanyDuplicatedException;
 import com.logistic.client.company.domain.exception.company.CompanyNotFoundException;
-import com.logistic.client.company.domain.exception.company.CompanyUpdateException;
+import com.logistic.client.company.domain.model.Address;
 import com.logistic.client.company.domain.model.Company;
 import com.logistic.client.company.domain.repository.CompanyRepository;
 import com.logistic.client.company.infrastructure.client.HubClient;
@@ -73,16 +73,46 @@ public class CompanyService {
 
     @Transactional
     public CompanyUpdateResponseDto updateCompany(UUID companyId, CompanyUpdateRequestDto requestDto) {
-        Company company = findByCompanyId(companyId);
-        long count = companyRepository.updateCompany(companyId, requestDto);
 
-        //
-        if (count == 0) {
-            throw new CompanyUpdateException();
+        Company company = findByCompanyId(companyId);
+
+        //허브
+
+        if(requestDto.getCompanyType() != null) {
+            company.changeCompanyType(requestDto.getCompanyType());
+        }
+
+        if(requestDto.getCompanyName() != null && !requestDto.getCompanyName().isBlank()) {
+            company.changeCompanyName(requestDto.getCompanyName());
+        }
+
+        if(requestDto.getCompanyTel() != null && !requestDto.getCompanyTel().isBlank()) {
+            company.changeCompanyTel(requestDto.getCompanyTel());
+        }
+
+        String postalCode = company.getAddress().getPostalCode();
+        String streetAddress = company.getAddress().getStreetAddress();
+        String detailAddress = company.getAddress().getDetailAddress();
+
+        if(requestDto.getPostalCode() != null && !requestDto.getPostalCode().isBlank()) {
+            postalCode = requestDto.getPostalCode();
+        }
+
+        if(requestDto.getStreetAddress() != null && !requestDto.getStreetAddress().isBlank()) {
+            streetAddress = requestDto.getStreetAddress();
+        }
+
+        if(requestDto.getDetailAddress() != null) {
+            detailAddress = requestDto.getDetailAddress().isBlank() ? "" : requestDto.getDetailAddress();
+        }
+
+        Address newAddress = new Address(postalCode, streetAddress, detailAddress);
+
+        if(!company.getAddress().equals(newAddress)) {
+            company.changeAddress(newAddress);
         }
 
         return new CompanyUpdateResponseDto(company);
-
     }
 
     @Transactional

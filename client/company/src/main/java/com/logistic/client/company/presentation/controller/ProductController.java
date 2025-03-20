@@ -64,4 +64,14 @@ public class ProductController {
         return productService.checkAndDeductStock(orderItems);
     }
 
+    //상품 수정
+    @PatchMapping("/{productId}")
+    public ResponseEntity<ProductUpdateResponseDto> updateProduct(
+            @PathVariable UUID productId,
+            @RequestBody ProductUpdateRequestDto requestDto
+    ) {
+        ProductUpdateResponseDto responseDto = productService.updateProduct(productId, requestDto);
+        return ResponseEntity.ok(responseDto);
+    }
+
 }

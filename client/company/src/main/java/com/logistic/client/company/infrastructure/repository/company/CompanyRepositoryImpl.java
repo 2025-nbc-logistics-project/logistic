@@ -43,9 +43,4 @@ public class CompanyRepositoryImpl implements CompanyRepository {
         return companyQueryDSLRepository.getSearchCompanies(key, pageable, sortBy, order);
     }
 
-    @Override
-    public long updateCompany(UUID companyId, CompanyUpdateRequestDto requestDto) {
-        return companyQueryDSLRepository.updateCompany(companyId, requestDto);
-    }
-
 }
