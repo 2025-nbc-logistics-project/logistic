@@ -11,7 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "p_delivery_route")
-public class DeliveryRoute {
+public class DeliveryRoute extends BaseEntity {
     @Id
     private UUID deliveryRouteId;
 

@@ -72,4 +72,15 @@ public class Delivery extends BaseEntity {
     public void updateShippingInfo(ShippingInfo newShipping) {
         this.shippingInfo = newShipping;
     }
+
+    @Override
+    public void markAsDeleted(Long userId) {
+        super.markAsDeleted(userId);
+
+        if (this.deliveryRoutes != null) {
+            for (DeliveryRoute route : this.deliveryRoutes) {
+                route.markAsDeleted(userId);
+            }
+        }
+    }
 }

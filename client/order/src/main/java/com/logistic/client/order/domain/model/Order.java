@@ -72,4 +72,15 @@ public class Order extends BaseEntity {
     public void addDelivery(UUID deliveryId) {
         this.deliveryId = deliveryId;
     }
+
+    @Override
+    public void markAsDeleted(Long userId) {
+        super.markAsDeleted(userId);
+
+        if (this.orderItems != null) {
+            for (OrderItem item : this.orderItems) {
+                item.markAsDeleted(userId);
+            }
+        }
+    }
 }

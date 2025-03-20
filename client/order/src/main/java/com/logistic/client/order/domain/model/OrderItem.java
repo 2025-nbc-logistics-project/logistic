@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(name = "p_order_item")
-public class OrderItem {
+public class OrderItem extends BaseEntity {
     @Id
     private UUID orderItemId;
 
