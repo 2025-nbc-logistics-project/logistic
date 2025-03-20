@@ -1,4 +1,4 @@
-package com.logistic.client.order.domain.model;
+package com.logistic.client.order.presentation.request;
 
 import com.logistic.client.order.presentation.request.OrderItemRequestDto;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemDifference {
-    private List<OrderItemRequestDto> restoreList;
-    private List<OrderItemRequestDto> deductList;
+public class OrderUpdateRequestDto {
+    private String orderRequest;
+    private List<OrderItemRequestDto> orderItems;
 }

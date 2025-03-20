@@ -2,6 +2,7 @@ package com.logistic.client.order.domain.service;
 
 import com.logistic.client.order.application.dto.*;
 import com.logistic.client.order.domain.model.*;
+import com.logistic.client.order.presentation.request.OrderItemRequestDto;
 import org.springframework.stereotype.Service;
 
 import java.util.*;

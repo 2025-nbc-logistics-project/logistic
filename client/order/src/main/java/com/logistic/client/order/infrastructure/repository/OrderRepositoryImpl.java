@@ -1,6 +1,6 @@
 package com.logistic.client.order.infrastructure.repository;
 
-import com.logistic.client.order.application.dto.OrderSearchDto;
+import com.logistic.client.order.presentation.request.OrderSearchDto;
 import com.logistic.client.order.domain.model.Order;
 import com.logistic.client.order.domain.model.QOrder;
 import com.logistic.client.order.domain.repository.OrderRepository;
