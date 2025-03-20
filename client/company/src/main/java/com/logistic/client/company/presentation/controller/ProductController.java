@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
@@ -18,6 +20,13 @@ public class ProductController {
     @PostMapping("/products")
     public ResponseEntity<ProductCreateResponseDto> createProduct(@RequestBody @Valid ProductCreateRequestDto requestDto) {
         ProductCreateResponseDto responseDto = productService.createProduct(requestDto);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    //상품 단일 조회
+    @GetMapping("/products/{productId}")
+    public ResponseEntity<ProductResponseDto> getProduct(@PathVariable UUID productId) {
+        ProductResponseDto responseDto = productService.getProduct(productId);
         return ResponseEntity.ok(responseDto);
     }
 

@@ -1,12 +1,15 @@
 package com.logistic.client.company.application.service;
 
 import com.logistic.client.company.application.dto.product.*;
+import com.logistic.client.company.domain.exception.product.ProductNotFoundException;
 import com.logistic.client.company.domain.model.Product;
 import com.logistic.client.company.domain.repository.ProductRepository;
 import com.logistic.client.company.infrastructure.client.HubClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +37,17 @@ public class ProductService {
         productRepository.save(product);
         return new ProductCreateResponseDto(product);
 
+    }
+
+    public ProductResponseDto getProduct(UUID productId) {
+        Product product = findByProductId(productId);
+        return new ProductResponseDto(product);
+    }
+
+    public Product findByProductId(UUID productId) {
+        return productRepository
+                .findByProductIdAndDeletedAtIsNull(productId)
+                .orElseThrow(ProductNotFoundException::new);
     }
 
 }
