@@ -88,8 +88,8 @@ public class OrderApplicationService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponseDto<OrderResponseDto> searchOrders(OrderSearchDto searchDto) {
-        Page<OrderResponseDto> mappedPage = orderRepository.searchOrders(searchDto).map(OrderResponseDto::new);
+    public PageResponseDto<OrderSummaryDto> searchOrders(OrderSearchDto searchDto) {
+        Page<OrderSummaryDto> mappedPage = orderRepository.searchOrders(searchDto).map(OrderSummaryDto::new);
         return new PageResponseDto<>(mappedPage);
     }
 

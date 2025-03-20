@@ -29,9 +29,9 @@ public class OrderController {
     }
 
     @GetMapping("/v1/orders/search")
-    public ResponseEntity<PageResponseDto<OrderResponseDto>> searchOrders(@ModelAttribute OrderSearchDto searchDto) {
+    public ResponseEntity<PageResponseDto<OrderSummaryDto>> searchOrders(@ModelAttribute OrderSearchDto searchDto) {
         searchDto.validateSize(searchDto.getSize());
-        PageResponseDto<OrderResponseDto> responseDtoPage = orderApplicationService.searchOrders(searchDto);
+        PageResponseDto<OrderSummaryDto> responseDtoPage = orderApplicationService.searchOrders(searchDto);
         return ResponseEntity.ok(responseDtoPage);
     }
 
