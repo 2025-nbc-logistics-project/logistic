@@ -59,5 +59,10 @@ public class DeliveryController {
         return ResponseEntity.ok(responseDto);
     }
 
+    @PatchMapping("/v1/deliveries/{deliveryId}")
+    public ResponseEntity<String> deleteDelivery(@PathVariable("deliveryId") UUID deliveryId) {
+        deliveryApplicationService.deleteDelivery(deliveryId);
+        return ResponseEntity.ok("삭제 성공 : " + deliveryId);
+    }
 
 }

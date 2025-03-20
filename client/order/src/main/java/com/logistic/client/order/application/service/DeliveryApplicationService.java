@@ -172,6 +172,14 @@ public class DeliveryApplicationService {
         return new DeliveryRouteDto(targetRoute);
     }
 
+    @Transactional
+    public void deleteDelivery(UUID deliveryId) {
+        Delivery delivery = deliveryRepository.findById(deliveryId)
+            .orElseThrow(() -> new NoSuchElementException("해당 Id를 가진 Delivery가 존재하지 않습니다."));
+
+        delivery.markAsDeleted(1L); // Todo : 실제 유저 Id 추가
+    }
+
     private OrderStatus deriveOrderStatus(DeliveryStatus status) {
         switch (status) {
             case WAITING_AT_HUB -> { return OrderStatus.DELIVERING; }

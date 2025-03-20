@@ -213,8 +213,8 @@ public class OrderApplicationService {
             companyClient.restoreStock(restoreList);
         }
 
-        if (order.getDeliveryId() != null) { // TODO : 배송 CRUD 를 구현하며 추가할 예정
-//            deliveryApplicationService.deleteDelivery(order.getDeliveryId())
+        if (order.getDeliveryId() != null) {
+            deliveryApplicationService.deleteDelivery(order.getDeliveryId());
         }
         order.markAsDeleted(1L); // TODO : 실제 유저 Id 추가
     }
