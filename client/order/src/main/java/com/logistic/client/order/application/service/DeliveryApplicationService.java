@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -19,6 +20,7 @@ public class DeliveryApplicationService {
 
     private final DeliveryRepository deliveryRepository;
     private final HubClient hubClient;
+    private final OrderApplicationService orderApplicationService;
 
     public Delivery createDelivery(CreateDeliveryRequest request) {
 
@@ -66,6 +68,116 @@ public class DeliveryApplicationService {
     public PageResponseDto<DeliverySummaryDto> searchDeliveries(DeliverySearchDto searchDto) {
         Page<DeliverySummaryDto> mappedPage = deliveryRepository.searchDeliveries(searchDto).map(DeliverySummaryDto::new);
         return new PageResponseDto<>(mappedPage);
+    }
+
+    @Transactional
+    public DeliverySummaryDto updateDelivery(UUID deliveryId, DeliveryUpdateRequestDto requestDto) {
+
+        // (1). 배송 조회
+        Delivery delivery = deliveryRepository.findById(deliveryId)
+            .orElseThrow(() -> new NoSuchElementException("해당 Id를 가진 Delivery가 존재하지 않습니다."));
+
+        // (2). 변경할 수령 업체 배송 담당자, 공급 업체 배송 담당자가 입력되었다면 Update
+        if (requestDto.getReceiverDeliveryManagerId() != null) {
+            delivery.updateReceiverManager(requestDto.getReceiverDeliveryManagerId());
+        }
+        if (requestDto.getSupplierDeliveryManagerId() != null) {
+            delivery.updateSupplierManager(requestDto.getSupplierDeliveryManagerId());
+        }
+
+        // (3). 수정할 ShippingInfo 데이터가 입력되었다면 반영, 입력되지 않았다면 기존 데이터 사용
+        ShippingInfo oldShipping = delivery.getShippingInfo();
+
+        Address newReceiverAddress = new Address(
+            requestDto.getReceiverPostalCode() != null ? requestDto.getReceiverPostalCode() : oldShipping.getReceiverAddress().getPostalCode(),
+            requestDto.getReceiverDetailAddress() != null ? requestDto.getReceiverDetailAddress() : oldShipping.getReceiverAddress().getDetailAddress(),
+            requestDto.getReceiverStreetAddress() != null ? requestDto.getReceiverStreetAddress() : oldShipping.getReceiverAddress().getStreetAddress()
+        );
+
+        String newRecipientName = requestDto.getRecipientName() != null ? requestDto.getRecipientName() : oldShipping.getRecipientName();
+        UUID newRecipientSlackId = requestDto.getRecipientSlackId() != null ? requestDto.getRecipientSlackId() : oldShipping.getRecipientSlackId();
+
+        // (4). 새 ShippingInfo 로 Update
+        ShippingInfo newShipping = new ShippingInfo(newReceiverAddress, oldShipping.getSupplierAddress(), newRecipientName, newRecipientSlackId);
+        delivery.updateShippingInfo(newShipping);
+
+        return new DeliverySummaryDto(delivery);
+    }
+
+    @Transactional
+    public DeliverySummaryDto updateDeliveryStatus(UUID deliveryId, DeliveryStatus newStatus) {
+        Delivery delivery = deliveryRepository.findById(deliveryId)
+            .orElseThrow(() -> new NoSuchElementException("해당 Id를 가진 Delivery가 존재하지 않습니다."));
+
+        delivery.updateStatus(newStatus);
+
+        OrderStatus newOrderStatus = deriveOrderStatus(delivery.getStatus());
+        if (newOrderStatus != null) { // TODO : feign 호출 또는 이벤트 방식으로 변경 예정
+            orderApplicationService.updateOrderStatus(delivery.getOrderId(), newOrderStatus);
+        }
+
+        return new DeliverySummaryDto(delivery);
+    }
+
+    @Transactional
+    public DeliveryRouteDto updateNextRouteStatus(UUID deliveryId, DeliveryRouteStatus newStatus) {
+        // (1). 배송 조회
+        Delivery delivery = deliveryRepository.findById(deliveryId)
+            .orElseThrow(() -> new NoSuchElementException("해당 Id를 가진 Delivery가 존재하지 않습니다."));
+
+        // (2). routes 를 sequence 오름차순으로 정렬
+        List<DeliveryRoute> sortedRoutes = delivery.getDeliveryRoutes().stream()
+            .sorted(Comparator.comparingInt(DeliveryRoute::getSequence))
+            .toList();
+
+        // (3). 배송이 완료되지 않은 route 중 첫 번째 (가장 작은 sequence) 찾기
+        DeliveryRoute targetRoute = null;
+        for (DeliveryRoute route : sortedRoutes) {
+            if (route.getRouteStatus() != DeliveryRouteStatus.HUB_ARRIVED) {
+                targetRoute = route;
+                break;
+            }
+        }
+
+        // (4). 모든 경로가 배송 완료되었다면, 예외 처리
+        if (targetRoute == null) {
+            throw new IllegalArgumentException("이미 모든 경로가 배송 완료되어, 업데이트할 route 가 없습니다.");
+        }
+
+        // (5). 상태 업데이트
+        targetRoute.updateRouteStatus(newStatus);
+
+        return new DeliveryRouteDto(targetRoute);
+    }
+
+    public DeliveryRouteDto updateActualDistanceTime(UUID deliveryId, UUID routeId, routeUpdateRequestDto requestDto) {
+        // (1). Delivery 조회
+        Delivery delivery = deliveryRepository.findById(deliveryId)
+            .orElseThrow(() -> new NoSuchElementException("해당 Id를 가진 Delivery가 존재하지 않습니다."));
+
+        // (2). routeId에 해당하는 DeliveryRoute 찾기
+        DeliveryRoute targetRoute = delivery.getDeliveryRoutes().stream()
+            .filter(r -> r.getDeliveryRouteId().equals(routeId))
+            .findFirst()
+            .orElseThrow(() -> new NoSuchElementException("해당 Id를 가진 Route가 존재하지 않습니다."));
+
+        // (3). route의 상태가 HUB_ARRIVED 가 아니면 예외 처리
+        if (targetRoute.getRouteStatus() != DeliveryRouteStatus.HUB_ARRIVED) {
+            throw new IllegalArgumentException("아직 배송이 끝나지 않은 경로이므로, 실제 거리/시간을 업데이트 할 수 없습니다.");
+        }
+
+        // (4). 실제 거리/소요시간 업데이트
+        targetRoute.updateActualDistanceTime(requestDto.getDistance(), requestDto.getTime());
+
+        return new DeliveryRouteDto(targetRoute);
+    }
+
+    private OrderStatus deriveOrderStatus(DeliveryStatus status) {
+        switch (status) {
+            case WAITING_AT_HUB -> { return OrderStatus.DELIVERING; }
+            case DELIVERY_COMPLETED -> { return OrderStatus.COMPLETED; }
+            default -> { return null; }
+        }
     }
 
     private ShippingInfo buildShippingInfo(AddressResponse receiver, AddressResponse supplier) {

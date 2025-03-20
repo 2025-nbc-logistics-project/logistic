@@ -56,4 +56,18 @@ public class Delivery extends BaseEntity {
         this.deliveryRoutes.add(route);
         route.setDelivery(this);
     }
+
+    public void updateReceiverManager(UUID receiver) {
+        UUID supplier = this.deliveryManagerId.getSupplierDeliveryManagerId();
+        this.deliveryManagerId = new DeliveryManagerId(receiver, supplier);
+    }
+
+    public void updateSupplierManager(UUID supplier) {
+        UUID receiver = this.deliveryManagerId.getReceiverDeliveryManagerId();
+        this.deliveryManagerId = new DeliveryManagerId(receiver, supplier);
+    }
+
+    public void updateShippingInfo(ShippingInfo newShipping) {
+        this.shippingInfo = newShipping;
+    }
 }
