@@ -1,0 +1,24 @@
+<component name="libraryTable">
+  <library name="logistic-project">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/client/ai/src/main/java" />
+      <root url="file://$PROJECT_DIR$/client/ai/src/test/java" />
+      <root url="file://$PROJECT_DIR$/client/alarm/src/main/java" />
+      <root url="file://$PROJECT_DIR$/client/alarm/src/test/java" />
+      <root url="file://$PROJECT_DIR$/client/company/src/main/java" />
+      <root url="file://$PROJECT_DIR$/client/company/src/test/java" />
+      <root url="file://$PROJECT_DIR$/client/gateway/src/main/java" />
+      <root url="file://$PROJECT_DIR$/client/gateway/src/test/java" />
+      <root url="file://$PROJECT_DIR$/client/hub/src/main/java" />
+      <root url="file://$PROJECT_DIR$/client/hub/src/test/java" />
+      <root url="file://$PROJECT_DIR$/client/order/src/main/java" />
+      <root url="file://$PROJECT_DIR$/client/order/src/test/java" />
+      <root url="file://$PROJECT_DIR$/server/server/src/main/java" />
+      <root url="file://$PROJECT_DIR$/server/server/src/test/java" />
+    </SOURCES>
+  </library>
+</component>
