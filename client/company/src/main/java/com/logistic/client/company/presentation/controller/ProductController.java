@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -28,6 +29,12 @@ public class ProductController {
     public ResponseEntity<ProductResponseDto> getProduct(@PathVariable UUID productId) {
         ProductResponseDto responseDto = productService.getProduct(productId);
         return ResponseEntity.ok(responseDto);
+    }
+
+    //주문 상품 검증 및 처리
+    @PostMapping("/products/deduct-stock")
+    public List<ProductPriceResponseDto> checkAndDeductStock(@RequestBody List<OrderItemRequestDto> orderItems) {
+        return productService.checkAndDeductStock(orderItems);
     }
 
 }

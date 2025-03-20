@@ -1,6 +1,7 @@
 package com.logistic.client.company.domain.model;
 
 import com.logistic.client.company.application.dto.product.ProductCreateRequestDto;
+import com.logistic.client.company.domain.exception.product.ProductValidationException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -37,6 +38,14 @@ public class Product extends BaseEntity {
         this.hubId = requestDto.getHudId();
         this.productInfo = new ProductInfo(requestDto.getProductName(), requestDto.getPrice());
         this.quantity = new Quantity(requestDto.getQuantity());
+    }
+
+    //
+    public void changeQuantity(Integer quantity){
+        if (quantity == null || this.quantity.getQuantity() - quantity < 0){
+            throw new ProductValidationException();
+        }
+        this.quantity = new Quantity(this.quantity.getQuantity() - quantity);
     }
 
 }

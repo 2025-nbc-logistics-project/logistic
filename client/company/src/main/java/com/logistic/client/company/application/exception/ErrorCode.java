@@ -18,7 +18,7 @@ public enum ErrorCode {
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다."),
     PRODUCT_NOT_ENOUGH(HttpStatus.UNPROCESSABLE_ENTITY, "재고보다 많은 수를 입력하셨습니다."),
     PRODUCT_CONFLICT(HttpStatus.CONFLICT, "상품 관리 중 문제가 생겼습니다."),
-    PRODUCT_INVALID(HttpStatus.BAD_REQUEST, "비어있거나 0 이하의 숫자는 입력할 수 없습니다.");
+    PRODUCT_INVALID(HttpStatus.BAD_REQUEST, "개수가 비어있거나 0 이하일 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
