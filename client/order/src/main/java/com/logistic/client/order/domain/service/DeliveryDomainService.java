@@ -2,6 +2,7 @@ package com.logistic.client.order.domain.service;
 
 import com.logistic.client.order.application.dto.AddressResponse;
 import com.logistic.client.order.application.dto.HubRouteResponse;
+import com.logistic.client.order.domain.exception.RouteAlreadyArrivedException;
 import com.logistic.client.order.domain.model.*;
 import org.springframework.stereotype.Service;
 
@@ -49,7 +50,7 @@ public class DeliveryDomainService {
 
         // 모든 경로가 배송 완료되었다면, 예외 처리
         if (targetRoute == null) {
-            throw new IllegalArgumentException("이미 모든 경로가 배송 완료되어, 업데이트할 route 가 없습니다.");
+            throw new RouteAlreadyArrivedException("이미 모든 경로가 배송 완료되어, 업데이트할 route 가 없습니다.");
         }
 
         return targetRoute;

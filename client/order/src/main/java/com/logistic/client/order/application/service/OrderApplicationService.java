@@ -1,6 +1,7 @@
 package com.logistic.client.order.application.service;
 
 import com.logistic.client.order.application.dto.*;
+import com.logistic.client.order.domain.exception.OrderNotFoundException;
 import com.logistic.client.order.domain.model.*;
 import com.logistic.client.order.domain.repository.OrderRepository;
 import com.logistic.client.order.domain.service.OrderDomainService;
@@ -165,6 +166,6 @@ public class OrderApplicationService {
 
     private Order findOrderById(UUID orderId) {
         return orderRepository.findById(orderId)
-            .orElseThrow(() -> new NoSuchElementException("해당 Id를 가진 주문 정보를 찾지 못했습니다."));
+            .orElseThrow(() -> new OrderNotFoundException("해당 Id를 가진 주문 정보를 찾지 못했습니다."));
     }
 }

@@ -1,5 +1,6 @@
 package com.logistic.client.order.domain.model;
 
+import com.logistic.client.order.domain.exception.OrderNotEditableException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -64,7 +65,7 @@ public class Order extends BaseEntity {
 
     public void checkEditable() {
         if (!this.orderStatus.equals(OrderStatus.PENDING)) {
-            throw new IllegalArgumentException("이미 배송이 진행 중이므로 주문 정보를 수정할 수 없습니다.");
+            throw new OrderNotEditableException("이미 배송이 진행 중이므로 주문 정보를 수정할 수 없습니다.");
         }
     }
 

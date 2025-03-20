@@ -1,6 +1,7 @@
 package com.logistic.client.order.application.service;
 
 import com.logistic.client.order.application.dto.*;
+import com.logistic.client.order.domain.exception.DeliveryNotFoundException;
 import com.logistic.client.order.domain.model.*;
 import com.logistic.client.order.domain.repository.DeliveryRepository;
 import com.logistic.client.order.domain.service.DeliveryDomainService;
@@ -161,6 +162,6 @@ public class DeliveryApplicationService {
 
     private Delivery findDeliveryById(UUID deliveryId) {
         return deliveryRepository.findById(deliveryId)
-            .orElseThrow(() -> new NoSuchElementException("해당 Id를 가진 Delivery가 존재하지 않습니다."));
+            .orElseThrow(() -> new DeliveryNotFoundException("해당 Id를 가진 Delivery 가 존재하지 않습니다."));
     }
 }
