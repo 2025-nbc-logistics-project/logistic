@@ -96,10 +96,10 @@ public class OrderApplicationService {
     @Transactional
     public OrderResponseDto updateOrder(UUID orderId, OrderUpdateRequestDto requestDto) {
 
-        // (1). 기존 Order 조회 및 업데이트 가능 여부 확인 (배송 중이면 X)
+        // (1). 기존 Order 조회 및 수정 가능 여부 확인 (배송 중이면 X)
         Order order = orderRepository.findById(orderId)
             .orElseThrow(() -> new NoSuchElementException("해당 Id를 가진 주문 정보를 찾지 못했습니다."));
-        order.checkUpdateAvailable();
+        order.checkEditable();
 
         // (2). 기존 OrderItem 을 맵으로 변환
         Map<UUID, Integer> oldQtyMap = new HashMap<>();
@@ -194,6 +194,29 @@ public class OrderApplicationService {
         order.updateStatus(newStatus);
 
         return new OrderResponseDto(order);
+    }
+
+    @Transactional
+    public void deleteOrder(UUID orderId) {
+        Order order = orderRepository.findById(orderId)
+            .orElseThrow(() -> new NoSuchElementException("해당 Id를 가진 주문 정보를 찾지 못했습니다."));
+        order.checkEditable();
+
+        List<OrderItemRequestDto> restoreList = order.getOrderItems().stream()
+                .map(oi -> new OrderItemRequestDto(
+                    oi.getProductId(),
+                    oi.getQuantity().getQuantity()
+                ))
+                .toList();
+
+        if (!restoreList.isEmpty()) {
+            companyClient.restoreStock(restoreList);
+        }
+
+        if (order.getDeliveryId() != null) { // TODO : 배송 CRUD 를 구현하며 추가할 예정
+//            deliveryApplicationService.deleteDelivery(order.getDeliveryId())
+        }
+        order.markAsDeleted(1L); // TODO : 실제 유저 Id 추가
     }
 
     private List<OrderItem> buildOrderItems(

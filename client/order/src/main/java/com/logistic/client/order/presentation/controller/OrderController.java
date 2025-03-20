@@ -47,4 +47,10 @@ public class OrderController {
         return ResponseEntity.ok(responseDto);
     }
 
+    @PatchMapping("/v1/orders/{orderId}")
+    public ResponseEntity<String> deleteOrder(@PathVariable("orderId") UUID orderId) {
+        orderApplicationService.deleteOrder(orderId);
+        return ResponseEntity.ok("삭제 성공 : " + orderId);
+    }
+
 }

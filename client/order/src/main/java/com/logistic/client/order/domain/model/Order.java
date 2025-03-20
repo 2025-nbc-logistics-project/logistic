@@ -3,6 +3,7 @@ package com.logistic.client.order.domain.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 import java.util.List;
 import java.util.UUID;
@@ -11,6 +12,7 @@ import java.util.UUID;
 @Getter
 @Entity
 @Table(name = "p_order")
+@Where(clause = "is_deleted = false")
 public class Order extends BaseEntity {
     @Id
     private UUID orderId;
@@ -60,7 +62,7 @@ public class Order extends BaseEntity {
         this.orderRequest = orderRequest;
     }
 
-    public void checkUpdateAvailable() {
+    public void checkEditable() {
         if (!this.orderStatus.equals(OrderStatus.PENDING)) {
             throw new IllegalArgumentException("이미 배송이 진행 중이므로 주문 정보를 수정할 수 없습니다.");
         }
