@@ -6,6 +6,7 @@ import com.logistic.client.order.domain.model.*;
 import com.logistic.client.order.domain.repository.OrderRepository;
 import com.logistic.client.order.domain.service.OrderDomainService;
 import com.logistic.client.order.infrastructure.client.CompanyClient;
+import com.logistic.client.order.infrastructure.client.DeliveryClient;
 import com.logistic.client.order.infrastructure.client.SlackClient;
 import com.logistic.client.order.presentation.request.OrderItemRequestDto;
 import com.logistic.client.order.presentation.request.OrderRequestDto;
@@ -24,7 +25,7 @@ public class OrderApplicationService {
 
     private final CompanyClient companyClient;
     private final SlackClient slackClient;
-    private final DeliveryApplicationService deliveryApplicationService;
+    private final DeliveryClient deliveryClient;
     private final OrderRepository orderRepository;
     private final OrderDomainService orderDomainService;
 
@@ -68,16 +69,15 @@ public class OrderApplicationService {
         );
 
         // (6). 배송 엔티티 생성 요청
-        deliveryApplicationService.createDelivery(createDeliveryRequest);
-        Delivery delivery = deliveryApplicationService.createDelivery(createDeliveryRequest); // 나중에 ResponseDto로 수정하자
+        FeignDeliveryResponse deliveryResponse = deliveryClient.createDelivery(createDeliveryRequest);
 
         // (7). 배송 데이터 업데이트
-        order.addDelivery(delivery.getDeliveryId());
+        order.addDelivery(deliveryResponse.getDeliveryId());
 
         // (8). 슬랙 메시지 생성 요청
         SlackRequestDto slackRequestDto = orderDomainService.buildSlackMessageRequest(
             order,
-            delivery,
+            deliveryResponse,
             orderItems
         );
         slackClient.createSlackMessage(slackRequestDto);
@@ -163,7 +163,7 @@ public class OrderApplicationService {
         }
 
         if (order.getDeliveryId() != null) {
-            deliveryApplicationService.deleteDelivery(order.getDeliveryId());
+            deliveryClient.deleteDelivery(order.getDeliveryId());
         }
         order.markAsDeleted(1L); // TODO : 실제 유저 Id 추가
     }

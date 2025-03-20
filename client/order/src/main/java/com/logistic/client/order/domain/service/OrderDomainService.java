@@ -36,7 +36,7 @@ public class OrderDomainService {
             .collect(Collectors.toList());
     }
 
-    public SlackRequestDto buildSlackMessageRequest(Order order, Delivery delivery, List<OrderItem> orderItems) {
+    public SlackRequestDto buildSlackMessageRequest(Order order, FeignDeliveryResponse delivery, List<OrderItem> orderItems) {
         // 주문자 정보 (User 도메인이 구현되면 반영할 예정)
         String username = "mock username";
         String email = "mock@email.com";
@@ -51,16 +51,16 @@ public class OrderDomainService {
 
         // 경유 허브 Id 리스트
         List<UUID> transitHubs = delivery.getDeliveryRoutes().stream()
-            .map(route -> route.getDeliveryHubInfo().getDestinationHubId())
+            .map(FeignDeliveryRouteResponse::getDestinationHubId)
             .toList();
 
         // 수령 업체의 주소
-        Address receiverAddress = delivery.getShippingInfo().getReceiverAddress();
         AddressResponse destinationAddress = new AddressResponse(
-            receiverAddress.getPostalCode(),
-            receiverAddress.getDetailAddress(),
-            receiverAddress.getStreetAddress()
+            delivery.getReceiverPostalCode(),
+            delivery.getReceiverDetailAddress(),
+            delivery.getReceiverStreetAddress()
         );
+
 
         return new SlackRequestDto(
             order.getOrderId(),
@@ -68,7 +68,7 @@ public class OrderDomainService {
             email,
             slackOrderItems,
             order.getOrderRequest(),
-            delivery.getDeliveryHubInfo().getDepartureHubId(),
+            delivery.getDepartureHubId(),
             transitHubs,
             destinationAddress,
             order.getCompanyInfo().getSupplierCompanyId()

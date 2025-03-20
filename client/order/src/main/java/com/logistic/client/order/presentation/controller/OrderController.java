@@ -6,6 +6,7 @@ import com.logistic.client.order.domain.model.OrderStatus;
 import com.logistic.client.order.presentation.request.OrderRequestDto;
 import com.logistic.client.order.presentation.request.OrderSearchDto;
 import com.logistic.client.order.presentation.request.OrderUpdateRequestDto;
+import jakarta.ws.rs.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,7 +46,13 @@ public class OrderController {
     }
 
     @PatchMapping("/status/{orderId}")
-    public ResponseEntity<OrderResponseDto> updateOrderStatus(@PathVariable("orderId") UUID orderId, @RequestParam("newStatus") OrderStatus newStatus) {
+    public ResponseEntity<OrderResponseDto> updateOrderStatus(@PathVariable("orderId") UUID orderId, @RequestParam("newStatus") String statusString) {
+        OrderStatus newStatus;
+        try {
+            newStatus = OrderStatus.valueOf(statusString);
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException("잘못된 OrderStatus 입니다.");
+        }
         OrderResponseDto responseDto = orderApplicationService.updateOrderStatus(orderId, newStatus);
         return ResponseEntity.ok(responseDto);
     }

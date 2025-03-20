@@ -6,6 +6,7 @@ import com.logistic.client.delivery.domain.model.*;
 import com.logistic.client.delivery.domain.repository.DeliveryRepository;
 import com.logistic.client.delivery.domain.service.DeliveryDomainService;
 import com.logistic.client.delivery.infrastructure.client.HubClient;
+import com.logistic.client.delivery.infrastructure.client.OrderClient;
 import com.logistic.client.delivery.presentation.request.DeliverySearchDto;
 import com.logistic.client.delivery.presentation.request.DeliveryUpdateRequestDto;
 import com.logistic.client.delivery.presentation.request.routeUpdateRequestDto;
@@ -25,9 +26,9 @@ public class DeliveryApplicationService {
     private final DeliveryRepository deliveryRepository;
     private final DeliveryDomainService deliveryDomainService;
     private final HubClient hubClient;
-    private final OrderApplicationService orderApplicationService;
+    private final OrderClient orderClient;
 
-    public Delivery createDelivery(CreateDeliveryRequest request) {
+    public FeignDeliveryResponse createDelivery(CreateDeliveryRequest request) {
 
         // (1). request 를 기반으로 delivery 엔티티 생성
         Delivery delivery = new Delivery(
@@ -50,7 +51,7 @@ public class DeliveryApplicationService {
         deliveryRepository.save(delivery);
 
         // 이벤트 발행 또는 Order 서비스를 호출하여 배송 데이터 업데이트 및 슬랙 메시지 발송 요청 (추후 반영 예정)
-        return delivery;
+        return new FeignDeliveryResponse(delivery);
     }
 
     @Transactional(readOnly = true)
@@ -110,9 +111,9 @@ public class DeliveryApplicationService {
 
         delivery.updateStatus(newStatus);
 
-        OrderStatus newOrderStatus = deriveOrderStatus(delivery.getStatus());
-        if (newOrderStatus != null) { // TODO : feign 호출 또는 이벤트 방식으로 변경 예정
-            orderApplicationService.updateOrderStatus(delivery.getOrderId(), newOrderStatus);
+        String newOrderStatusString = mapDeliveryStatusToOrderStatusString(delivery.getStatus());
+        if (newOrderStatusString != null) {
+            orderClient.updateOrderStatus(delivery.getOrderId(), newOrderStatusString);
         }
 
         return new DeliverySummaryDto(delivery);
@@ -155,12 +156,12 @@ public class DeliveryApplicationService {
         delivery.markAsDeleted(1L); // Todo : 실제 유저 Id 추가
     }
 
-    private OrderStatus deriveOrderStatus(DeliveryStatus status) {
-        switch (status) {
-            case DeliveryStatus.WAITING_AT_HUB -> { return OrderStatus.DELIVERING; }
-            case DeliveryStatus.DELIVERY_COMPLETED -> { return OrderStatus.COMPLETED; }
-            default -> { return null; }
-        }
+    private String mapDeliveryStatusToOrderStatusString(DeliveryStatus status) {
+        return switch (status) {
+            case WAITING_AT_HUB -> "DELIVERING";
+            case DELIVERY_COMPLETED -> "COMPLETED";
+            default -> null; // 업데이트 불필요
+        };
     }
 
     private Delivery findDeliveryById(UUID deliveryId) {

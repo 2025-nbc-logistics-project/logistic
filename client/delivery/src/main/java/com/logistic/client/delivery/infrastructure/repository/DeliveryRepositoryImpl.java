@@ -1,9 +1,15 @@
 package com.logistic.client.delivery.infrastructure.repository;
 
 
+import com.logistic.client.delivery.domain.model.QDelivery;
 import com.logistic.client.delivery.presentation.request.DeliverySearchDto;
 import com.logistic.client.delivery.domain.model.Delivery;
 import com.logistic.client.delivery.domain.repository.DeliveryRepository;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.ComparableExpressionBase;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.data.domain.Page;

@@ -2,6 +2,7 @@ package com.logistic.client.delivery.presentation.controller;
 
 import com.logistic.client.delivery.application.dto.*;
 import com.logistic.client.delivery.application.service.DeliveryApplicationService;
+import com.logistic.client.delivery.domain.model.Delivery;
 import com.logistic.client.delivery.domain.model.DeliveryRouteStatus;
 import com.logistic.client.delivery.domain.model.DeliveryStatus;
 import com.logistic.client.delivery.presentation.request.DeliverySearchDto;
@@ -19,6 +20,11 @@ import java.util.UUID;
 public class DeliveryController {
 
     private final DeliveryApplicationService deliveryApplicationService;
+
+    @PostMapping("")
+    public FeignDeliveryResponse createDelivery(@RequestBody CreateDeliveryRequest requestDto) {
+        return deliveryApplicationService.createDelivery(requestDto);
+    }
 
     @GetMapping("/{deliveryId}")
     public ResponseEntity<DeliveryResponseDto> readDelivery(@PathVariable("deliveryId") UUID deliveryId) {
