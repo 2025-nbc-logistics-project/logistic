@@ -25,12 +25,17 @@ public class DeliveryRoute extends BaseEntity {
     private DeliveryHubInfo deliveryHubInfo;
 
     @Embedded
-//    @AttributeOverrides({
-//        @AttributeOverride(name = "distance", column = @Column(name = "estimated_distance")),
-//        @AttributeOverride(name = "time", column = @Column(name = "estimated_time"))
-//    })
+    @AttributeOverrides({
+        @AttributeOverride(name = "distance", column = @Column(name = "estimated_distance")),
+        @AttributeOverride(name = "time", column = @Column(name = "estimated_time"))
+    })
     private DistanceTime estimated; // 예상 거리 및 소요 시간
+
     @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "distance", column = @Column(name = "actual_distance")),
+        @AttributeOverride(name = "time", column = @Column(name = "actual_time"))
+    })
     private DistanceTime actual; // 실제 거리 및 소요 시간
 
     @Enumerated(EnumType.STRING)

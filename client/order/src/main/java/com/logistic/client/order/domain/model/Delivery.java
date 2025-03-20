@@ -31,6 +31,10 @@ public class Delivery extends BaseEntity {
     private DeliveryHubInfo deliveryHubInfo;
 
     @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "receiverAddress", column = @Column(name = "receiver_address")),
+        @AttributeOverride(name = "detailAddress", column = @Column(name = "receiver_detail_address"))
+    })
     private ShippingInfo shippingInfo;
 
     @OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL, orphanRemoval = true)

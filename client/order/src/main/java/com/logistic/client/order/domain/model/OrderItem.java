@@ -1,9 +1,6 @@
 package com.logistic.client.order.domain.model;
 
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,9 +20,15 @@ public class OrderItem extends BaseEntity {
     private Quantity quantity;
 
     @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "amount", column = @Column(name = "price_amount"))
+    })
     private Money price;
 
     @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "amount", column = @Column(name = "subtotal_amount"))
+    })
     private Money subTotal;
 
     public OrderItem(UUID productId, Quantity quantity, Money price) {
