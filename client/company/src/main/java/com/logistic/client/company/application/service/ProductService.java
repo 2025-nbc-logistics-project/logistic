@@ -10,6 +10,9 @@ import jakarta.persistence.LockModeType;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,6 +54,15 @@ public class ProductService {
     public ProductResponseDto getProduct(UUID productId) {
         Product product = findByProductId(productId);
         return new ProductResponseDto(product);
+    }
+
+    public Page<ProductListResponseDto> getProducts(int page, int limit, String sortBy, String order) {
+        if(limit != 10 && limit != 30 && limit != 50) {
+            limit = 10;
+        }
+        Pageable pageable = PageRequest.of(page, limit);
+        Page<Product> products = productRepository.getProducts(pageable, sortBy, order);
+        return products.map(ProductListResponseDto::new);
     }
 
     @Transactional

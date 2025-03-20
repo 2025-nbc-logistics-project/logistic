@@ -3,6 +3,8 @@ package com.logistic.client.company.infrastructure.repository.product;
 import com.logistic.client.company.domain.model.Product;
 import com.logistic.client.company.domain.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -23,6 +25,11 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public Optional<Product> findByProductIdAndDeletedAtIsNull(UUID productId) {
         return jpaProductRepository.findByProductIdAndDeletedAtIsNull(productId);
+    }
+
+    @Override
+    public Page<Product> getProducts(Pageable pageable, String sortBy, String order) {
+        return productQueryDSLRepository.getProducts(pageable, sortBy, order);
     }
 
 }
