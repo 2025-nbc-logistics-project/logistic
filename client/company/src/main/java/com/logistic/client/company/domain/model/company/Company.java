@@ -1,6 +1,7 @@
-package com.logistic.client.company.domain.model;
+package com.logistic.client.company.domain.model.company;
 
 import com.logistic.client.company.application.dto.company.CompanyCreateRequestDto;
+import com.logistic.client.company.domain.model.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

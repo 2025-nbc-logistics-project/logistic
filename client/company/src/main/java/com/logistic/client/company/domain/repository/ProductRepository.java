@@ -1,6 +1,6 @@
 package com.logistic.client.company.domain.repository;
 
-import com.logistic.client.company.domain.model.Product;
+import com.logistic.client.company.domain.model.product.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

@@ -2,9 +2,9 @@ package com.logistic.client.company.application.service;
 
 import com.logistic.client.company.application.dto.product.*;
 import com.logistic.client.company.domain.exception.product.ProductNotFoundException;
-import com.logistic.client.company.domain.model.Product;
-import com.logistic.client.company.domain.model.ProductInfo;
-import com.logistic.client.company.domain.model.Quantity;
+import com.logistic.client.company.domain.model.product.Product;
+import com.logistic.client.company.domain.model.product.ProductInfo;
+import com.logistic.client.company.domain.model.product.Quantity;
 import com.logistic.client.company.domain.repository.ProductRepository;
 import com.logistic.client.company.infrastructure.client.HubClient;
 import jakarta.persistence.EntityManager;
@@ -146,6 +146,15 @@ public class ProductService {
         }
 
         return new ProductUpdateResponseDto(product);
+    }
+
+    @Transactional
+    public ProductDeleteResponseDto deleteProduct(UUID productId) {
+        Product product = findByProductId(productId);
+        //
+        product.delete(1L);
+
+        return new ProductDeleteResponseDto(product);
     }
 
     public Product findByProductId(UUID productId) {

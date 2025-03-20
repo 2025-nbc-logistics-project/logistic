@@ -1,7 +1,6 @@
 package com.logistic.client.company.infrastructure.repository.company;
 
-import com.logistic.client.company.application.dto.company.CompanyUpdateRequestDto;
-import com.logistic.client.company.domain.model.Company;
+import com.logistic.client.company.domain.model.company.Company;
 import com.logistic.client.company.domain.repository.CompanyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

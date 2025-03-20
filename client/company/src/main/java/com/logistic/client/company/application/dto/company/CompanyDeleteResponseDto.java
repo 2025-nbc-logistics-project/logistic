@@ -1,6 +1,6 @@
 package com.logistic.client.company.application.dto.company;
 
-import com.logistic.client.company.domain.model.Company;
+import com.logistic.client.company.domain.model.company.Company;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,6 +19,5 @@ public class CompanyDeleteResponseDto {
         this.companyId = company.getCompanyId();
         this.deletedAt = company.getDeletedAt();
         this.deletedBy = company.getDeletedBy();
-
     }
 }

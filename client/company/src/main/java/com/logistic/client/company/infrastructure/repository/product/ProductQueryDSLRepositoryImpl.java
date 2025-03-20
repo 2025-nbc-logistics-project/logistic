@@ -1,6 +1,6 @@
 package com.logistic.client.company.infrastructure.repository.product;
 
-import com.logistic.client.company.domain.model.Product;
+import com.logistic.client.company.domain.model.product.Product;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.UUID;
 
-import static com.logistic.client.company.domain.model.QProduct.product;
+import static com.logistic.client.company.domain.model.product.QProduct.product;
 
 @Repository
 @RequiredArgsConstructor

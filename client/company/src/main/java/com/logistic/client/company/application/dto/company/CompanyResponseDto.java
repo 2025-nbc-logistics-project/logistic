@@ -1,7 +1,7 @@
 package com.logistic.client.company.application.dto.company;
 
-import com.logistic.client.company.domain.model.Company;
-import com.logistic.client.company.domain.model.CompanyType;
+import com.logistic.client.company.domain.model.company.Company;
+import com.logistic.client.company.domain.model.company.CompanyType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

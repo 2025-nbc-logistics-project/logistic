@@ -68,7 +68,7 @@ public class CompanyController {
     }
 
     //업체 삭제
-    @DeleteMapping("/{companyId}")
+    @PatchMapping("/{companyId}/delete")
     public ResponseEntity<CompanyDeleteResponseDto> deleteCompany(@PathVariable UUID companyId) {
         CompanyDeleteResponseDto responseDto = companyService.deleteCompany(companyId);
         return ResponseEntity.ok(responseDto);

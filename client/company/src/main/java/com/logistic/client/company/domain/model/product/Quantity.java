@@ -1,4 +1,4 @@
-package com.logistic.client.company.domain.model;
+package com.logistic.client.company.domain.model.product;
 
 import com.logistic.client.company.domain.exception.product.ProductValidationException;
 import jakarta.persistence.Embeddable;

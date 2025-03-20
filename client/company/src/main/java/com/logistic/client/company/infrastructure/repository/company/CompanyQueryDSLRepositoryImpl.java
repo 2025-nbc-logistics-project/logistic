@@ -1,14 +1,10 @@
 package com.logistic.client.company.infrastructure.repository.company;
 
-import com.logistic.client.company.application.dto.company.CompanyUpdateRequestDto;
-import com.logistic.client.company.domain.model.Company;
-import com.logistic.client.company.domain.model.QCompany;
+import com.logistic.client.company.domain.model.company.Company;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.querydsl.jpa.impl.JPAUpdateClause;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -16,16 +12,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.UUID;
 
-import static com.logistic.client.company.domain.model.QCompany.company;
+import static com.logistic.client.company.domain.model.company.QCompany.company;
 
 @Repository
 @RequiredArgsConstructor
 public class CompanyQueryDSLRepositoryImpl {
 
     private final JPAQueryFactory jpaQueryFactory;
-    private final EntityManager entityManager;
 
     public boolean isDuplicateStore(String companyName, String companyTel) {
 

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     HUB_NOT_FOUND(HttpStatus.NOT_FOUND, "허브를 찾을 수 없습니다."),
+    ALREADY_DELETED(HttpStatus.CONFLICT, "이미 삭제되었습니다."),
 
     COMPANY_NOT_FOUND(HttpStatus.NOT_FOUND, "업체를 찾을 수 없습니다."),
     COMPANY_DUPLICATED(HttpStatus.CONFLICT, "이미 존재하는 업체입니다."),

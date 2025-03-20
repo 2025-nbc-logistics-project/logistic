@@ -1,4 +1,4 @@
-package com.logistic.client.company.domain.model;
+package com.logistic.client.company.domain.model.company;
 
 import com.logistic.client.company.domain.exception.company.CompanyValidationException;
 import jakarta.persistence.Column;

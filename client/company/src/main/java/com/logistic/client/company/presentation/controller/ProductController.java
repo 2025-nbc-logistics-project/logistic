@@ -74,4 +74,11 @@ public class ProductController {
         return ResponseEntity.ok(responseDto);
     }
 
+    //상품 삭제
+    @PatchMapping("/{productId}/delete")
+    public ResponseEntity<ProductDeleteResponseDto> deleteProduct(@PathVariable UUID productId) {
+        ProductDeleteResponseDto responseDto = productService.deleteProduct(productId);
+        return ResponseEntity.ok(responseDto);
+    }
+
 }

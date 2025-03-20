@@ -1,7 +1,8 @@
-package com.logistic.client.company.domain.model;
+package com.logistic.client.company.domain.model.product;
 
 import com.logistic.client.company.application.dto.product.ProductCreateRequestDto;
 import com.logistic.client.company.domain.exception.product.ProductValidationException;
+import com.logistic.client.company.domain.model.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
