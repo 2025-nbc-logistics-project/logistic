@@ -99,11 +99,11 @@ public class ProductService {
             log.debug("원래 상품 개수: {}", product.getQuantity().getQuantity());
 
             //재고 확인 후 차감
-            product.changeStock(orderItem.getQuantity());
+            product.deductStock(orderItem.getQuantity());
 
             entityManager.flush();
 
-            log.debug("차감 후 개수: {}", findByProductId(orderItem.getProductId()).getQuantity().getQuantity());
+            log.debug("차감 후 개수: {}", product.getQuantity().getQuantity());
 
             //상품 id와 가격 반환
             responseDtoList.add(
@@ -114,6 +114,29 @@ public class ProductService {
 
         return responseDtoList;
 
+    }
+
+    @Transactional
+    public void restoreStock(List<OrderItemRequestDto> restoreList) {
+
+        for(OrderItemRequestDto restore : restoreList) {
+            log.debug("주문 상품: {}, 재입고 개수: {}", restore.getProductId(), restore.getQuantity());
+
+            Product product = entityManager.find(Product.class, restore.getProductId(), LockModeType.PESSIMISTIC_WRITE);
+
+            if(product == null) {
+                throw new ProductNotFoundException();
+            }
+
+            log.debug("원래 상품 개수: {}", product.getQuantity().getQuantity());
+
+            product.restoreStock(restore.getQuantity());
+
+            entityManager.flush();
+
+            log.debug("재입고 후 개수: {}", product.getQuantity().getQuantity());
+
+        }
     }
 
     @Transactional

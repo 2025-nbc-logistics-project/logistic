@@ -58,10 +58,16 @@ public class ProductController {
         return productService.getSearchProducts(key, company, hub, page-1, limit, sortBy, order);
     }
 
-    //주문 상품 검증 및 처리
+    //주문시 상품 수량 변경
     @PostMapping("/deduct-stock")
     public List<ProductPriceResponseDto> checkAndDeductStock(@RequestBody List<OrderItemRequestDto> orderItems) {
         return productService.checkAndDeductStock(orderItems);
+    }
+
+    //주문 취소시 상품 수량 변경
+    @PostMapping("/restore-stock")
+    public void restoreStock(@RequestBody List<OrderItemRequestDto> restoreList) {
+        productService.restoreStock(restoreList);
     }
 
     //상품 수정
