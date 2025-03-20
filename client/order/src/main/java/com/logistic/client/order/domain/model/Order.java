@@ -25,7 +25,7 @@ public class Order extends BaseEntity {
     @Embedded
     private CompanyInfo companyInfo;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.PERSIST)
     private List<OrderItem> orderItems;
 
     @Embedded

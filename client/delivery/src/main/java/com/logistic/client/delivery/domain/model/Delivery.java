@@ -37,7 +37,7 @@ public class Delivery extends BaseEntity {
     })
     private ShippingInfo shippingInfo;
 
-    @OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "delivery", cascade = CascadeType.PERSIST)
     private List<DeliveryRoute> deliveryRoutes = new ArrayList<>();
 
     public Delivery(UUID orderId, DeliveryManagerId deliveryManagerId, DeliveryHubInfo hubInfo, ShippingInfo shippingInfo) {
