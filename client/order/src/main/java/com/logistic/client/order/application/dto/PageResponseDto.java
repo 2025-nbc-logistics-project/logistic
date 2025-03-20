@@ -1,18 +1,14 @@
 package com.logistic.client.order.application.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.data.domain.Page;
 
 import java.io.Serializable;
 import java.util.List;
 
 @Getter
-@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class PageResponseDto<T> implements Serializable {
     private List<T> content;
     private int page;

@@ -4,12 +4,12 @@ import com.logistic.client.order.domain.model.CompanyInfo;
 import com.logistic.client.order.domain.model.Money;
 import com.logistic.client.order.domain.model.Order;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
 @Getter
-@Setter
+@NoArgsConstructor
 public class OrderSummaryDto {
     private UUID orderId;
     private CompanyInfo companyInfo;

@@ -4,14 +4,14 @@ import com.logistic.client.order.domain.model.CompanyInfo;
 import com.logistic.client.order.domain.model.Money;
 import com.logistic.client.order.domain.model.Order;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Getter
-@Setter
+@NoArgsConstructor
 public class OrderResponseDto {
     private UUID orderId;
     private CompanyInfo companyInfo;

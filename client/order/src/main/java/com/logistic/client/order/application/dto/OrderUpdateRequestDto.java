@@ -1,12 +1,14 @@
 package com.logistic.client.order.application.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Getter
-@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderUpdateRequestDto {
     private String orderRequest;
     private List<OrderItemRequestDto> orderItems;

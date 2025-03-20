@@ -2,14 +2,14 @@ package com.logistic.client.order.application.dto;
 
 import com.logistic.client.order.domain.model.*;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Getter
-@Setter
+@NoArgsConstructor
 public class DeliveryResponseDto {
     private UUID deliveryId;
     private UUID orderId;

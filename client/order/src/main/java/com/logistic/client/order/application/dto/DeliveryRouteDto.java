@@ -5,12 +5,12 @@ import com.logistic.client.order.domain.model.DeliveryRoute;
 import com.logistic.client.order.domain.model.DeliveryRouteStatus;
 import com.logistic.client.order.domain.model.DistanceTime;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
 @Getter
-@Setter
+@NoArgsConstructor
 public class DeliveryRouteDto {
     private UUID deliveryRouteId;
     private int sequence;

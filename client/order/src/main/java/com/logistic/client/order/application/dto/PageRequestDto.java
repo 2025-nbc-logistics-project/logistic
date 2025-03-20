@@ -1,10 +1,12 @@
 package com.logistic.client.order.application.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public abstract class PageRequestDto {
     private String sortBy = "createdAt";
     private Boolean isAsc = false;
