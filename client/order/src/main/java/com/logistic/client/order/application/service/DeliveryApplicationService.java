@@ -1,15 +1,16 @@
 package com.logistic.client.order.application.service;
 
-import com.logistic.client.order.application.dto.AddressResponse;
-import com.logistic.client.order.application.dto.CreateDeliveryRequest;
-import com.logistic.client.order.application.dto.HubRouteResponse;
+import com.logistic.client.order.application.dto.*;
 import com.logistic.client.order.domain.model.*;
 import com.logistic.client.order.domain.repository.DeliveryRepository;
 import com.logistic.client.order.infrastructure.client.HubClient;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -51,6 +52,20 @@ public class DeliveryApplicationService {
 
         // 이벤트 발행 또는 Order 서비스를 호출하여 배송 데이터 업데이트 및 슬랙 메시지 발송 요청 (추후 반영 예정)
         return delivery;
+    }
+
+    @Transactional(readOnly = true)
+    public DeliveryResponseDto readDelivery(UUID deliveryId) {
+        Delivery delivery = deliveryRepository.findById(deliveryId)
+            .orElseThrow(() -> new NoSuchElementException("해당 Id를 가진 Delivery가 존재하지 않습니다."));
+
+        return new DeliveryResponseDto(delivery);
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponseDto<DeliverySummaryDto> searchDeliveries(DeliverySearchDto searchDto) {
+        Page<DeliverySummaryDto> mappedPage = deliveryRepository.searchDeliveries(searchDto).map(DeliverySummaryDto::new);
+        return new PageResponseDto<>(mappedPage);
     }
 
     private ShippingInfo buildShippingInfo(AddressResponse receiver, AddressResponse supplier) {
