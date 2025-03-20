@@ -10,12 +10,9 @@ import com.logistic.client.hub.domain.model.HubLocation;
 import com.logistic.client.hub.domain.repository.HubRepository;
 import com.logistic.client.hub.domain.spec.HubSpecifications;
 import com.logistic.client.hub.presentation.request.CreateHubRequest;
-import com.logistic.client.hub.presentation.request.HubDto;
 import com.logistic.client.hub.presentation.request.UpdateHubRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -39,7 +36,7 @@ public class HubService {
   public void deleteHub(Long hubId) {
     Hub hub = getHubOrThrow(hubId);
 
-    if(hub.isDeleted()){
+    if (hub.isDeleted()) {
       throw new HubAlreadyDeletedException(HubExceptionCode.HUB_ALREADY_DELETED);
     }
     // TODO : SecurityContext에서 userId 가져오기
@@ -74,9 +71,10 @@ public class HubService {
   }
 
   @Transactional(readOnly = true)
-  public Page<Hub> searchHubs(String keyword, int page, int size){
+  public Page<Hub> searchHubs(String keyword, int page, int size) {
     Pageable pageable = PageRequest.of(page, size);
-    Specification<Hub> spec = Specification.where(HubSpecifications.nameOrLocationContains(keyword));
+    Specification<Hub> spec = Specification.where(
+        HubSpecifications.nameOrLocationContains(keyword));
 
     return hubRepository.findAll(spec, pageable);
   }

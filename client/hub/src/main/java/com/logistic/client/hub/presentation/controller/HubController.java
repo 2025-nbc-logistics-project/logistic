@@ -8,11 +8,11 @@ import com.logistic.client.hub.presentation.request.CreateHubRequest;
 import com.logistic.client.hub.presentation.request.UpdateHubRequest;
 import com.logistic.client.hub.presentation.response.HubResponse;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,19 +31,19 @@ public class HubController {
   }
 
   @DeleteMapping("/{hubId}")
-  public ResponseEntity<ApiResponse<Void>> deleteHub(@PathVariable Long hubId){
+  public ResponseEntity<ApiResponse<Void>> deleteHub(@PathVariable Long hubId) {
     hubService.deleteHub(hubId);
     return ResponseUtil.noContent();
   }
 
   @GetMapping("/{hubId}")
-  public ResponseEntity<ApiResponse<Hub>> getHubById(@PathVariable Long hubId){
+  public ResponseEntity<ApiResponse<Hub>> getHubById(@PathVariable Long hubId) {
     Hub hub = hubService.getHub(hubId);
     return ResponseUtil.success(hub);
   }
 
   @GetMapping()
-  public ResponseEntity<ApiResponse<List<Hub>>> getAllHubs(){
+  public ResponseEntity<ApiResponse<List<Hub>>> getAllHubs() {
     List<Hub> hubs = hubService.getAllHubs();
     return ResponseUtil.success(hubs);
 
@@ -64,8 +64,8 @@ public class HubController {
       @RequestParam(required = false) String key,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size
-  ){
-    Page<Hub> hubs = hubService.searchHubs(key, page,size);
+  ) {
+    Page<Hub> hubs = hubService.searchHubs(key, page, size);
     return ResponseUtil.success(hubs);
   }
 
