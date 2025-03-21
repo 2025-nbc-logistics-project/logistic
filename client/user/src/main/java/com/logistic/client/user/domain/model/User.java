@@ -35,15 +35,4 @@ public class User extends BaseEntity{
     private UUID hubId;
 
     private UUID companyId;
-
-    public UserResDTO toResponseDto() {
-        return UserResDTO.builder()
-                .username(username)
-                .password(password)
-                .slackId(slackId)
-                .role(role)
-                .hubId(hubId)
-                .companyId(companyId)
-                .build();
-    }
 }
