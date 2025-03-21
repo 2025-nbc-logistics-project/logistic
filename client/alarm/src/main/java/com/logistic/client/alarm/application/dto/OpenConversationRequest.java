@@ -12,5 +12,5 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OpenConversationRequest {
-    private List<String> slackUsers;
+    private List<String> users; // 이거 중요하다..
 }

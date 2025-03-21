@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 public interface SlackFeignClient {
 
     // DM 채널 열기
-    @PostMapping("/conversation.open")
+    @PostMapping("/conversations.open")
     OpenConversationResponse openConversation(@RequestHeader("Authorization") String authorizationHeader,
                                               @RequestBody OpenConversationRequest request);
 
