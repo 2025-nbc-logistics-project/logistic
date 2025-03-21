@@ -102,7 +102,8 @@ public class HubRouteService {
     }
 
     // 5. 도착 허브에 도달할 수 없는 경우 처리
-    if (distances.get(endHubId) == Integer.MAX_VALUE) {
+    Integer endDistance = distances.get(endHubId) == null ? Integer.MAX_VALUE : distances.get(endHubId);
+    if (endDistance == Integer.MAX_VALUE) {
       return new FindRouteResponse(Collections.emptyList(), -1);
     }
 
