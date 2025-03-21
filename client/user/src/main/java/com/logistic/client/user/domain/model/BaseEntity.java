@@ -21,5 +21,4 @@ public abstract class BaseEntity {
     private LocalDateTime deletedAt;
     private String deletedBy;
     private Boolean isDeleted = false;
-
 }

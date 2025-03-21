@@ -1,13 +1,13 @@
 spring:
   application:
-    name: user
+    name: users
   cloud:
     discovery:
       enabled: true
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://postgresql:5432/logistic
+    url: jdbc:postgresql://localhost:5432/logistic
     username: logistic
     password: logistic
 
