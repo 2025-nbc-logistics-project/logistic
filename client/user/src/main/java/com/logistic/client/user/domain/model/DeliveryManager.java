@@ -29,13 +29,4 @@ public class DeliveryManager extends BaseEntity {
     private DeliveryManagerType deliveryManagerType;
 
     private int assignmentOrder;
-
-    public DeliveryManagerResDTO toResponseDto() {
-        return DeliveryManagerResDTO.builder()
-                .username(user.getUsername())
-                .hubId(hubId)
-                .deliveryManagerType(deliveryManagerType)
-                .assignmentOrder(assignmentOrder)
-                .build();
-    }
 }
