@@ -1,6 +1,6 @@
 package com.logistic.client.company.infrastructure.repository.company;
 
-import com.logistic.client.company.domain.model.Company;
+import com.logistic.client.company.domain.model.company.Company;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
