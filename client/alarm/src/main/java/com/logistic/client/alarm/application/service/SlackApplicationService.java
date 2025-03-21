@@ -1,13 +1,18 @@
 package com.logistic.client.alarm.application.service;
 
+import com.logistic.client.alarm.application.dto.PageResponseDto;
 import com.logistic.client.alarm.application.dto.SlackResponseDto;
 import com.logistic.client.alarm.domain.model.Message;
 import com.logistic.client.alarm.domain.model.Slack;
 import com.logistic.client.alarm.domain.repository.SlackRepository;
 import com.logistic.client.alarm.infrastructure.client.SlackApiClient;
 import com.logistic.client.alarm.presentation.request.SlackRequestDto;
+import com.logistic.client.alarm.presentation.request.SlackSearchDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -33,5 +38,17 @@ public class SlackApplicationService {
         slackApiClient.postMessage(channelId, requestDto.getText());
 
         return new SlackResponseDto(slack);
+    }
+
+    public SlackResponseDto readSlack(UUID slackId) {
+        Slack slack = slackRepository.findById(slackId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 Id를 가진 슬랙 메시지를 찾을 수 없습니다."));
+
+        return new SlackResponseDto(slack);
+    }
+
+    public PageResponseDto<SlackResponseDto> searchSlack(SlackSearchDto requestDto) {
+        Page<SlackResponseDto> mappedPage = slackRepository.searchSlack(requestDto).map(SlackResponseDto::new);
+        return new PageResponseDto<>(mappedPage);
     }
 }
