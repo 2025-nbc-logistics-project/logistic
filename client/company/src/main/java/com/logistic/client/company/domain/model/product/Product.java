@@ -50,14 +50,14 @@ public class Product extends BaseEntity {
     }
 
     public void restoreStock(Integer quantity) {
-        if(quantity == null) {
+        if(quantity == null || quantity < 0) {
             throw new ProductValidationException();
         }
         this.quantity = new Quantity(this.quantity.getQuantity() + quantity);
     }
 
     public void changeProductInfo(ProductInfo productInfo){
-        this.productInfo = productInfo;
+        this.productInfo = new ProductInfo(productInfo.getProductName(), productInfo.getPrice());
     }
 
     public void changeQuantity(Integer quantity){

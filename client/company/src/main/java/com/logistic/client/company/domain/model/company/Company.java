@@ -1,6 +1,7 @@
 package com.logistic.client.company.domain.model.company;
 
 import com.logistic.client.company.application.dto.company.CompanyCreateRequestDto;
+import com.logistic.client.company.domain.exception.company.CompanyUpdateException;
 import com.logistic.client.company.domain.model.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -49,19 +50,28 @@ public class Company extends BaseEntity {
     }
 
     public void changeCompanyType(CompanyType companyType) {
+        if(companyType == null) {
+            throw new IllegalArgumentException();
+        }
         this.companyType = companyType;
     }
 
     public void changeCompanyName(String companyName) {
+        if(companyName == null || companyName.isBlank()) {
+            throw new CompanyUpdateException();
+        }
         this.companyName = companyName;
     }
 
     public void changeCompanyTel(String companyTel) {
+        if(companyTel == null || companyTel.isBlank()) {
+            throw new CompanyUpdateException();
+        }
         this.companyTel = companyTel;
     }
 
     public void changeAddress(Address address) {
-        this.address = address;
+        this.address = new Address(address.getPostalCode(), address.getStreetAddress(), address.getDetailAddress());
     }
 
 }
