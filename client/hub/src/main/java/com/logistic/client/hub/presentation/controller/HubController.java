@@ -1,8 +1,10 @@
 package com.logistic.client.hub.presentation.controller;
 
+import com.logistic.client.hub.application.dto.FindRouteResponse;
+import com.logistic.client.hub.application.service.HubRouteService;
 import com.logistic.client.hub.application.service.HubService;
-import com.logistic.client.hub.common.ApiResponse;
-import com.logistic.client.hub.common.ResponseUtil;
+import com.logistic.client.hub.presentation.common.ApiResponse;
+import com.logistic.client.hub.presentation.common.ResponseUtil;
 import com.logistic.client.hub.domain.model.Hub;
 import com.logistic.client.hub.presentation.request.CreateHubRequest;
 import com.logistic.client.hub.presentation.request.UpdateHubRequest;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class HubController {
 
   private final HubService hubService;
+  private final HubRouteService hubRouteService;
 
   @PostMapping()
   public ResponseEntity<ApiResponse<HubResponse>> createHub(
@@ -67,6 +70,14 @@ public class HubController {
   ) {
     Page<Hub> hubs = hubService.searchHubs(key, page, size);
     return ResponseUtil.success(hubs);
+  }
+
+  @GetMapping("/routes")
+  public ResponseEntity<ApiResponse<FindRouteResponse>> getHubRoutes(
+      @RequestParam UUID startHubId,
+      @RequestParam UUID endHubId) {
+    FindRouteResponse route = hubRouteService.findOptimalRoute(startHubId, endHubId);
+    return ResponseUtil.success(route);
   }
 
   private HubResponse toHubResponse(Hub hub) {
