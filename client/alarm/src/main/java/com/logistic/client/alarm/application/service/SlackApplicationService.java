@@ -11,6 +11,7 @@ import com.logistic.client.alarm.presentation.request.SlackSearchDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -21,6 +22,7 @@ public class SlackApplicationService {
     private final SlackRepository slackRepository;
     private final SlackApiClient slackApiClient;
 
+    @Transactional
     public SlackResponseDto createSlackAndSend(SlackRequestDto requestDto) {
         // Slack 엔티티 생성 및 저장
         Slack slack = new Slack(
@@ -40,15 +42,28 @@ public class SlackApplicationService {
         return new SlackResponseDto(slack);
     }
 
+    @Transactional(readOnly = true)
     public SlackResponseDto readSlack(UUID slackId) {
-        Slack slack = slackRepository.findById(slackId)
-            .orElseThrow(() -> new IllegalArgumentException("해당 Id를 가진 슬랙 메시지를 찾을 수 없습니다."));
+        Slack slack = findSlackById(slackId);
 
         return new SlackResponseDto(slack);
     }
 
+    @Transactional(readOnly = true)
     public PageResponseDto<SlackResponseDto> searchSlack(SlackSearchDto requestDto) {
         Page<SlackResponseDto> mappedPage = slackRepository.searchSlack(requestDto).map(SlackResponseDto::new);
         return new PageResponseDto<>(mappedPage);
+    }
+
+    @Transactional
+    public void deleteSlack(UUID slackId) {
+        Slack slack = findSlackById(slackId);
+
+        slack.markAsDeleted(1L); // TODO : 유저 Id 추가
+    }
+
+    private Slack findSlackById(UUID slackId) {
+        return slackRepository.findById(slackId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 Id를 가진 슬랙 메시지를 찾을 수 없습니다."));
     }
 }

@@ -6,6 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 import java.util.UUID;
 
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Table(name = "p_slack")
 @Getter
 @NoArgsConstructor
+@Where(clause = "is_deleted = false")
 public class Slack extends BaseEntity {
 
     @Id

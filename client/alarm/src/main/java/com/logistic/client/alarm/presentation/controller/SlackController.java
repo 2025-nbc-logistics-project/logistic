@@ -35,4 +35,10 @@ public class SlackController {
         PageResponseDto<SlackResponseDto> responseDtoPage = slackApplicationService.searchSlack(requestDto);
         return ResponseEntity.ok(responseDtoPage);
     }
+
+    @PatchMapping("/{slackId}")
+    public ResponseEntity<String> deleteSlack(@PathVariable("slackId") UUID slackId) {
+        slackApplicationService.deleteSlack(slackId);
+        return ResponseEntity.ok("삭제 성공 : " + slackId);
+    }
 }
