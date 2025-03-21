@@ -1,0 +1,37 @@
+package com.logistic.client.alarm.application.service;
+
+import com.logistic.client.alarm.application.dto.SlackResponseDto;
+import com.logistic.client.alarm.domain.model.Message;
+import com.logistic.client.alarm.domain.model.Slack;
+import com.logistic.client.alarm.domain.repository.SlackRepository;
+import com.logistic.client.alarm.infrastructure.client.SlackApiClient;
+import com.logistic.client.alarm.presentation.request.SlackRequestDto;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class SlackApplicationService {
+
+    private final SlackRepository slackRepository;
+    private final SlackApiClient slackApiClient;
+
+    public SlackResponseDto createSlackAndSend(SlackRequestDto requestDto) {
+        // Slack 엔티티 생성 및 저장
+        Slack slack = new Slack(
+            requestDto.getReceiverSlackId(),
+            1L, // TODO : 유저 Id를 받아와서 저장하기
+            new Message(requestDto.getText())
+        );
+
+        slackRepository.save(slack);
+
+        // DM 채널 열기
+        String channelId = slackApiClient.openConversation(requestDto.getReceiverSlackId());
+
+        // 메시지 전송
+        slackApiClient.postMessage(channelId, requestDto.getText());
+
+        return new SlackResponseDto(slack);
+    }
+}

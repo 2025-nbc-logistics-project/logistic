@@ -18,13 +18,16 @@ public class Slack extends BaseEntity {
     @Id
     private UUID slackId;
 
+    private Long senderId;
+
     private String receiverSlackId;
 
     @Embedded
     private Message message;
 
-    private Slack(String receiverSlackId, Message message) {
+    public Slack(String receiverSlackId, Long userId, Message message) {
         this.slackId = UUID.randomUUID();
+        this.senderId = userId;
         this.receiverSlackId = receiverSlackId;
         this.message = message;
     }
