@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>네이버 지도 - 허브 및 경로 표시</title>
+  <!-- 반드시 본인 발급받은 ncpClientId로 교체 -->
+  <script type="text/javascript" th:src="@{'https://openapi.map.naver.com/openapi/v3/maps.js'(ncpClientId=${naverClientId})}"></script>
+</head>
+<body>
+<h1>네이버 지도 테스트 페이지 - 허브 및 경로 표시</h1>
+
+<!-- 입력 필드: 시작 허브와 도착 허브 ID -->
+<div>
+  <label for="startHubId">시작 허브 ID: </label>
+  <input type="text" id="startHubId" value="bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb">
+  <label for="endHubId">도착 허브 ID: </label>
+  <input type="text" id="endHubId" value="cccccccc-cccc-cccc-cccc-cccccccccccc">
+  <button id="fetchRouteBtn">경로 조회</button>
+</div>
+
+<!-- 지도 영역 -->
+<div id="map" style="width:100%; height:600px;"></div>
+
+<script>
+  // 1. 지도 초기화
+  var map = new naver.maps.Map('map', {
+    center: new naver.maps.LatLng(36.5, 127.5),
+    zoom: 7
+  });
+
+  // 2. 허브 데이터 (예시)
+  var hubs = [
+    { id: '11111111-1111-1111-1111-111111111111', name: "서울특별시 센터", lat: 37.5665, lng: 126.9780 },
+    { id: '22222222-2222-2222-2222-222222222222', name: "경기 북부 센터", lat: 37.6584, lng: 126.8354 },
+    { id: '33333333-3333-3333-3333-333333333333', name: "경기 남부 센터", lat: 37.2821, lng: 127.4430 },
+    { id: '44444444-4444-4444-4444-444444444444', name: "부산광역시 센터", lat: 35.1796, lng: 129.0756 },
+    { id: '55555555-5555-5555-5555-555555555555', name: "대구광역시 센터", lat: 35.8714, lng: 128.6014 },
+    { id: '66666666-6666-6666-6666-666666666666', name: "인천광역시 센터", lat: 37.4563, lng: 126.7052 },
+    { id: '77777777-7777-7777-7777-777777777777', name: "광주광역시 센터", lat: 35.1595, lng: 126.8526 },
+    { id: '88888888-8888-8888-8888-888888888888', name: "대전광역시 센터", lat: 36.3504, lng: 127.3845 },
+    { id: '99999999-9999-9999-9999-999999999999', name: "울산광역시 센터", lat: 35.5394, lng: 129.3114 },
+    { id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', name: "세종특별자치시 센터", lat: 36.4800, lng: 127.2890 },
+    { id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', name: "강원특별자치도 센터", lat: 37.8813, lng: 127.7298 },
+    { id: 'cccccccc-cccc-cccc-cccc-cccccccccccc', name: "충청북도 센터", lat: 36.6424, lng: 127.4890 },
+    { id: 'dddddddd-dddd-dddd-dddd-dddddddddddd', name: "충청남도 센터", lat: 36.1167, lng: 126.6333 },
+    { id: 'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee', name: "전북특별자치도 센터", lat: 35.8242, lng: 127.1088 },
+    { id: 'ffffffff-ffff-ffff-ffff-ffffffffffff', name: "전라남도 센터", lat: 34.9876, lng: 126.4231 },
+    { id: '10101010-1010-1010-1010-101010101010', name: "경상북도 센터", lat: 36.5734, lng: 128.7292 },
+    { id: '20202020-2020-2020-2020-202020202020', name: "경상남도 센터", lat: 35.2287, lng: 128.6811 }
+  ];
+
+  // 지도 범위 조정을 위한 bounds
+  var bounds = new naver.maps.LatLngBounds();
+  hubs.forEach(function(hub) {
+    var position = new naver.maps.LatLng(hub.lat, hub.lng);
+    new naver.maps.Marker({
+      position: position,
+      map: map,
+      title: hub.name
+    });
+    bounds.extend(position);
+  });
+  map.fitBounds(bounds);
+
+  // 3. 버튼 클릭 시 입력값 참조 및 API 호출 후 경로를 순서대로 연결
+  document.getElementById('fetchRouteBtn').addEventListener('click', function() {
+    // 입력 필드에서 startHubId와 endHubId 값 읽어오기
+    var startHubId = document.getElementById('startHubId').value.trim();
+    var endHubId = document.getElementById('endHubId').value.trim();
+
+    // API URL 구성
+    var apiUrl = 'http://localhost:18083/api/v1/hubs/routes'
+        + '?startHubId=' + encodeURIComponent(startHubId)
+        + '&endHubId=' + encodeURIComponent(endHubId);
+
+    fetch(apiUrl)
+    .then(function(response) {
+      if (!response.ok) {
+        throw new Error('네트워크 응답이 올바르지 않습니다: ' + response.status);
+      }
+      return response.json();
+    })
+    .then(function(result) {
+      // 응답 결과 예시 구조에 따라 data.route 배열을 추출
+      var routeArray = result.data.route; // route 배열 [{hubId, hubName, cumulativeDistance}, ...]
+      var pathCoordinates = [];
+
+      // route 배열 순서대로 hubId에 해당하는 좌표 정보를 찾아 pathCoordinates 배열에 저장
+      routeArray.forEach(function(routeItem) {
+        var hub = hubs.find(function(item) {
+          return item.id === routeItem.hubId;
+        });
+        if (hub) {
+          pathCoordinates.push(new naver.maps.LatLng(hub.lat, hub.lng));
+        }
+      });
+
+      // pathCoordinates 배열에 2개 이상의 좌표가 있어야 선(Polyline) 그리기 가능
+      if (pathCoordinates.length >= 2) {
+        new naver.maps.Polyline({
+          map: map,
+          path: pathCoordinates,
+          strokeColor: '#FF0000',
+          strokeWeight: 3,
+          strokeOpacity: 0.7
+        });
+      }
+    })
+    .catch(function(error) {
+      console.error('API 호출 에러:', error);
+    });
+  });
+</script>
+</body>
+</html>
