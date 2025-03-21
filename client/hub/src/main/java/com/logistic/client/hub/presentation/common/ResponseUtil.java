@@ -1,4 +1,4 @@
-package com.logistic.client.hub.common;
+package com.logistic.client.hub.presentation.common;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
