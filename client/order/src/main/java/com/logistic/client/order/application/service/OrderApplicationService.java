@@ -8,6 +8,7 @@ import com.logistic.client.order.domain.repository.OrderRepository;
 import com.logistic.client.order.domain.service.OrderDomainService;
 import com.logistic.client.order.infrastructure.client.CompanyClient;
 import com.logistic.client.order.infrastructure.client.DeliveryClient;
+import com.logistic.client.order.infrastructure.client.DeliveryManagerClient;
 import com.logistic.client.order.infrastructure.client.SlackClient;
 import com.logistic.client.order.presentation.request.OrderItemRequestDto;
 import com.logistic.client.order.presentation.request.OrderRequestDto;
@@ -27,6 +28,7 @@ public class OrderApplicationService {
     private final CompanyClient companyClient;
     private final SlackClient slackClient;
     private final DeliveryClient deliveryClient;
+    private final DeliveryManagerClient deliveryManagerClient;
     private final OrderRepository orderRepository;
     private final OrderDomainService orderDomainService;
 
@@ -43,6 +45,12 @@ public class OrderApplicationService {
         // (2). 입력받은 수령 업체 Id, 공급 업체 Id가 유효한지 검증을 요청하고 해당 업체들의 정보를 반환받음.
         CompanyResponse supplierResponse = companyClient.getCompany(requestDto.getSupplierCompanyId());
         CompanyResponse receiverResponse = companyClient.getCompany(requestDto.getReceiverCompanyId());
+
+        // (5) 배송 담당자 서비스 호출 (업체 Id → 배송 담당자 Id)
+        UUID supplierDeliveryManagerId =
+            deliveryManagerClient.getDeliveryManagerIdByCompany(supplierResponse.getCompanyId());
+        UUID receiverDeliveryManagerId =
+            deliveryManagerClient.getDeliveryManagerIdByCompany(receiverResponse.getCompanyId());
 
         // (3). (1)에서반환 받은 상품들의 가격을 토대로 List<OrderItem> 생성, 업체 Id로 CompanyInfo 생성
         List<OrderItem> orderItems =
@@ -64,10 +72,10 @@ public class OrderApplicationService {
         CreateDeliveryRequest createDeliveryRequest = new CreateDeliveryRequest(
             order.getOrderId(),
             supplierResponse.getHubId(),
-            supplierResponse.getDeliveryManagerId(),
+            supplierDeliveryManagerId,
             supplierResponse.getAddress(),
             receiverResponse.getHubId(),
-            receiverResponse.getDeliveryManagerId(),
+            receiverDeliveryManagerId,
             receiverResponse.getAddress()
         );
 
