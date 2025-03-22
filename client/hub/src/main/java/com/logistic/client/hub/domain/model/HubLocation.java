@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class HubLocation {
 
-  private Integer latitude;
-  private Integer longitude;
+  private double latitude;
+  private double longitude;
 }
