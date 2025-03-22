@@ -1,4 +1,4 @@
-package com.logistic.client.user.application.dto.requestDto;
+package com.logistic.client.user.presentation.requestDto;
 
 import com.logistic.client.user.domain.model.UserRole;
 import jakarta.validation.constraints.NotNull;

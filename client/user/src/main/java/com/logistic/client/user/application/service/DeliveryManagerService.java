@@ -1,7 +1,7 @@
 package com.logistic.client.user.application.service;
 
-import com.logistic.client.user.application.dto.requestDto.DeliveryManagerDTO;
-import com.logistic.client.user.application.dto.requestDto.UpdateDeliveryManagerDTO;
+import com.logistic.client.user.presentation.requestDto.DeliveryManagerDTO;
+import com.logistic.client.user.presentation.requestDto.UpdateDeliveryManagerDTO;
 import com.logistic.client.user.application.dto.responseDto.DeliveryManagerResDTO;
 import com.logistic.client.user.domain.model.DeliveryManager;
 import com.logistic.client.user.domain.model.DeliveryManagerType;

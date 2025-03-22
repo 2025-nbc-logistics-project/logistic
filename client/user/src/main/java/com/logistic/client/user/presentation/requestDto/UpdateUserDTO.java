@@ -1,4 +1,4 @@
-package com.logistic.client.user.application.dto.requestDto;
+package com.logistic.client.user.presentation.requestDto;
 
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
