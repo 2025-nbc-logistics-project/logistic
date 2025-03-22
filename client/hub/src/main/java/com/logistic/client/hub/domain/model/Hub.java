@@ -1,0 +1,58 @@
+package com.logistic.client.hub.domain.model;
+
+import com.logistic.client.hub.application.exception.HubExceptionCode;
+import com.logistic.client.hub.domain.exception.HubAlreadyDeletedException;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+import org.springframework.data.annotation.Id;
+
+@Entity
+@Table(name = "p_hub")
+@Builder(toBuilder = true)
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@SQLDelete(sql = """
+    UPDATE hub
+    SET is_deleted = true,
+        deleted_at = now()
+    WHERE id = ?
+""")
+@Where(clause = "is_deleted = false")
+public class Hub extends BaseEntity{
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  private String name;
+
+  @Embedded
+  private HubAddress address;
+
+  @Embedded
+  private HubLocation location;
+
+  public void updateInfo(String name, HubAddress address, HubLocation location){
+    if (super.isDeleted()) {
+      throw new HubAlreadyDeletedException(HubExceptionCode.HUB_ALREADY_DELETED);
+    }
+    this.name=name;
+    this.address=address;
+    this.location=location;
+  }
+
+  public void deleteHub(Long deleterId){
+    if (super.isDeleted()){
+      throw new HubAlreadyDeletedException(HubExceptionCode.HUB_ALREADY_DELETED);
+    }
+
+    super.markAsDeleted(deleterId);
+  }
+
+}
