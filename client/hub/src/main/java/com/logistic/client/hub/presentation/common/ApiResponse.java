@@ -1,4 +1,4 @@
-package com.logistic.client.hub.common;
+package com.logistic.client.hub.presentation.common;
 
 
 import lombok.AllArgsConstructor;
