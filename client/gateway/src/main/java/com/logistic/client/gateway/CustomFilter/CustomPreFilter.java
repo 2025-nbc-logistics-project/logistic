@@ -52,12 +52,16 @@ public class CustomPreFilter implements GlobalFilter, Ordered {
                     HttpHeaders headers = response.getHeaders();
 
                     logger.info("인증 서버 응답 헤더: " + headers);
+                    logger.info("userId: " + headers.getFirst("userId"));
                     logger.info("username: " + headers.getFirst("username"));
                     logger.info("role: " + headers.getFirst("role"));
+                    logger.info("slackId: " + headers.getFirst("slackId"));
 
                     ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
+                            .header("userId", headers.getFirst("userId"))
                             .header("username", headers.getFirst("username"))
                             .header("role", headers.getFirst("role"))
+                            .header("slackId", headers.getFirst("slackId"))
                             .build();
 
                     return chain.filter(exchange.mutate().request(modifiedRequest).build());
