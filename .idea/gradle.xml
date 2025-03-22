@@ -31,8 +31,9 @@
         </option>
       </GradleProjectSettings>
       <GradleProjectSettings>
-        <option name="externalProjectPath" value="$PROJECT_DIR$/client/gateway" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/client/hub" />
         <option name="gradleJvm" value="#JAVA_HOME" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/client/gateway" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/client/gateway" />
@@ -53,15 +54,6 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/client/order" />
-          </set>
-        </option>
-      </GradleProjectSettings>
-      <GradleProjectSettings>
-        <option name="externalProjectPath" value="$PROJECT_DIR$/client/user" />
-        <option name="gradleJvm" value="#JAVA_HOME" />
-        <option name="modules">
-          <set>
-            <option value="$PROJECT_DIR$/client/user" />
           </set>
         </option>
       </GradleProjectSettings>

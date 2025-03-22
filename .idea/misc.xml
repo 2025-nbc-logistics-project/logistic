@@ -8,7 +8,6 @@
     <file type="web" url="file://$PROJECT_DIR$/client/gateway" />
     <file type="web" url="file://$PROJECT_DIR$/client/hub" />
     <file type="web" url="file://$PROJECT_DIR$/client/order" />
-    <file type="web" url="file://$PROJECT_DIR$/client/user" />
     <file type="web" url="file://$PROJECT_DIR$/server/server" />
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_20" project-jdk-name="17" project-jdk-type="JavaSDK">
