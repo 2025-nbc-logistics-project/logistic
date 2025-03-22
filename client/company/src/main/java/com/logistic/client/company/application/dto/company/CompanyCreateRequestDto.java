@@ -1,6 +1,6 @@
 package com.logistic.client.company.application.dto.company;
 
-import com.logistic.client.company.domain.model.CompanyType;
+import com.logistic.client.company.domain.model.company.CompanyType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

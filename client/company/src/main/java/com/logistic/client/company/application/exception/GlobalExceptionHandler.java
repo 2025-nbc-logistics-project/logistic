@@ -50,4 +50,25 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(errorResponseDto, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponseDto> handlerIllegalArgumentException(IllegalArgumentException e) {
+
+        String message = e.getMessage();
+        ErrorResponseDto errorResponseDto = null;
+
+        //Enum값 잘못 입력시
+        if (message != null && message.contains("No enum constant")) {
+            errorResponseDto = new ErrorResponseDto(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Enum 값 오류"
+            );
+        } else {
+            errorResponseDto = new ErrorResponseDto(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "잘못된 요청입니다."
+            );
+        }
+        return new ResponseEntity<>(errorResponseDto, HttpStatus.BAD_REQUEST);
+    }
 }
