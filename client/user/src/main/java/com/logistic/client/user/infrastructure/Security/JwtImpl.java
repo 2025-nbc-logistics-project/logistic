@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class JwtImpl {
@@ -26,15 +27,27 @@ public class JwtImpl {
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(secretKey));
     }
 
-    public String getUsername(String token) {
+    public UUID getUserId(String token) {
         Claims claims = getClaims(token);
-        return claims.get("username", String.class);
+        String userId = claims.get("userId", String.class);
+
+        return UUID.fromString(userId);
     }
 
     public UserRole getUserRole(String token) {
         Claims claims = getClaims(token);
         String role = claims.get("role", String.class);
         return UserRole.valueOf(role);
+    }
+
+    public String getSlackId(String token) {
+        Claims claims = getClaims(token);
+        return claims.get("slackId", String.class);
+    }
+
+    public String getUsername(String token) {
+        Claims claims = getClaims(token);
+        return claims.get("username", String.class);
     }
 
     public Claims getClaims(String token) {
@@ -45,9 +58,11 @@ public class JwtImpl {
                 .getPayload();
     }
 
-    public String createAccessToken(String username, UserRole userRole) {
+    public String createAccessToken(UUID userId, String username, UserRole userRole, String slackId) {
         return Jwts.builder()
+                .claim("userId", userId)
                 .claim("username", username)
+                .claim("slackId", slackId)
                 .claim("role", userRole)
                 .issuer(issuer)
                 .issuedAt(new Date(System.currentTimeMillis()))

@@ -1,5 +1,7 @@
 package com.logistic.client.user.infrastructure.Security;
 
+import com.logistic.client.user.domain.model.User;
+import com.logistic.client.user.domain.model.UserRole;
 import com.logistic.client.user.infrastructure.Security.JwtImpl;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -12,8 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -21,6 +21,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -61,13 +62,19 @@ public class SecurityContextFilter extends OncePerRequestFilter {
         String token = headerAuthorizationToken.substring(7);
 
         try {
+            UUID userId = jwtImpl.getUserId(token);
             String username = jwtImpl.getUsername(token);
             String role = String.valueOf(jwtImpl.getUserRole(token));
+            String slackId = jwtImpl.getSlackId(token);
 
-            UserDetails userDetails = User.withUsername(username)
-                    .password("") // 패스워드는 필요 없음
-                    .roles(role) // 역할 부여
+            User user = User.builder()
+                    .userId(userId)
+                    .role(UserRole.valueOf(role))
+                    .slackId(slackId)
+                    .username(username)
                     .build();
+
+            PrincipalDetails userDetails = new PrincipalDetails(user);
 
             // 스프링 시큐리티 인증 토큰 생성
             Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails,

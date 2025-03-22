@@ -15,7 +15,7 @@ public class AuthService {
     private final JwtImpl jwtImpl;
 
     public String createAccessToken(CreateTokenDTO request) {
-        return jwtImpl.createAccessToken(request.getUsername(), request.getRole());
+        return jwtImpl.createAccessToken(request.getUserId(), request.getUsername(), request.getRole(), request.getSlackId());
     }
 
     public HttpHeaders validateToken(String token) {
@@ -25,15 +25,19 @@ public class AuthService {
         token = token.substring(7);
         try {
             Claims claims = jwtImpl.getClaims(token);
+            String userId = claims.get("userId", String.class);
             String username = claims.get("username", String.class);
             String roleString = claims.get("role", String.class);
+            String slackId = claims.get("slackId", String.class);
 
             UserRole role = UserRole.valueOf(roleString);
 
             HttpHeaders headers = new HttpHeaders();
             // 검증된 정보를 응답 헤더에 추가
+            headers.add("userId", userId);
             headers.add("username", username);
             headers.add("role", role.toString());
+            headers.add("slackId", slackId);
 
             return headers;
 

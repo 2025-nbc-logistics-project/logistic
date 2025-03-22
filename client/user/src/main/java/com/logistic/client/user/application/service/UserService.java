@@ -54,7 +54,7 @@ public class UserService {
             if (!passwordEncoder.matches(signInRequest.getPassword(), user.getPassword())){
                 throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
             }
-            return authService.createAccessToken(new CreateTokenDTO(user.getUsername(), user.getRole()));
+            return authService.createAccessToken(new CreateTokenDTO(user.getUserId(), user.getUsername(), user.getRole(), user.getSlackId()));
         }
         catch (Exception e) {
             throw e;
