@@ -1,4 +1,4 @@
-package com.logistic.client.company.domain.model;
+package com.logistic.client.company.domain.model.company;
 
 public enum CompanyType {
     producer, //생산 업체

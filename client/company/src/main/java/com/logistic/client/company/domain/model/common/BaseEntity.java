@@ -1,5 +1,6 @@
-package com.logistic.client.company.domain.model;
+package com.logistic.client.company.domain.model.common;
 
+import com.logistic.client.company.domain.exception.common.AlreadyDeletedException;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -41,6 +42,9 @@ public class BaseEntity {
 
     //삭제
     public void delete(Long deletedBy) {
+        if(this.deletedAt != null) {
+            throw new AlreadyDeletedException();
+        }
         this.deletedAt = LocalDateTime.now();
         this.deletedBy = deletedBy;
     }
