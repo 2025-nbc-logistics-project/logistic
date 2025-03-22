@@ -2,6 +2,7 @@ package com.logistic.client.user.presentation.requestDto;
 
 import com.logistic.client.user.domain.model.User;
 import com.logistic.client.user.domain.model.UserRole;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -35,6 +36,16 @@ public class UserDTO {
 
     //업체 관리자용
     private UUID companyId;
+
+    @AssertTrue(message = "HUB_MANAGER 타입일 경우 허브 아이디는 필수 입력값입니다.")
+    public boolean isHubIdValid() {
+        return role != UserRole.HUB_MANAGER || hubId != null;
+    }
+
+    @AssertTrue(message = "COMPANY_MANAGER 타입일 경우 업체 아이디는 필수 입력값입니다.")
+    public boolean isCompanyValid() {
+        return role != UserRole.COMPANY_MANAGER || companyId != null;
+    }
 
     //기본값 일반 유저로 회원가입
     public User toUser(String encodePassword) {
