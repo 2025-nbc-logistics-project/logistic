@@ -1,0 +1,14 @@
+package com.logistic.client.user.domain.repository;
+
+import com.logistic.client.user.domain.model.User;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface UserRepository {
+    Optional<User> findByUsernameAndIsDeletedFalse(String username);
+    List<User> findAllByIsDeletedFalse();
+    User save(User user);
+    Boolean existsByUsernameAndIsDeletedFalse(String username);
+
+}
