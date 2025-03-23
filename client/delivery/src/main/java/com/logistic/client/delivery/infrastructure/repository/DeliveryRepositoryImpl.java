@@ -94,6 +94,12 @@ public class DeliveryRepositoryImpl implements DeliveryRepository {
         if (searchDto.getReceiverDeliveryManagerId() != null) {
             builder.and(delivery.deliveryManagerId.receiverDeliveryManagerId.eq(searchDto.getReceiverDeliveryManagerId()));
         }
+        if (searchDto.getUserId() != null) {
+            builder.and(
+                delivery.deliveryManagerId.supplierDeliveryManagerId.eq(searchDto.getUserId())
+                    .or(delivery.deliveryManagerId.receiverDeliveryManagerId.eq(searchDto.getUserId()))
+            );
+        }
 
         return builder.getValue();
     }

@@ -78,7 +78,7 @@ public class Delivery extends BaseEntity {
     }
 
     @Override
-    public void markAsDeleted(Long userId) {
+    public void markAsDeleted(UUID userId) {
         super.markAsDeleted(userId);
 
         if (this.deliveryRoutes != null) {

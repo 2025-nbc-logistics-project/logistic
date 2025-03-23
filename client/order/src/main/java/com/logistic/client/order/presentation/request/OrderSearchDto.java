@@ -4,6 +4,7 @@ import com.logistic.client.order.presentation.request.PageRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.UUID;
 
@@ -13,5 +14,7 @@ import java.util.UUID;
 public class OrderSearchDto extends PageRequestDto {
     private UUID supplierCompanyId;
     private UUID receiverCompanyId;
-    private Long userId;
+    @Setter
+    private UUID userId;
+
 }
