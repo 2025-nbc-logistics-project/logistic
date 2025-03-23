@@ -102,6 +102,20 @@ public class HubService {
     return hubRepository.findAll(spec, pageable);
   }
 
+  public List<GetHubNameResponse> getHubNames(List<UUID> hubIds) {
+
+    List<Hub> hubs = hubRepository.findAllById(hubIds);
+
+    for(UUID hubId : hubIds) {
+      if(getHub(hubId).isDeleted()){
+        throw new HubNotFoundException(HubExceptionCode.HUB_NOT_FOUND);
+      }
+    }
+
+    return hubs.stream()
+        .map(hub -> new GetHubNameResponse(hub.getId(), hub.getName()))
+        .collect(Collectors.toList());
+  }
 
   private Hub convertToHubEntity(CreateHubRequest hubDto) {
     return Hub.builder()

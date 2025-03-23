@@ -1,6 +1,8 @@
 package com.logistic.client.hub.presentation.controller;
 
 import com.logistic.client.hub.application.dto.FindRouteResponse;
+import com.logistic.client.hub.application.dto.GetHubNameResponse;
+import com.logistic.client.hub.application.dto.UserResponseDto;
 import com.logistic.client.hub.application.service.HubRouteService;
 import com.logistic.client.hub.application.service.HubService;
 import com.logistic.client.hub.infrastructure.client.UserClient;
@@ -97,6 +99,13 @@ public class HubController {
       @RequestParam UUID arriveHubId) {
     FindRouteResponse route = hubRouteService.findOptimalRoute(departHubId, arriveHubId);
     return ResponseUtil.success(route);
+  }
+
+  @PostMapping("/names")
+  public ResponseEntity<ApiResponse<List<GetHubNameResponse>>> getHubNames(
+      @RequestBody List<UUID> hubIds) {
+    List<GetHubNameResponse> hubNames = hubService.getHubNames(hubIds);
+    return ResponseUtil.success(hubNames);
   }
 
   private HubResponse toHubResponse(Hub hub) {
