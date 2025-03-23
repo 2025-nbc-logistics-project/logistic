@@ -13,6 +13,7 @@ import com.logistic.client.hub.presentation.response.HubResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -50,13 +51,16 @@ public class HubController {
   @GetMapping("/{hubId}")
   public ResponseEntity<ApiResponse<HubResponse>> getHubById(@PathVariable UUID hubId) {
     Hub hub = hubService.getHub(hubId);
-    return ResponseUtil.success(hub);
+    HubResponse hubResponse = toHubResponse(hub);
+    return ResponseUtil.success(hubResponse);
   }
 
   @GetMapping()
-  public ResponseEntity<ApiResponse<List<Hub>>> getAllHubs() {
+  public ResponseEntity<ApiResponse<List<HubResponse>>> getAllHubs() {
     List<Hub> hubs = hubService.getAllHubs();
-    return ResponseUtil.success(hubs);
+    List<HubResponse> responseList = hubs.stream().map(this::toHubResponse)
+        .collect(Collectors.toList());
+    return ResponseUtil.success(responseList);
 
   }
 
@@ -73,14 +77,18 @@ public class HubController {
   }
 
   @GetMapping("/search")
-  public ResponseEntity<ApiResponse<List<Hub>>> searchHubs(
+  public ResponseEntity<ApiResponse<List<HubResponse>>> searchHubs(
       @RequestParam(required = false) String key,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(defaultValue = "asc") String sort
   ) {
     Page<Hub> hubs = hubService.searchHubs(key, page, size, sort);
-    return ResponseUtil.success(hubs.getContent());
+    List<HubResponse> responseList = hubs.getContent()
+        .stream()
+        .map(this::toHubResponse)
+        .collect(Collectors.toList());
+    return ResponseUtil.success(responseList);
   }
 
   @GetMapping("/routes")
