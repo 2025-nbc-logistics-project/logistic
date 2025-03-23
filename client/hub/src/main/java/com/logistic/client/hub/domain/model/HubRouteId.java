@@ -9,6 +9,5 @@ import lombok.Getter;
 public class HubRouteId {
 
   private UUID departHubId;
-
   private UUID arriveHubId;
 }
