@@ -111,6 +111,27 @@ public class DeliveryManagerService {
         }
     }
 
+    public List<DeliveryManagerResDTO> getDeliveryManagersByHubId(UUID hubId, String userRole, String signInUsername) {
+        try {
+            UserRole role = UserRole.valueOf(userRole);
+            User user = userRepository.findByUsernameAndIsDeletedFalse(signInUsername)
+                    .orElseThrow(() -> new IllegalArgumentException("현재 로그인한 사용자가 존재하지 않는 유저입니다."));
+
+            if(role.equals(UserRole.COMPANY_MANAGER) || role.equals(UserRole.DELIVERY_MANAGER))
+                throw new AccessDeniedException("배송 담당자를 조회 할 수 있는 권한이 없습니다.");
+
+            if(role.equals(UserRole.HUB_MANAGER) && hubId != user.getHubId())
+                throw new AccessDeniedException("담당 허브의 배송 담당자만 조회 가능합니다.");
+
+            List<DeliveryManager> deliveryManagerList = deliveryManagerRepository.findAllByHubIdAndDeliveryManagerTypeAndIsDeletedFalse(hubId, DeliveryManagerType.COMPANY_DELIVERY_MANAGER);
+
+            return deliveryManagerList.stream().map(deliveryManager -> DeliveryManagerResDTO.to(deliveryManager)).toList();
+        }
+        catch (Exception e) {
+            throw e;
+        }
+    }
+
     @Transactional
     public DeliveryManagerResDTO updateDeliveryManagers(String deliveryManagerId, UpdateDeliveryManagerDTO requestDto, String userRole, String signInUsername) {
         try {

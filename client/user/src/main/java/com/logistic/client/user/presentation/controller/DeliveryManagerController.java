@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/delivery-managers")
@@ -39,13 +40,12 @@ public class DeliveryManagerController {
         return ResponseEntity.status(HttpStatus.OK).body(deliveryManagerService.getDeliveryManager(deliveryManagerId, userRole, signInUsername));
     }
 
-    //검색 및 페이징 기능 추후 추가 예정
-//    @GetMapping("/")
-//    public ResponseEntity<?> getDeliveryManagers(@RequestParam, HttpServletRequest request) {
-//        String signInUsername = request.getHeader("username");
-//        String userRole = request.getHeader("role");
-//        return ResponseEntity.status(HttpStatus.OK).body(deliveryManagerService.getDeliveryManager(deliveryManagerId, userRole, signInUsername));
-//    }
+    @GetMapping("/hub/{hubId}")
+    public ResponseEntity<?> getDeliveryManagersByHubId(@PathVariable UUID hubId, HttpServletRequest request) {
+        String signInUsername = request.getHeader("username");
+        String userRole = request.getHeader("role");
+        return ResponseEntity.status(HttpStatus.OK).body(deliveryManagerService.getDeliveryManagersByHubId(hubId, userRole, signInUsername));
+    }
 
     @PatchMapping("/update/{deliveryManagerId}")
     public ResponseEntity<?> updateDeliveryManager(@PathVariable String deliveryManagerId, @Valid @RequestBody UpdateDeliveryManagerDTO requestDto, BindingResult bindingResult, HttpServletRequest request) {

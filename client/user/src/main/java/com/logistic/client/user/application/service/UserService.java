@@ -2,6 +2,7 @@ package com.logistic.client.user.application.service;
 
 import com.logistic.client.user.application.dto.responseDto.CompanyResDTO;
 import com.logistic.client.user.application.dto.responseDto.HubResDTO;
+import com.logistic.client.user.domain.model.QUser;
 import com.logistic.client.user.infrastructure.client.CompanyClient;
 import com.logistic.client.user.infrastructure.client.HubClient;
 import com.logistic.client.user.presentation.requestDto.SignInRequestDTO;
@@ -17,7 +18,10 @@ import com.logistic.client.user.infrastructure.configuration.customException.Acc
 import com.logistic.client.user.infrastructure.configuration.customException.SamePasswordException;
 import com.logistic.client.user.infrastructure.configuration.customException.UserAlreadyExistException;
 import com.logistic.client.user.infrastructure.repository.UserRepositoryImpl;
+import com.querydsl.core.BooleanBuilder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,8 +97,18 @@ public class UserService {
         }
     }
 
-    //검색 및 페이징 추가 필요
-    public List<UserResDTO> getUsers(String userRole) {
+    public UserResDTO getUserByHubId(String hubId) {
+        try {
+            User user = userRepository.findByHubIdAndIsDeletedFalse(hubId)
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+            return UserResDTO.from(user);
+        }
+        catch(Exception e) {
+            throw e;
+        }
+    }
+
+    public Page<UserResDTO> getUsers(String userRole, Pageable pageable, UserRole searchRole) {
         try {
             UserRole role = UserRole.valueOf(userRole);
 
@@ -102,8 +116,22 @@ public class UserService {
                 throw new AccessDeniedException("유저 정보에 대해 접근 권한이 존재하지 않습니다.");
             }
 
-            List<User> users = userRepository.findAllByIsDeletedFalse();
-            return users.stream().map(UserResDTO::from).toList();
+            QUser qUser = QUser.user;
+            BooleanBuilder builder = new BooleanBuilder();
+            builder.and(qUser.isDeleted.eq(false));
+
+            if(searchRole != null) {
+                builder.and(qUser.role.eq(searchRole));
+            }
+            Page<User> userList = userRepository.findAll(builder, pageable);
+
+            if(userList.isEmpty()) {
+                throw new IllegalArgumentException("조건에 맞는 유저가 존재하지 않습니다.");
+            }
+
+            return userList.map(user -> {
+                return UserResDTO.from(user);
+            });
         }
         catch(Exception e) {
             throw e;
