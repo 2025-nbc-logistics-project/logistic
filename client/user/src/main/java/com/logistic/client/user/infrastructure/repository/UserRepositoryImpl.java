@@ -2,7 +2,10 @@ package com.logistic.client.user.infrastructure.repository;
 
 import com.logistic.client.user.domain.model.User;
 import com.logistic.client.user.domain.repository.UserRepository;
+import com.querydsl.core.BooleanBuilder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -31,5 +34,10 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Boolean existsByUsernameAndIsDeletedFalse(String username) {
         return jpaUserRepository.existsByUsernameAndIsDeletedFalse(username);
+    }
+
+    @Override
+    public Page<User> findAll(BooleanBuilder builder, Pageable pageable) {
+        return jpaUserRepository.findAll(builder, pageable);
     }
 }

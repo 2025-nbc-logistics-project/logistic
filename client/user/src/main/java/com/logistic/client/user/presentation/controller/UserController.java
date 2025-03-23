@@ -1,5 +1,6 @@
 package com.logistic.client.user.presentation.controller;
 
+import com.logistic.client.user.domain.model.UserRole;
 import com.logistic.client.user.presentation.requestDto.SignInRequestDTO;
 import com.logistic.client.user.presentation.requestDto.UpdateUserDTO;
 import com.logistic.client.user.presentation.requestDto.UpdateUserRoleDTO;
@@ -8,6 +9,9 @@ import com.logistic.client.user.application.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,10 +56,21 @@ public class UserController {
     }
 
     @GetMapping("")
-    public ResponseEntity<?> getUsers(HttpServletRequest request) {
+    public ResponseEntity<?> getUsers(@RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+                                      @RequestParam(name = "size", required = false, defaultValue = "10") Integer  size,
+                                      @RequestParam(name = "sortBy", required = false, defaultValue = "createdAt") String sortBy,
+                                      @RequestParam(name = "orderBy", required = false, defaultValue = "asc") String orderBy,
+                                      @RequestParam(name = "userRole", required = false) UserRole searchRole,
+                                      HttpServletRequest request) {
         String userRole = request.getHeader("role");
 
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getUsers(userRole));
+        if (size != 10 && size != 30 && size != 50) {
+            size = 10;
+        }
+        Sort.Direction direction = orderBy.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUsers(userRole, pageable, searchRole));
     }
 
     @PatchMapping("/update/{username}")
