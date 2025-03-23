@@ -2,15 +2,12 @@ package com.logistic.client.order.application.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import java.util.UUID;
+import lombok.Setter;
 
 @Getter
-@NoArgsConstructor
+@Setter
 @AllArgsConstructor
-public class ProductPriceResponse {
-    private UUID productId;
+public class ProductNameQuantity {
     private String productName;
-    private Integer price;
+    private int quantity;
 }

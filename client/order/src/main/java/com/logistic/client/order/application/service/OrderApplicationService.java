@@ -40,17 +40,13 @@ public class OrderApplicationService {
         각 상품의 Id와 가격을 List 로 반환 받음
         */
         List<ProductPriceResponse> productPrices =
-                companyClient.checkAndDeductStock(requestDto.getOrderItems());
+                companyClient.checkAndDeductStock(requestDto.getOrderItems()); // 여기서 상품 명도 같이 전달 받음
 
         // (2). 입력받은 수령 업체 Id, 공급 업체 Id가 유효한지 검증을 요청하고 해당 업체들의 정보를 반환받음.
-        CompanyResponse supplierResponse = companyClient.getCompany(requestDto.getSupplierCompanyId());
+        CompanyResponse supplierResponse = companyClient.getCompany(requestDto.getSupplierCompanyId()); // 여기서 업체명도 같이 전달 받음
         CompanyResponse receiverResponse = companyClient.getCompany(requestDto.getReceiverCompanyId());
 
-        // (5) 배송 담당자 서비스 호출 (허브 Id → 업체 배송 담당자 Id)
-        UUID supplierDeliveryManagerId =
-            deliveryManagerClient.getDeliveryManagerIdByHubId(supplierResponse.getHubId());
-        UUID receiverDeliveryManagerId =
-            deliveryManagerClient.getDeliveryManagerIdByHubId(receiverResponse.getHubId());
+
 
         // (3). (1)에서반환 받은 상품들의 가격을 토대로 List<OrderItem> 생성, 업체 Id로 CompanyInfo 생성
         List<OrderItem> orderItems =
@@ -58,6 +54,7 @@ public class OrderApplicationService {
         CompanyInfo companyInfo = new CompanyInfo(supplierResponse.getCompanyId(), receiverResponse.getCompanyId());
         Orderer orderer = new Orderer(userId, username);
 
+        List<ProductNameQuantity> productNameQuantities = orderDomainService.buildNameQuantityList(orderItems, productPrices);
 
         // (4). Order 엔티티 생성 및 DB 저장
         Order order = new Order(
@@ -68,28 +65,36 @@ public class OrderApplicationService {
         );
         orderRepository.save(order);
 
-        // (5). 배송 엔티티를 생성하기 위해 필요한 Request 데이터 생성
+        // (5) 배송 담당자 서비스 호출 (허브 Id → 업체 배송 담당자 Id)
+        DeliveryManagerResponse supplierDeliveryManagerResponse = // 여기서 업체 배송 담당자명도 같이 전달 받음
+            deliveryManagerClient.getDeliveryManagerIdByHubId(supplierResponse.getHubId());
+        DeliveryManagerResponse receiverDeliveryManagerResponse =
+            deliveryManagerClient.getDeliveryManagerIdByHubId(receiverResponse.getHubId());
+
+        // (6). 배송 엔티티를 생성하기 위해 필요한 Request 데이터 생성
         CreateDeliveryRequest createDeliveryRequest = new CreateDeliveryRequest(
             order.getOrderId(),
             supplierResponse.getHubId(),
-            supplierDeliveryManagerId,
+            supplierDeliveryManagerResponse.getDeliveryManagerId(),
             supplierResponse.getAddress(),
             receiverResponse.getHubId(),
-            receiverDeliveryManagerId,
+            receiverDeliveryManagerResponse.getDeliveryManagerId(),
             receiverResponse.getAddress()
         );
 
-        // (6). 배송 엔티티 생성 요청
+        // (7). 배송 엔티티 생성 요청
         FeignDeliveryResponse deliveryResponse = deliveryClient.createDelivery(createDeliveryRequest);
 
-        // (7). 배송 데이터 업데이트
+        // (8). 배송 데이터 업데이트
         order.addDelivery(deliveryResponse.getDeliveryId());
 
-        // (8). 슬랙 메시지 생성 요청
+        // (9). 슬랙 메시지 생성 요청
         SlackRequestDto slackRequestDto = orderDomainService.buildSlackMessageRequest(
             order,
             deliveryResponse,
-            orderItems
+            productNameQuantities,
+            receiverResponse.getCompanyName(),
+            supplierDeliveryManagerResponse.getDeliveryManagerName()
         );
         slackClient.createSlackMessage(slackRequestDto);
 

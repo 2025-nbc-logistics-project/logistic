@@ -36,17 +36,33 @@ public class OrderDomainService {
             .collect(Collectors.toList());
     }
 
-    public SlackRequestDto buildSlackMessageRequest(Order order, FeignDeliveryResponse delivery, List<OrderItem> orderItems) {
+    public List<ProductNameQuantity> buildNameQuantityList(
+        List<OrderItem> orderItems,
+        List<ProductPriceResponse> productPrices
+    ) {
+        Map<UUID, ProductPriceResponse> priceMap =
+            productPrices.stream()
+                .collect(Collectors.toMap(
+                    ProductPriceResponse::getProductId,
+                    p -> p
+                ));
+
+        return orderItems.stream()
+            .map(orderItem -> {
+                UUID pid = orderItem.getProductId();
+                ProductPriceResponse ppr = priceMap.get(pid);
+                return new ProductNameQuantity(
+                    ppr.getProductName(),
+                    orderItem.getQuantity().getQuantity()
+                );
+            })
+            .collect(Collectors.toList());
+    }
+
+    public SlackRequestDto buildSlackMessageRequest(
+        Order order, FeignDeliveryResponse delivery, List<ProductNameQuantity> orderItems, String receiverCompanyName, String deliveryManagerName) {
         // 주문자명
         String username = order.getOrderer().getUsername();
-
-        // 주문 상품 목록
-        List<SlackOrderItem> slackOrderItems = orderItems.stream()
-            .map(oi -> new SlackOrderItem(
-                oi.getProductId(),
-                oi.getQuantity().getQuantity()
-            ))
-            .toList();
 
         // 경유 허브 Id 리스트
         List<UUID> transitHubs = delivery.getDeliveryRoutes().stream()
@@ -64,12 +80,13 @@ public class OrderDomainService {
         return new SlackRequestDto(
             order.getOrderId(),
             username,
-            slackOrderItems,
+            orderItems,
             order.getOrderRequest(),
             delivery.getDepartureHubId(),
             transitHubs,
             destinationAddress,
-            order.getCompanyInfo().getSupplierCompanyId()
+            receiverCompanyName,
+            deliveryManagerName
         );
     }
 
