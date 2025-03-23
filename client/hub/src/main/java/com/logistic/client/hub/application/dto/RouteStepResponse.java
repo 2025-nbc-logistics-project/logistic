@@ -7,8 +7,9 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class RouteStepResponse {
-
+  private Integer order;
   private UUID hubId;
   private String hubName;
-  private int cumulativeDistance;
+  private double cumulativeDistanceKm;
+  private double estimatedTimeHours;
 }
