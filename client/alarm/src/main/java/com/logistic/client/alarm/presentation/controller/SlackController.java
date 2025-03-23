@@ -1,5 +1,6 @@
 package com.logistic.client.alarm.presentation.controller;
 
+import com.logistic.client.alarm.application.dto.OrderInfoDto;
 import com.logistic.client.alarm.application.dto.PageResponseDto;
 import com.logistic.client.alarm.application.dto.SlackResponseDto;
 import com.logistic.client.alarm.application.service.SlackApplicationService;
@@ -20,9 +21,18 @@ public class SlackController {
 
     private final SlackApplicationService slackApplicationService;
 
+    @PostMapping("/order")
+    public ResponseEntity<Void> createOrderSlack(@RequestBody OrderInfoDto requestDto) {
+        slackApplicationService.createOrderSlack(requestDto);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping
-    public ResponseEntity<SlackResponseDto> createSlackAndSend(@RequestBody SlackRequestDto requestDto) {
-        SlackResponseDto responseDto = slackApplicationService.createSlackAndSend(requestDto);
+    public ResponseEntity<SlackResponseDto> createSlackAndSend(@RequestBody SlackRequestDto requestDto,
+                                                               HttpServletRequest request) {
+        String userIdStr = request.getHeader("userId");
+        UUID userId = UUID.fromString(userIdStr);
+        SlackResponseDto responseDto = slackApplicationService.createSlackAndSend(requestDto, userId);
         return ResponseEntity.ok(responseDto);
     }
 
