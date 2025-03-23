@@ -7,11 +7,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum HubExceptionCode implements ExceptionCode {
-
-  HUB_NOT_FOUND(HttpStatus.NOT_FOUND, "Hub Not Found"),
-  HUB_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "Hub Already Exists"),
-  HUB_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "Hub Already Deleted"),
+public enum AuthExceptionCode implements ExceptionCode {
 
   UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "Unauthorized Access");
 

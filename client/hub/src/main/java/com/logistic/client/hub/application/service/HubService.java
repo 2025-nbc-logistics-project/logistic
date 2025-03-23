@@ -1,6 +1,10 @@
 package com.logistic.client.hub.application.service;
 
+import com.logistic.client.hub.application.dto.GetHubNameResponse;
+import com.logistic.client.hub.application.dto.UserResponseDto;
+import com.logistic.client.hub.application.exception.AuthExceptionCode;
 import com.logistic.client.hub.application.exception.HubExceptionCode;
+import com.logistic.client.hub.application.exception.UnauthorizedAccessException;
 import com.logistic.client.hub.domain.exception.HubAlreadyDeletedException;
 import com.logistic.client.hub.domain.exception.HubAlreadyExistsException;
 import com.logistic.client.hub.domain.exception.HubNotFoundException;
@@ -12,6 +16,7 @@ import com.logistic.client.hub.domain.spec.HubSpecifications;
 import com.logistic.client.hub.presentation.request.CreateHubRequest;
 import com.logistic.client.hub.presentation.request.UpdateHubRequest;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
@@ -26,7 +31,11 @@ public class HubService {
 
   private final HubRepository hubRepository;
 
-  public Hub createHub(CreateHubRequest hubDto) {
+  public Hub createHub(CreateHubRequest hubDto, UserResponseDto user) {
+    if (!"MASTER".equals(user.getRole())) {
+      throw new UnauthorizedAccessException(AuthExceptionCode.UNAUTHORIZED_ACCESS);
+    }
+
     if (hubRepository.existsByName(hubDto.getName())) {
       throw new HubAlreadyExistsException(HubExceptionCode.HUB_ALREADY_EXISTS);
     }
@@ -34,14 +43,17 @@ public class HubService {
     return hubRepository.save(hub);
   }
 
-  public void deleteHub(UUID hubId, Long userId) {
+  public void deleteHub(UUID hubId, UserResponseDto user) {
+    if (!"MASTER".equals(user.getRole())) {
+      throw new UnauthorizedAccessException(AuthExceptionCode.UNAUTHORIZED_ACCESS);
+    }
     Hub hub = getHubOrThrow(hubId);
 
     if (hub.isDeleted()) {
       throw new HubAlreadyDeletedException(HubExceptionCode.HUB_ALREADY_DELETED);
     }
 
-    hub.deleteHub(userId);
+    hub.deleteHub(user.getUserId());
     hubRepository.delete(hub);
   }
 
@@ -49,7 +61,10 @@ public class HubService {
     return getHubOrThrow(hubId);
   }
 
-  public Hub updateHub(UUID hubId, UpdateHubRequest request) {
+  public Hub updateHub(UUID hubId, UpdateHubRequest request, UserResponseDto user) {
+    if (!"MASTER".equals(user.getRole())) {
+      throw new UnauthorizedAccessException(AuthExceptionCode.UNAUTHORIZED_ACCESS);
+    }
     Hub hub = getHubOrThrow(hubId);
     hub.updateInfo(
         request.getName(),
@@ -87,6 +102,20 @@ public class HubService {
     return hubRepository.findAll(spec, pageable);
   }
 
+  public List<GetHubNameResponse> getHubNames(List<UUID> hubIds) {
+
+    List<Hub> hubs = hubRepository.findAllById(hubIds);
+
+    for(UUID hubId : hubIds) {
+      if(getHub(hubId).isDeleted()){
+        throw new HubNotFoundException(HubExceptionCode.HUB_NOT_FOUND);
+      }
+    }
+
+    return hubs.stream()
+        .map(hub -> new GetHubNameResponse(hub.getId(), hub.getName()))
+        .collect(Collectors.toList());
+  }
 
   private Hub convertToHubEntity(CreateHubRequest hubDto) {
     return Hub.builder()

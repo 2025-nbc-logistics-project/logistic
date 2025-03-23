@@ -4,6 +4,7 @@ import com.logistic.client.hub.application.exception.HubExceptionCode;
 import com.logistic.client.hub.domain.exception.HubAlreadyDeletedException;
 import java.util.UUID;
 import jakarta.persistence.Entity;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import jakarta.persistence.*;
@@ -56,7 +57,7 @@ public class Hub extends BaseEntity {
     this.location = location;
   }
 
-  public void deleteHub(Long deleterId) {
+  public void deleteHub(UUID deleterId) {
     if (super.isDeleted()) {
       throw new HubAlreadyDeletedException(HubExceptionCode.HUB_ALREADY_DELETED);
     }

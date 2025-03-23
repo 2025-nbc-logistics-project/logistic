@@ -100,7 +100,7 @@ public class HubRouteServiceTest {
 
     // then : 도착 허브에 도달할 수 없으므로 빈 경로, -1 거리 반환
     assertThat(response.getRoute()).isEmpty();
-    assertThat(response.getTotalDistance()).isEqualTo(-1);
+    assertThat(response.getTotalDistanceKm()).isEqualTo(-1);
   }
 
   @Test
@@ -118,7 +118,7 @@ public class HubRouteServiceTest {
 
     // then
     assertThat(response.getRoute()).hasSize(1);
-    assertThat(response.getTotalDistance()).isEqualTo(0);
+    assertThat(response.getTotalDistanceKm()).isEqualTo(0);
   }
 }
 

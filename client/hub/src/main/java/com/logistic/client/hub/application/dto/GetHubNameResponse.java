@@ -6,10 +6,9 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class RouteStepResponse {
-  private Integer order;
+public class GetHubNameResponse {
   private UUID hubId;
   private String hubName;
-  private double cumulativeDistanceKm;
-  private double estimatedTimeHours;
+
+
 }

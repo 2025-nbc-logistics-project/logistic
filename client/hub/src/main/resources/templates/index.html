@@ -77,8 +77,8 @@
 
     // API URL 구성
     var apiUrl = 'http://localhost:18083/api/v1/hubs/routes'
-        + '?startHubId=' + encodeURIComponent(startHubId)
-        + '&endHubId=' + encodeURIComponent(endHubId);
+        + '?departHubId=' + encodeURIComponent(startHubId)
+        + '&arriveHubId=' + encodeURIComponent(endHubId);
 
     fetch(apiUrl)
     .then(function(response) {
