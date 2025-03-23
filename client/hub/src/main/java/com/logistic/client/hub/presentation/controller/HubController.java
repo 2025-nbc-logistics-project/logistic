@@ -33,7 +33,7 @@ public class HubController {
     return ResponseUtil.success(hubResponse);
   }
 
-  @DeleteMapping("/{hubId}")
+  @PatchMapping("/{hubId}/delete")
   public ResponseEntity<ApiResponse<Void>> deleteHub(@PathVariable UUID hubId) {
     // TODO : SecurityContext에서 userId 가져오기
     Long userId = 0L;
