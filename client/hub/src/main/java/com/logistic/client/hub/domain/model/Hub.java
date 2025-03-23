@@ -2,20 +2,12 @@ package com.logistic.client.hub.domain.model;
 
 import com.logistic.client.hub.application.exception.HubExceptionCode;
 import com.logistic.client.hub.domain.exception.HubAlreadyDeletedException;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
 import jakarta.persistence.Entity;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "p_hub")
@@ -24,38 +16,48 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor
 @AllArgsConstructor
 @SQLDelete(sql = """
-    UPDATE p_hub
-    SET is_deleted = true,
-        deleted_at = now()
-    WHERE id = ?
-""")
+        UPDATE p_hub
+        SET is_deleted = true,
+            deleted_at = now()
+        WHERE id = ?
+    """)
 @Where(clause = "is_deleted = false")
-public class Hub extends BaseEntity{
+public class Hub extends BaseEntity {
 
   @Id
-  @GeneratedValue(generator = "UUID")
-  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  @Column(name = "id", updatable = false, nullable = false)
   private UUID id;
 
+  @Column(name = "name", nullable = false)
   private String name;
 
   @Embedded
+  @AttributeOverrides({
+      @AttributeOverride(name = "postalCode", column = @Column(name = "hub_postal_code")),
+      @AttributeOverride(name = "streetAddress", column = @Column(name = "hub_street_address")),
+      @AttributeOverride(name = "detailAddress", column = @Column(name = "hub_detail_address"))
+  })
   private HubAddress address;
 
   @Embedded
+  @AttributeOverrides({
+      @AttributeOverride(name = "latitude", column = @Column(name = "hub_latitude")),
+      @AttributeOverride(name = "longitude", column = @Column(name = "hub_longitude"))
+  })
   private HubLocation location;
 
-  public void updateInfo(String name, HubAddress address, HubLocation location){
+  public void updateInfo(String name, HubAddress address, HubLocation location) {
     if (super.isDeleted()) {
       throw new HubAlreadyDeletedException(HubExceptionCode.HUB_ALREADY_DELETED);
     }
-    this.name=name;
-    this.address=address;
-    this.location=location;
+    this.name = name;
+    this.address = address;
+    this.location = location;
   }
 
-  public void deleteHub(Long deleterId){
-    if (super.isDeleted()){
+  public void deleteHub(Long deleterId) {
+    if (super.isDeleted()) {
       throw new HubAlreadyDeletedException(HubExceptionCode.HUB_ALREADY_DELETED);
     }
 
