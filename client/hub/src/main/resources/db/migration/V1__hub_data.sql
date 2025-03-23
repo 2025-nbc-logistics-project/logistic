@@ -1,6 +1,6 @@
 -- 허브 데이터 삽입
 INSERT INTO p_hub
-(id, name, postal_code, street_address, detail_address, latitude, longitude, is_deleted)
+(id, name, hub_postal_code, hub_street_address, hub_detail_address, hub_latitude, hub_longitude, is_deleted)
 VALUES
     ('11111111-1111-1111-1111-111111111111', '서울특별시 센터', '04500', '서울특별시 송파구', '송파대로 55', 37.5665, 126.9780, false),
     ('22222222-2222-2222-2222-222222222222', '경기 북부 센터', '00000', '경기도 고양시 덕양구', '권율대로 570', 37.6584, 126.8354, false),
@@ -22,146 +22,150 @@ VALUES
 
 --------------------------------------------------
 -- [경기남부 센터] (ID: '33333333-3333-3333-3333-333333333333')의 연결 정보
--- 경기남부 → 경기북부 (ID: '22222222-2222-2222-2222-222222222222') : 약 68 km
-INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, distance, is_deleted)
+-- 경기남부 → 경기북부 (68 km → 약 102분)
+INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, estimated_time, distance, is_deleted)
 VALUES ('11111111-1111-1111-1111-000000000001',
         '33333333-3333-3333-3333-333333333333',
-        '22222222-2222-2222-2222-222222222222', 68, false);
+        '22222222-2222-2222-2222-222222222222', 102, 68, false);
 
--- 경기남부 → 서울 (ID: '11111111-1111-1111-1111-111111111111') : 약 52 km
-INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, distance, is_deleted)
+-- 경기남부 → 서울 (52 km → 약 78분)
+INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, estimated_time, distance, is_deleted)
 VALUES ('11111111-1111-1111-1111-000000000002',
         '33333333-3333-3333-3333-333333333333',
-        '11111111-1111-1111-1111-111111111111', 52, false);
+        '11111111-1111-1111-1111-111111111111', 78, 52, false);
 
--- 경기남부 → 인천 (ID: '66666666-6666-6666-6666-666666666666') : 약 68 km
-INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, distance, is_deleted)
+-- 경기남부 → 인천 (68 km → 약 102분)
+INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, estimated_time, distance, is_deleted)
 VALUES ('11111111-1111-1111-1111-000000000003',
         '33333333-3333-3333-3333-333333333333',
-        '66666666-6666-6666-6666-666666666666', 68, false);
+        '66666666-6666-6666-6666-666666666666', 102, 68, false);
 
--- 경기남부 → 강원도 (ID: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb') : 약 71 km
-INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, distance, is_deleted)
+-- 경기남부 → 강원도 (71 km → 약 107분)
+INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, estimated_time, distance, is_deleted)
 VALUES ('11111111-1111-1111-1111-000000000004',
         '33333333-3333-3333-3333-333333333333',
-        'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 71, false);
+        'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 107, 71, false);
 
--- 경기남부 → 경상북도 (ID: '10101010-1010-1010-1010-101010101010') : 약 139 km
-INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, distance, is_deleted)
+-- 경기남부 → 경상북도 (139 km → 약 209분)
+INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, estimated_time, distance, is_deleted)
 VALUES ('11111111-1111-1111-1111-000000000005',
         '33333333-3333-3333-3333-333333333333',
-        '10101010-1010-1010-1010-101010101010', 139, false);
+        '10101010-1010-1010-1010-101010101010', 209, 139, false);
 
--- 경기남부 → 대전 (ID: '88888888-8888-8888-8888-888888888888') : 약 104 km
-INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, distance, is_deleted)
+-- 경기남부 → 대전 (104 km → 약 156분)
+INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, estimated_time, distance, is_deleted)
 VALUES ('11111111-1111-1111-1111-000000000006',
         '33333333-3333-3333-3333-333333333333',
-        '88888888-8888-8888-8888-888888888888', 104, false);
+        '88888888-8888-8888-8888-888888888888', 156, 104, false);
 
--- 경기남부 → 대구 (ID: '55555555-5555-5555-5555-555555555555') : 약 188 km
-INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, distance, is_deleted)
+-- 경기남부 → 대구 (188 km → 약 282분)
+INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, estimated_time, distance, is_deleted)
 VALUES ('11111111-1111-1111-1111-000000000007',
         '33333333-3333-3333-3333-333333333333',
-        '55555555-5555-5555-5555-555555555555', 188, false);
+        '55555555-5555-5555-5555-555555555555', 282, 188, false);
+
 
 --------------------------------------------------
 -- [대전 센터] (ID: '88888888-8888-8888-8888-888888888888')의 연결 정보
--- 대전 → 충청남도 (ID: 'dddddddd-dddd-dddd-dddd-dddddddddddd') : 약 72 km
-INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, distance, is_deleted)
+-- 대전 → 충청남도 (72 km → 약 108분)
+INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, estimated_time, distance, is_deleted)
 VALUES ('22222222-2222-2222-2222-000000000001',
         '88888888-8888-8888-8888-888888888888',
-        'dddddddd-dddd-dddd-dddd-dddddddddddd', 72, false);
+        'dddddddd-dddd-dddd-dddd-dddddddddddd', 108, 72, false);
 
--- 대전 → 충청북도 (ID: 'cccccccc-cccc-cccc-cccc-cccccccccccc') : 약 34 km
-INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, distance, is_deleted)
+-- 대전 → 충청북도 (34 km → 약 51분)
+INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, estimated_time, distance, is_deleted)
 VALUES ('22222222-2222-2222-2222-000000000002',
         '88888888-8888-8888-8888-888888888888',
-        'cccccccc-cccc-cccc-cccc-cccccccccccc', 34, false);
+        'cccccccc-cccc-cccc-cccc-cccccccccccc', 51, 34, false);
 
--- 대전 → 세종 (ID: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa') : 약 17 km
-INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, distance, is_deleted)
+-- 대전 → 세종 (17 km → 약 26분)
+INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, estimated_time, distance, is_deleted)
 VALUES ('22222222-2222-2222-2222-000000000003',
         '88888888-8888-8888-8888-888888888888',
-        'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 17, false);
+        'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 26, 17, false);
 
--- 대전 → 전북 (ID: 'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee') : 약 64 km
-INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, distance, is_deleted)
+-- 대전 → 전북 (64 km → 약 96분)
+INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, estimated_time, distance, is_deleted)
 VALUES ('22222222-2222-2222-2222-000000000004',
         '88888888-8888-8888-8888-888888888888',
-        'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee', 64, false);
+        'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee', 96, 64, false);
 
--- 대전 → 광주 (ID: '77777777-7777-7777-7777-777777777777') : 약 141 km
-INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, distance, is_deleted)
+-- 대전 → 광주 (141 km → 약 212분)
+INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, estimated_time, distance, is_deleted)
 VALUES ('22222222-2222-2222-2222-000000000005',
         '88888888-8888-8888-8888-888888888888',
-        '77777777-7777-7777-7777-777777777777', 141, false);
+        '77777777-7777-7777-7777-777777777777', 212, 141, false);
 
--- 대전 → 전라남도 (ID: 'ffffffff-ffff-ffff-ffff-ffffffffffff') : 약 175 km
-INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, distance, is_deleted)
+-- 대전 → 전라남도 (175 km → 약 263분)
+INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, estimated_time, distance, is_deleted)
 VALUES ('22222222-2222-2222-2222-000000000006',
         '88888888-8888-8888-8888-888888888888',
-        'ffffffff-ffff-ffff-ffff-ffffffffffff', 175, false);
+        'ffffffff-ffff-ffff-ffff-ffffffffffff', 263, 175, false);
 
--- 대전 → 경기남부 (ID: '33333333-3333-3333-3333-333333333333') : 약 104 km
-INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, distance, is_deleted)
+-- 대전 → 경기남부 (104 km → 약 156분)
+INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, estimated_time, distance, is_deleted)
 VALUES ('22222222-2222-2222-2222-000000000007',
         '88888888-8888-8888-8888-888888888888',
-        '33333333-3333-3333-3333-333333333333', 104, false);
+        '33333333-3333-3333-3333-333333333333', 156, 104, false);
 
--- 대전 → 대구 (ID: '55555555-5555-5555-5555-555555555555') : 약 122 km
-INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, distance, is_deleted)
+-- 대전 → 대구 (122 km → 약 183분)
+INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, estimated_time, distance, is_deleted)
 VALUES ('22222222-2222-2222-2222-000000000008',
         '88888888-8888-8888-8888-888888888888',
-        '55555555-5555-5555-5555-555555555555', 122, false);
+        '55555555-5555-5555-5555-555555555555', 183, 122, false);
+
 
 --------------------------------------------------
 -- [대구 센터] (ID: '55555555-5555-5555-5555-555555555555')의 연결 정보
--- 대구 → 경상북도 (ID: '10101010-1010-1010-1010-101010101010') : 약 79 km
-INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, distance, is_deleted)
+-- 대구 → 경상북도 (79 km → 약 119분)
+INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, estimated_time, distance, is_deleted)
 VALUES ('33333333-3333-3333-3333-000000000001',
         '55555555-5555-5555-5555-555555555555',
-        '10101010-1010-1010-1010-101010101010', 79, false);
+        '10101010-1010-1010-1010-101010101010', 119, 79, false);
 
--- 대구 → 경상남도 (ID: '20202020-2020-2020-2020-202020202020') : 약 72 km
-INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, distance, is_deleted)
+-- 대구 → 경상남도 (72 km → 약 108분)
+INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, estimated_time, distance, is_deleted)
 VALUES ('33333333-3333-3333-3333-000000000002',
         '55555555-5555-5555-5555-555555555555',
-        '20202020-2020-2020-2020-202020202020', 72, false);
+        '20202020-2020-2020-2020-202020202020', 108, 72, false);
 
--- 대구 → 부산 (ID: '44444444-4444-4444-4444-444444444444') : 약 88 km
-INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, distance, is_deleted)
+-- 대구 → 부산 (88 km → 약 132분)
+INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, estimated_time, distance, is_deleted)
 VALUES ('33333333-3333-3333-3333-000000000003',
         '55555555-5555-5555-5555-555555555555',
-        '44444444-4444-4444-4444-444444444444', 88, false);
+        '44444444-4444-4444-4444-444444444444', 132, 88, false);
 
--- 대구 → 울산 (ID: '99999999-9999-9999-9999-999999999999') : 약 74 km
-INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, distance, is_deleted)
+-- 대구 → 울산 (74 km → 약 111분)
+INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, estimated_time, distance, is_deleted)
 VALUES ('33333333-3333-3333-3333-000000000004',
         '55555555-5555-5555-5555-555555555555',
-        '99999999-9999-9999-9999-999999999999', 74, false);
+        '99999999-9999-9999-9999-999999999999', 111, 74, false);
 
--- 대구 → 경기남부 (ID: '33333333-3333-3333-3333-333333333333') : 약 188 km (양방향)
-INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, distance, is_deleted)
+-- 대구 → 경기남부 (188 km → 약 282분) -- 양방향
+INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, estimated_time, distance, is_deleted)
 VALUES ('33333333-3333-3333-3333-000000000005',
         '55555555-5555-5555-5555-555555555555',
-        '33333333-3333-3333-3333-333333333333', 188, false);
+        '33333333-3333-3333-3333-333333333333', 282, 188, false);
 
--- 대구 → 대전 (ID: '88888888-8888-8888-8888-888888888888') : 약 122 km (양방향)
-INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, distance, is_deleted)
+-- 대구 → 대전 (122 km → 약 183분) -- 양방향
+INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, estimated_time, distance, is_deleted)
 VALUES ('33333333-3333-3333-3333-000000000006',
         '55555555-5555-5555-5555-555555555555',
-        '88888888-8888-8888-8888-888888888888', 122, false);
+        '88888888-8888-8888-8888-888888888888', 183, 122, false);
+
 
 --------------------------------------------------
 -- [경상북도 센터] (ID: '10101010-1010-1010-1010-101010101010')의 연결 정보
--- 경상북도 → 경기남부 (ID: '33333333-3333-3333-3333-333333333333') : 약 139 km (양방향)
-INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, distance, is_deleted)
+-- 경상북도 → 경기남부 (139 km → 약 209분) -- 양방향
+INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, estimated_time, distance, is_deleted)
 VALUES ('44444444-4444-4444-4444-000000000001',
         '10101010-1010-1010-1010-101010101010',
-        '33333333-3333-3333-3333-333333333333', 139, false);
+        '33333333-3333-3333-3333-333333333333', 209, 139, false);
 
--- 경상북도 → 대구 (ID: '55555555-5555-5555-5555-555555555555') : 약 79 km (양방향)
-INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, distance, is_deleted)
+-- 경상북도 → 대구 (79 km → 약 119분) -- 양방향
+INSERT INTO p_hub_route (id, depart_hub_id, arrive_hub_id, estimated_time, distance, is_deleted)
 VALUES ('44444444-4444-4444-4444-000000000002',
         '10101010-1010-1010-1010-101010101010',
-        '55555555-5555-5555-5555-555555555555', 79, false);
+        '55555555-5555-5555-5555-555555555555', 119, 79, false);
+

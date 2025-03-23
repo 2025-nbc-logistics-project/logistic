@@ -11,6 +11,7 @@ import com.logistic.client.hub.domain.repository.HubRepository;
 import com.logistic.client.hub.domain.spec.HubSpecifications;
 import com.logistic.client.hub.presentation.request.CreateHubRequest;
 import com.logistic.client.hub.presentation.request.UpdateHubRequest;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
@@ -29,27 +30,26 @@ public class HubService {
     if (hubRepository.existsByName(hubDto.getName())) {
       throw new HubAlreadyExistsException(HubExceptionCode.HUB_ALREADY_EXISTS);
     }
-    Hub hub = toHubEntity(hubDto);
+    Hub hub = convertToHubEntity(hubDto);
     return hubRepository.save(hub);
   }
 
-  public void deleteHub(Long hubId) {
+  public void deleteHub(UUID hubId, Long userId) {
     Hub hub = getHubOrThrow(hubId);
 
     if (hub.isDeleted()) {
       throw new HubAlreadyDeletedException(HubExceptionCode.HUB_ALREADY_DELETED);
     }
-    // TODO : SecurityContext에서 userId 가져오기
-    Long currentUserId = 0L;
-    hub.deleteHub(currentUserId);
+
+    hub.deleteHub(userId);
     hubRepository.delete(hub);
   }
 
-  public Hub getHub(Long hubId) {
+  public Hub getHub(UUID hubId) {
     return getHubOrThrow(hubId);
   }
 
-  public Hub updateHub(Long hubId, UpdateHubRequest request) {
+  public Hub updateHub(UUID hubId, UpdateHubRequest request) {
     Hub hub = getHubOrThrow(hubId);
     hub.updateInfo(
         request.getName(),
@@ -71,8 +71,16 @@ public class HubService {
   }
 
   @Transactional(readOnly = true)
-  public Page<Hub> searchHubs(String keyword, int page, int size) {
-    Pageable pageable = PageRequest.of(page, size);
+  public Page<Hub> searchHubs(String keyword, int page, int size, String sort) {
+    if (!(size == 10 || size == 30 || size == 50)) {
+      size = 10;
+    }
+
+    Sort sortObj = "desc".equalsIgnoreCase(sort)
+        ? Sort.by("createdAt").descending()
+        : Sort.by("createdAt").ascending();
+
+    Pageable pageable = PageRequest.of(page, size, sortObj);
     Specification<Hub> spec = Specification.where(
         HubSpecifications.nameOrLocationContains(keyword));
 
@@ -80,7 +88,7 @@ public class HubService {
   }
 
 
-  private Hub toHubEntity(CreateHubRequest hubDto) {
+  private Hub convertToHubEntity(CreateHubRequest hubDto) {
     return Hub.builder()
         .name(hubDto.getName())
         .address(new HubAddress(
@@ -95,7 +103,7 @@ public class HubService {
         .build();
   }
 
-  private Hub getHubOrThrow(Long hubId) {
+  private Hub getHubOrThrow(UUID hubId) {
     return hubRepository.findById(hubId)
         .orElseThrow(() -> new HubNotFoundException(HubExceptionCode.HUB_NOT_FOUND));
   }

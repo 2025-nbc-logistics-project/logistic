@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" >
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
   <title>네이버 지도 - 허브 및 경로 표시</title>
   <!-- 반드시 본인 발급받은 ncpClientId로 교체 -->
-  <script type="text/javascript" th:src="@{'https://openapi.map.naver.com/openapi/v3/maps.js'(ncpClientId=${naverClientId})}"></script>
+  <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=tg0itsciwa"></script>
+
+
+
 </head>
 <body>
-<h1>네이버 지도 테스트 페이지 - 허브 및 경로 표시</h1>
+<h2>네이버 지도 테스트 페이지 - 허브 및 경로 표시</h2>
 
 <!-- 입력 필드: 시작 허브와 도착 허브 ID -->
 <div>
@@ -27,6 +32,8 @@
     center: new naver.maps.LatLng(36.5, 127.5),
     zoom: 7
   });
+
+  var currentPolyline = null;  // 현재 그려진 Polyline을 추적
 
   // 2. 허브 데이터 (예시)
   var hubs = [
@@ -95,9 +102,14 @@
         }
       });
 
+      // 기존 Polyline 삭제
+      if (currentPolyline) {
+        currentPolyline.setMap(null); // 이전에 그린 Polyline을 삭제
+      }
+
       // pathCoordinates 배열에 2개 이상의 좌표가 있어야 선(Polyline) 그리기 가능
       if (pathCoordinates.length >= 2) {
-        new naver.maps.Polyline({
+        currentPolyline = new naver.maps.Polyline({
           map: map,
           path: pathCoordinates,
           strokeColor: '#FF0000',
