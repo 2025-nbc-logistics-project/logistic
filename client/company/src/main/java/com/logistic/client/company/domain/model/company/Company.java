@@ -1,6 +1,7 @@
 package com.logistic.client.company.domain.model.company;
 
-import com.logistic.client.company.application.dto.company.CompanyCreateRequestDto;
+import com.logistic.client.company.domain.exception.common.HubNotFoundException;
+import com.logistic.client.company.presentation.request.CompanyCreateRequestDto;
 import com.logistic.client.company.domain.exception.company.CompanyUpdateException;
 import com.logistic.client.company.domain.model.common.BaseEntity;
 import jakarta.persistence.*;
@@ -23,10 +24,10 @@ public class Company extends BaseEntity {
     private UUID companyId;
 
     @Column(name = "hub_id", nullable = false)
-    private UUID hudId;
+    private UUID hubId;
 
     @Column(name = "user_id", nullable = false)
-    private Long userId = 1L; //temp
+    private UUID userId; //업체 관리자
 
     @Enumerated(EnumType.STRING)
     @Column(name = "company_type", nullable = false)
@@ -42,11 +43,19 @@ public class Company extends BaseEntity {
     private Address address;
 
     public Company(CompanyCreateRequestDto requestDto){
-        this.hudId = requestDto.getHudId();
+        this.hubId = requestDto.getHubId();
+        this.userId = requestDto.getUserId();
         this.companyType = requestDto.getCompanyType();
         this.companyName = requestDto.getCompanyName();
         this.companyTel = requestDto.getCompanyTel();
         this.address = new Address(requestDto.getPostalCode(), requestDto.getStreetAddress(), requestDto.getDetailAddress());
+    }
+
+    public void changeHub(UUID hubId) {
+        if(hubId == null) {
+            throw new HubNotFoundException();
+        }
+        this.hubId = hubId;
     }
 
     public void changeCompanyType(CompanyType companyType) {

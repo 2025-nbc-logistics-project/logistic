@@ -10,10 +10,12 @@ import java.util.UUID;
 public class ProductPriceResponseDto {
 
     private UUID productId;
+    private String productName;
     private Integer price;
 
-    public ProductPriceResponseDto(UUID productId, int price) {
+    public ProductPriceResponseDto(UUID productId, String productName, int price) {
         this.productId = productId;
+        this.productName = productName;
         this.price = price;
     }
 }

@@ -13,7 +13,7 @@ public class CompanyDeleteResponseDto {
 
     private UUID companyId;
     private LocalDateTime deletedAt;
-    private long deletedBy;
+    private UUID deletedBy;
 
     public CompanyDeleteResponseDto(Company company) {
         this.companyId = company.getCompanyId();

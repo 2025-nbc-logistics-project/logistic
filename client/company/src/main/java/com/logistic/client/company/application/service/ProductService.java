@@ -1,12 +1,18 @@
 package com.logistic.client.company.application.service;
 
+import com.logistic.client.company.application.dto.common.CompanyExistResponseDto;
 import com.logistic.client.company.application.dto.product.*;
+import com.logistic.client.company.domain.exception.common.HubNotFoundException;
+import com.logistic.client.company.domain.exception.common.UnauthorizedAccessException;
 import com.logistic.client.company.domain.exception.product.ProductNotFoundException;
 import com.logistic.client.company.domain.model.product.Product;
 import com.logistic.client.company.domain.model.product.ProductInfo;
 import com.logistic.client.company.domain.model.product.Quantity;
 import com.logistic.client.company.domain.repository.ProductRepository;
 import com.logistic.client.company.infrastructure.client.HubClient;
+import com.logistic.client.company.presentation.request.OrderItemRequestDto;
+import com.logistic.client.company.presentation.request.ProductCreateRequestDto;
+import com.logistic.client.company.presentation.request.ProductUpdateRequestDto;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.PersistenceContext;
@@ -30,22 +36,34 @@ public class ProductService {
     private final ProductRepository productRepository;
     @PersistenceContext
     private EntityManager entityManager;
-    //
     private final CompanyService companyService;
     private final HubClient hubClient;
 
     @Transactional
-    public ProductCreateResponseDto createProduct(ProductCreateRequestDto requestDto) {
-
-        //중복 검사 (??)
+    public ProductCreateResponseDto createProduct(
+            ProductCreateRequestDto requestDto,
+            UUID userId,
+            UUID hubId,
+            String role
+    ) {
 
         //존재하는 업체인지
-        companyService.findByCompanyId(requestDto.getCompanyId());
+        CompanyExistResponseDto company = companyService.getCompanyById(requestDto.getCompanyId());
+
+        if(
+                !("MASTER".equals(role)) //마스터 관리자가 아니고
+                        && !("HUB_MANAGER".equals(role) //허브 관리자도 아니고
+                        && hubId.equals(requestDto.getHubId())) //허브 관리자여도 담당 허브가 아니고
+                        && !("COMPANY_MANAGER".equals(role)) //업체 담당자도 아니고
+                        && !userId.equals(company.getUserId()) //업체 담당자여도 담당 업체가 아니라면
+        ){
+            throw new UnauthorizedAccessException();
+        }
 
         //존재하는 허브인지
-//        if(!hubClient.existsHub(requestDto.getHudId())) {
-//            throw new HubNotFoundException();
-//        }
+        if(hubClient.getHub(requestDto.getHubId()) == null) {
+            throw new HubNotFoundException();
+        }
 
         Product product = new Product(requestDto);
         productRepository.save(product);
@@ -83,7 +101,18 @@ public class ProductService {
     }
 
     @Transactional
-    public List<ProductPriceResponseDto> checkAndDeductStock(List<OrderItemRequestDto> orderItems) {
+    public List<ProductPriceResponseDto> checkAndDeductStock(
+            List<OrderItemRequestDto> orderItems,
+            String role
+    ) {
+
+        if(
+                !("MASTER".equals(role)) //마스터 관리자가 아니고
+                        && !("HUB_MANAGER".equals(role)) //허브 관리자도 아니고
+                        && !("COMPANY_MANAGER".equals(role)) //업체 담당자도 아니라면
+        ){
+            throw new UnauthorizedAccessException();
+        }
 
         List<ProductPriceResponseDto> responseDtoList = new ArrayList<>();
 
@@ -105,10 +134,11 @@ public class ProductService {
 
             log.debug("차감 후 개수: {}", product.getQuantity().getQuantity());
 
-            //상품 id와 가격 반환
+            //상품 id, 상품 이름, 가격 반환
             responseDtoList.add(
                     new ProductPriceResponseDto(
                             orderItem.getProductId(),
+                            product.getProductInfo().getProductName(),
                             product.getProductInfo().getPrice() * orderItem.getQuantity()));
         }
 
@@ -117,7 +147,18 @@ public class ProductService {
     }
 
     @Transactional
-    public void restoreStock(List<OrderItemRequestDto> restoreList) {
+    public void restoreStock(
+            List<OrderItemRequestDto> restoreList,
+            String role
+    ) {
+
+        if(
+                !("MASTER".equals(role)) //마스터 관리자가 아니고
+                        && !("HUB_MANAGER".equals(role)) //허브 관리자도 아니고
+                        && !("COMPANY_MANAGER".equals(role)) //업체 담당자도 아니라면
+        ){
+            throw new UnauthorizedAccessException();
+        }
 
         for(OrderItemRequestDto restore : restoreList) {
             log.debug("주문 상품: {}, 재입고 개수: {}", restore.getProductId(), restore.getQuantity());
@@ -140,12 +181,32 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductUpdateResponseDto updateProduct(UUID productId, ProductUpdateRequestDto requestDto) {
+    public ProductUpdateResponseDto updateProduct(
+            UUID productId,
+            ProductUpdateRequestDto requestDto,
+            UUID userId,
+            UUID hubId,
+            String role
+
+    ) {
 
         //존재하는 상품인지
         Product product = findByProductId(productId);
+        CompanyExistResponseDto company = companyService.getCompanyById(product.getCompanyId());
 
-        //허브
+        if(
+                !("MASTER".equals(role)) //마스터 관리자가 아니고
+                        && !("HUB_MANAGER".equals(role) //허브 관리자도 아니고
+                        && hubId.equals(product.getHubId())) //허브 관리자여도 담당 허브가 아니고
+                        && !("COMPANY_MANAGER".equals(role)) //업체 담당자도 아니고
+                        && !userId.equals(company.getUserId()) //업체 담당자여도 담당 업체가 아니라면
+        ) {
+            throw new UnauthorizedAccessException();
+        }
+
+        if(requestDto.getHubId() != null && hubClient.getHub(requestDto.getHubId()) != null) {
+            product.changeHub(requestDto.getHubId());
+        }
 
         String productName = product.getProductInfo().getProductName();
         Integer price = product.getProductInfo().getPrice();
@@ -172,10 +233,24 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductDeleteResponseDto deleteProduct(UUID productId) {
+    public ProductDeleteResponseDto deleteProduct(
+            UUID productId,
+            UUID userId,
+            UUID hubId,
+            String role
+    ) {
+
         Product product = findByProductId(productId);
-        //
-        product.delete(1L);
+
+        if(
+                !("MASTER".equals(role)) //마스터 관리자가 아니고
+                        && !("HUB_MANAGER".equals(role) //허브 관리자도 아니고
+                        && hubId.equals(product.getHubId())) //허브 관리자여도 담당 허브가 아니라면
+        ){
+            throw new UnauthorizedAccessException();
+        }
+
+        product.delete(userId);
 
         return new ProductDeleteResponseDto(product);
     }

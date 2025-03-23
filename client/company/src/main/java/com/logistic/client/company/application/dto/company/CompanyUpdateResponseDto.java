@@ -11,7 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class CompanyUpdateResponseDto {
 
-    private UUID hudId;
+    private UUID hubId;
     private CompanyType companyType;
     private String companyName;
     private String companyTel;
@@ -22,7 +22,7 @@ public class CompanyUpdateResponseDto {
     //private Long userId;
 
     public CompanyUpdateResponseDto(Company company) {
-        this.hudId = company.getHudId();
+        this.hubId = company.getHubId();
         this.companyType = company.getCompanyType();
         this.companyName = company.getCompanyName();
         this.companyTel = company.getCompanyTel();

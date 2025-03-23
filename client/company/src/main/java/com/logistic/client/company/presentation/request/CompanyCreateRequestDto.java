@@ -1,13 +1,10 @@
-package com.logistic.client.company.application.dto.company;
+package com.logistic.client.company.presentation.request;
 
 import com.logistic.client.company.domain.model.company.CompanyType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -18,7 +15,9 @@ import java.util.UUID;
 public class CompanyCreateRequestDto {
 
     @NotNull(message = "소속 허브를 입력해주세요.")
-    private UUID hudId;
+    private UUID hubId;
+
+    private UUID userId;
 
     @NotNull(message = "업체 타입을 입력해주세요.")
     private CompanyType companyType;
@@ -37,5 +36,16 @@ public class CompanyCreateRequestDto {
     private String streetAddress;
 
     private String detailAddress;
+
+    public CompanyCreateRequestDto(CompanyCreateRequestDto requestDto, UUID userId) {
+        this.hubId = requestDto.getHubId();
+        this.userId = userId;
+        this.companyType = requestDto.getCompanyType();
+        this.companyName = requestDto.getCompanyName();
+        this.companyTel = requestDto.getCompanyTel();
+        this.postalCode = requestDto.getPostalCode();
+        this.streetAddress = requestDto.getStreetAddress();
+        this.detailAddress = requestDto.getDetailAddress();
+    }
 
 }

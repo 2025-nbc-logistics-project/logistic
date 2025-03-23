@@ -1,6 +1,7 @@
 package com.logistic.client.company.domain.model.product;
 
-import com.logistic.client.company.application.dto.product.ProductCreateRequestDto;
+import com.logistic.client.company.presentation.request.ProductCreateRequestDto;
+import com.logistic.client.company.domain.exception.common.HubNotFoundException;
 import com.logistic.client.company.domain.exception.product.ProductValidationException;
 import com.logistic.client.company.domain.model.common.BaseEntity;
 import jakarta.persistence.*;
@@ -36,9 +37,16 @@ public class Product extends BaseEntity {
 
     public Product(ProductCreateRequestDto requestDto){
         this.companyId = requestDto.getCompanyId();
-        this.hubId = requestDto.getHudId();
+        this.hubId = requestDto.getHubId();
         this.productInfo = new ProductInfo(requestDto.getProductName(), requestDto.getPrice());
         this.quantity = new Quantity(requestDto.getQuantity());
+    }
+
+    public void changeHub(UUID hubId) {
+        if(hubId == null) {
+           throw new HubNotFoundException();
+        }
+        this.hubId = hubId;
     }
 
     //
