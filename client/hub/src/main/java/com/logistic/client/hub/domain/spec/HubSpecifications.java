@@ -15,7 +15,7 @@ public class HubSpecifications {
 
       return builder.or(
           builder.like(builder.lower(root.get("name")),likePattern),
-          builder.like(builder.lower(root.get("location")),likePattern)
+          builder.like(builder.lower(root.get("address").get("streetAddress")), likePattern)
       );
     };
   }

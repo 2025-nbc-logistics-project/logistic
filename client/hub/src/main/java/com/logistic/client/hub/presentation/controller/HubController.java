@@ -34,13 +34,15 @@ public class HubController {
   }
 
   @DeleteMapping("/{hubId}")
-  public ResponseEntity<ApiResponse<Void>> deleteHub(@PathVariable Long hubId) {
-    hubService.deleteHub(hubId);
+  public ResponseEntity<ApiResponse<Void>> deleteHub(@PathVariable UUID hubId) {
+    // TODO : SecurityContext에서 userId 가져오기
+    Long userId = 0L;
+    hubService.deleteHub(hubId, userId);
     return ResponseUtil.noContent();
   }
 
   @GetMapping("/{hubId}")
-  public ResponseEntity<ApiResponse<Hub>> getHubById(@PathVariable Long hubId) {
+  public ResponseEntity<ApiResponse<Hub>> getHubById(@PathVariable UUID hubId) {
     Hub hub = hubService.getHub(hubId);
     return ResponseUtil.success(hub);
   }
@@ -54,7 +56,7 @@ public class HubController {
 
   @PatchMapping("/{hubId}")
   public ResponseEntity<ApiResponse<HubResponse>> updateHub(
-      @PathVariable Long hubId,
+      @PathVariable UUID hubId,
       @Valid @RequestBody UpdateHubRequest updateHubRequest
   ) {
     Hub updatedHub = hubService.updateHub(hubId, updateHubRequest);
@@ -63,13 +65,14 @@ public class HubController {
   }
 
   @GetMapping("/search")
-  public ResponseEntity<ApiResponse<Page<Hub>>> searchHubs(
+  public ResponseEntity<ApiResponse<List<Hub>>> searchHubs(
       @RequestParam(required = false) String key,
       @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size
+      @RequestParam(defaultValue = "10") int size,
+      @RequestParam(defaultValue = "asc") String sort
   ) {
-    Page<Hub> hubs = hubService.searchHubs(key, page, size);
-    return ResponseUtil.success(hubs);
+    Page<Hub> hubs = hubService.searchHubs(key, page, size, sort);
+    return ResponseUtil.success(hubs.getContent());
   }
 
   @GetMapping("/routes")
