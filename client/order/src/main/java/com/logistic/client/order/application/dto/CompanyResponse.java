@@ -12,6 +12,5 @@ import java.util.UUID;
 public class CompanyResponse {
     private UUID companyId;
     private UUID hubId;
-    private UUID deliveryManagerId;
     private AddressResponse address;
 }
