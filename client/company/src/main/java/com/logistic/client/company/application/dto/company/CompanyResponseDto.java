@@ -12,8 +12,8 @@ import java.util.UUID;
 public class CompanyResponseDto {
 
     private UUID companyId;
-    private UUID hudId;
-    private Long userId;
+    private UUID hubId;
+    private UUID userId;
     private CompanyType companyType;
     private String companyName;
     private String companyTel;
@@ -23,7 +23,7 @@ public class CompanyResponseDto {
 
     public CompanyResponseDto(Company company) {
         this.companyId = company.getCompanyId();
-        this.hudId = company.getHudId();
+        this.hubId = company.getHubId();
         this.userId = company.getUserId();
         this.companyType = company.getCompanyType();
         this.companyName = company.getCompanyName();

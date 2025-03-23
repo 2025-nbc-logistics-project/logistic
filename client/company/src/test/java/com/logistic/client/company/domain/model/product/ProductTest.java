@@ -1,6 +1,6 @@
 package com.logistic.client.company.domain.model.product;
 
-import com.logistic.client.company.application.dto.product.ProductCreateRequestDto;
+import com.logistic.client.company.presentation.request.ProductCreateRequestDto;
 import com.logistic.client.company.domain.exception.product.ProductValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

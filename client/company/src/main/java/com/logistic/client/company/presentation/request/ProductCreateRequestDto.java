@@ -1,4 +1,4 @@
-package com.logistic.client.company.application.dto.product;
+package com.logistic.client.company.presentation.request;
 
 import com.logistic.client.company.domain.model.product.Product;
 import jakarta.validation.constraints.Min;
@@ -21,7 +21,7 @@ public class ProductCreateRequestDto {
     private UUID companyId;
 
     @NotNull(message = "소속 허브를 입력해주세요.")
-    private UUID hudId;
+    private UUID hubId;
 
     @NotBlank(message = "상품 이름을 입력해주세요.")
     private String productName;
@@ -34,7 +34,7 @@ public class ProductCreateRequestDto {
 
     public ProductCreateRequestDto(Product product) {
         this.companyId = product.getCompanyId();
-        this.hudId = product.getHubId();
+        this.hubId = product.getHubId();
         this.productName = product.getProductInfo().getProductName();
         this.price = product.getProductInfo().getPrice();
         this.quantity = product.getQuantity().getQuantity();

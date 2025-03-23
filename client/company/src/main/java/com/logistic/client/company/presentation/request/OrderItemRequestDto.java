@@ -1,4 +1,4 @@
-package com.logistic.client.company.application.dto.product;
+package com.logistic.client.company.presentation.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

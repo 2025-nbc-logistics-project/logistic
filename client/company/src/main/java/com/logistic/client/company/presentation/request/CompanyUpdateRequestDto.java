@@ -1,4 +1,4 @@
-package com.logistic.client.company.application.dto.company;
+package com.logistic.client.company.presentation.request;
 
 import com.logistic.client.company.domain.model.company.CompanyType;
 import lombok.AllArgsConstructor;
@@ -14,14 +14,12 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CompanyUpdateRequestDto {
 
-    private UUID hudId;
+    private UUID hubId;
     private CompanyType companyType;
     private String companyName;
     private String companyTel;
     private String postalCode;
     private String streetAddress;
     private String detailAddress;
-    //담당자
-    //private Long userId;
 
 }

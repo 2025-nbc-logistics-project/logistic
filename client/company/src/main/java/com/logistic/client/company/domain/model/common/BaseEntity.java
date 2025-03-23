@@ -12,6 +12,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @MappedSuperclass
@@ -20,11 +21,11 @@ public class BaseEntity {
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now(); //temp
+    private LocalDateTime createdAt;
 
     @CreatedBy
     @Column(name = "created_by", nullable = false, updatable = false)
-    private Long createdBy = 1L; //temp
+    private UUID createdBy;
 
     @LastModifiedDate
     @Column(name = "updated_at")
@@ -32,16 +33,16 @@ public class BaseEntity {
 
     @LastModifiedBy
     @Column(name = "updated_by")
-    private Long updatedBy;
+    private UUID updatedBy;
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
     @Column(name = "deleted_by")
-    private Long deletedBy;
+    private UUID deletedBy;
 
     //삭제
-    public void delete(Long deletedBy) {
+    public void delete(UUID deletedBy) {
         if(this.deletedAt != null) {
             throw new AlreadyDeletedException();
         }
