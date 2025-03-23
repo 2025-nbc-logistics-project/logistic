@@ -9,11 +9,10 @@ import com.logistic.client.hub.domain.model.HubAddress;
 import com.logistic.client.hub.domain.model.HubLocation;
 import com.logistic.client.hub.domain.repository.HubRepository;
 import com.logistic.client.hub.domain.spec.HubSpecifications;
-import com.logistic.client.hub.presentation.request.HubDto;
+import com.logistic.client.hub.presentation.request.CreateHubRequest;
+import com.logistic.client.hub.presentation.request.UpdateHubRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -26,8 +25,7 @@ public class HubService {
 
   private final HubRepository hubRepository;
 
-  public Hub createHub(HubDto hubDto) {
-    // 동일한 이름이면 에러 처리
+  public Hub createHub(CreateHubRequest hubDto) {
     if (hubRepository.existsByName(hubDto.getName())) {
       throw new HubAlreadyExistsException(HubExceptionCode.HUB_ALREADY_EXISTS);
     }
@@ -38,7 +36,7 @@ public class HubService {
   public void deleteHub(Long hubId) {
     Hub hub = getHubOrThrow(hubId);
 
-    if(hub.isDeleted()){
+    if (hub.isDeleted()) {
       throw new HubAlreadyDeletedException(HubExceptionCode.HUB_ALREADY_DELETED);
     }
     // TODO : SecurityContext에서 userId 가져오기
@@ -51,12 +49,17 @@ public class HubService {
     return getHubOrThrow(hubId);
   }
 
-  public Hub updateHub(Long hubId, HubDto hubDto) {
+  public Hub updateHub(Long hubId, UpdateHubRequest request) {
     Hub hub = getHubOrThrow(hubId);
     hub.updateInfo(
-        hubDto.getName(),
-        new HubAddress(hubDto.getPostalCode(),hubDto.getStreetAddress(), hubDto.getDetailAddress()),
-        new HubLocation(hubDto.getLatitude(),hubDto.getLongitude())
+        request.getName(),
+        new HubAddress(
+            request.getPostalCode(),
+            request.getStreetAddress(),
+            request.getDetailAddress()),
+        new HubLocation(
+            request.getLatitude(),
+            request.getLongitude())
     );
 
     return hubRepository.save(hub);
@@ -68,15 +71,16 @@ public class HubService {
   }
 
   @Transactional(readOnly = true)
-  public Page<Hub> searchHubs(String keyword, int page, int size){
+  public Page<Hub> searchHubs(String keyword, int page, int size) {
     Pageable pageable = PageRequest.of(page, size);
-    Specification<Hub> spec = Specification.where(HubSpecifications.nameOrLocationContains(keyword));
+    Specification<Hub> spec = Specification.where(
+        HubSpecifications.nameOrLocationContains(keyword));
 
     return hubRepository.findAll(spec, pageable);
   }
 
 
-  private Hub toHubEntity(HubDto hubDto) {
+  private Hub toHubEntity(CreateHubRequest hubDto) {
     return Hub.builder()
         .name(hubDto.getName())
         .address(new HubAddress(
