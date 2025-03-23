@@ -11,8 +11,9 @@ public enum HubExceptionCode implements ExceptionCode {
 
   HUB_NOT_FOUND(HttpStatus.NOT_FOUND, "Hub Not Found"),
   HUB_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "Hub Already Exists"),
-  HUB_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "Hub Already Deleted");
+  HUB_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "Hub Already Deleted"),
 
+  UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "Unauthorized Access");
 
   private final HttpStatus httpStatus;
   private final String message;
