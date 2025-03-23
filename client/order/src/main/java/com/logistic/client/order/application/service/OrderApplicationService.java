@@ -46,11 +46,11 @@ public class OrderApplicationService {
         CompanyResponse supplierResponse = companyClient.getCompany(requestDto.getSupplierCompanyId());
         CompanyResponse receiverResponse = companyClient.getCompany(requestDto.getReceiverCompanyId());
 
-        // (5) 배송 담당자 서비스 호출 (업체 Id → 배송 담당자 Id)
+        // (5) 배송 담당자 서비스 호출 (허브 Id → 업체 배송 담당자 Id)
         UUID supplierDeliveryManagerId =
-            deliveryManagerClient.getDeliveryManagerIdByCompany(supplierResponse.getCompanyId());
+            deliveryManagerClient.getDeliveryManagerIdByHubId(supplierResponse.getHubId());
         UUID receiverDeliveryManagerId =
-            deliveryManagerClient.getDeliveryManagerIdByCompany(receiverResponse.getCompanyId());
+            deliveryManagerClient.getDeliveryManagerIdByHubId(receiverResponse.getHubId());
 
         // (3). (1)에서반환 받은 상품들의 가격을 토대로 List<OrderItem> 생성, 업체 Id로 CompanyInfo 생성
         List<OrderItem> orderItems =

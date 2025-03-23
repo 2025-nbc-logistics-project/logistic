@@ -8,6 +8,6 @@ import java.util.UUID;
 
 @FeignClient(name = "delivery-manager-service")
 public interface DeliveryManagerClient {
-    @GetMapping("/api/v1/delivery-managers/company/{companyId}")
-    UUID getDeliveryManagerIdByCompany(@PathVariable UUID companyId);
+    @GetMapping("/api/v1/delivery-managers/hub/{hubId}")
+    UUID getDeliveryManagerIdByHubId(@PathVariable UUID hubId);
 }
