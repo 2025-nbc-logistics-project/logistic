@@ -7,6 +7,7 @@ import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
@@ -14,14 +15,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public abstract class BaseEntity {
     private LocalDateTime createdAt;
-    private Long createdBy;
+    private UUID createdBy;
     private LocalDateTime updatedAt;
-    private Long updatedBy;
+    private UUID updatedBy;
     private LocalDateTime deletedAt;
-    private Long deletedBy;
+    private UUID deletedBy;
     private Boolean isDeleted = false;
 
-    public void markAsDeleted(Long userId){
+    public void markAsDeleted(UUID userId){
         if(Boolean.TRUE.equals(isDeleted)){
             return;
         }

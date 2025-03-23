@@ -21,7 +21,8 @@ public class Order extends BaseEntity {
 
     private UUID deliveryId;
 
-//    private Orderer orderer;
+    @Embedded
+    private Orderer orderer;
 
     @Embedded
     private CompanyInfo companyInfo;
@@ -37,13 +38,14 @@ public class Order extends BaseEntity {
     private OrderStatus orderStatus;
 
 
-    public Order(CompanyInfo companyInfo, List<OrderItem> orderItems, String orderRequest) {
+    public Order(CompanyInfo companyInfo, List<OrderItem> orderItems, Orderer orderer, String orderRequest) {
         this.orderId = UUID.randomUUID();
         this.companyInfo = companyInfo;
         this.orderItems = new ArrayList<>();
         for (OrderItem item : orderItems) {
             this.addOrderItem(item);
         }
+        this.orderer = orderer;
         this.orderRequest = orderRequest;
         this.orderStatus = OrderStatus.PENDING;
         this.totalPrice = orderItems.stream() // 총 합계 계산
@@ -83,7 +85,7 @@ public class Order extends BaseEntity {
     }
 
     @Override
-    public void markAsDeleted(Long userId) {
+    public void markAsDeleted(UUID userId) {
         super.markAsDeleted(userId);
 
         if (this.orderItems != null) {

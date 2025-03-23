@@ -37,9 +37,8 @@ public class OrderDomainService {
     }
 
     public SlackRequestDto buildSlackMessageRequest(Order order, FeignDeliveryResponse delivery, List<OrderItem> orderItems) {
-        // 주문자 정보 (User 도메인이 구현되면 반영할 예정)
-        String username = "mock username";
-        String email = "mock@email.com";
+        // 주문자명
+        String username = order.getOrderer().getUsername();
 
         // 주문 상품 목록
         List<SlackOrderItem> slackOrderItems = orderItems.stream()
@@ -65,7 +64,6 @@ public class OrderDomainService {
         return new SlackRequestDto(
             order.getOrderId(),
             username,
-            email,
             slackOrderItems,
             order.getOrderRequest(),
             delivery.getDepartureHubId(),
