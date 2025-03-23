@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.UUID;
 
-@FeignClient(name = "delivery-manager-service")
+@FeignClient(name = "users")
 public interface DeliveryManagerClient {
     @GetMapping("/api/v1/delivery-managers/hub/{hubId}")
     DeliveryManagerResponse getDeliveryManagerIdByHubId(@PathVariable UUID hubId);

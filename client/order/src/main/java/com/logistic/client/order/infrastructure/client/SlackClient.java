@@ -5,9 +5,9 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "slack-service")
+@FeignClient(name = "slack")
 public interface SlackClient {
 
-    @PostMapping("/api/slack")
+    @PostMapping("/api/v1/slack/order")
     void createSlackMessage(@RequestBody SlackRequestDto requestDto);
 }

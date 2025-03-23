@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@FeignClient(name = "company-service")
+@FeignClient(name = "company")
 public interface CompanyClient {
     @PostMapping("/api/products/deduct-stock")
     List<ProductPriceResponse> checkAndDeductStock(@RequestBody List<OrderItemRequestDto> orderItems);
