@@ -14,5 +14,6 @@ public interface UserRepository {
     User save(User user);
     Boolean existsByUsernameAndIsDeletedFalse(String username);
     Page<User> findAll(BooleanBuilder builder, Pageable pageable);
+    Optional<User> findByHubIdAndIsDeletedFalse(String username);
 
 }

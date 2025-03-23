@@ -97,7 +97,17 @@ public class UserService {
         }
     }
 
-    //검색 및 페이징 추가 필요
+    public UserResDTO getUserByHubId(String hubId) {
+        try {
+            User user = userRepository.findByHubIdAndIsDeletedFalse(hubId)
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+            return UserResDTO.from(user);
+        }
+        catch(Exception e) {
+            throw e;
+        }
+    }
+
     public Page<UserResDTO> getUsers(String userRole, Pageable pageable, UserRole searchRole) {
         try {
             UserRole role = UserRole.valueOf(userRole);

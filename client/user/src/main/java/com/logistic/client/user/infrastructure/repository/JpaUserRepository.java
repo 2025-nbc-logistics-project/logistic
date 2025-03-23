@@ -16,5 +16,6 @@ public interface JpaUserRepository extends JpaRepository<User, UUID>, QuerydslPr
     List<User> findAllByIsDeletedFalse();
     Boolean existsByUsernameAndIsDeletedFalse(String username);
     Page<User> findAll(BooleanBuilder builder, Pageable pageable);
+    Optional<User> findByHubIdAndIsDeletedFalse(String username);
 
 }

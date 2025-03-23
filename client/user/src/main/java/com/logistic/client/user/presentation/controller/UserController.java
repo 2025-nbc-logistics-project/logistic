@@ -55,6 +55,11 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(username, signInUsername, userRole));
     }
 
+    @GetMapping("/{hubId}")
+    public ResponseEntity<?> getUserByHubId(@PathVariable String hubId) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserByHubId(hubId));
+    }
+
     @GetMapping("")
     public ResponseEntity<?> getUsers(@RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
                                       @RequestParam(name = "size", required = false, defaultValue = "10") Integer  size,

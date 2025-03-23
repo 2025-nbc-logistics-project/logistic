@@ -40,4 +40,9 @@ public class UserRepositoryImpl implements UserRepository {
     public Page<User> findAll(BooleanBuilder builder, Pageable pageable) {
         return jpaUserRepository.findAll(builder, pageable);
     }
+
+    @Override
+    public Optional<User> findByHubIdAndIsDeletedFalse(String hubId) {
+        return jpaUserRepository.findByHubIdAndIsDeletedFalse(hubId);
+    }
 }
