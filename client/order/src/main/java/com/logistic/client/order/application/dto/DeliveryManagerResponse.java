@@ -9,9 +9,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CompanyResponse {
-    private UUID companyId;
-    private String companyName;
-    private UUID hubId;
-    private AddressResponse address;
+public class DeliveryManagerResponse {
+    private UUID deliveryManagerId;
+    private String deliveryManagerName;
 }
