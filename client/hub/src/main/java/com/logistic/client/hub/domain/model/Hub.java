@@ -7,7 +7,7 @@ import jakarta.persistence.Entity;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import jakarta.persistence.*;
-import lombok.*;
+
 
 @Entity
 @Table(name = "p_hub")
