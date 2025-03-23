@@ -1,7 +1,10 @@
 package com.logistic.client.user.application.service;
 
-import com.logistic.client.user.application.dto.requestDto.DeliveryManagerDTO;
-import com.logistic.client.user.application.dto.requestDto.UpdateDeliveryManagerDTO;
+import com.logistic.client.user.application.dto.responseDto.HubResDTO;
+import com.logistic.client.user.infrastructure.client.HubClient;
+import com.logistic.client.user.infrastructure.configuration.customException.NotDeliveryManagerException;
+import com.logistic.client.user.presentation.requestDto.DeliveryManagerDTO;
+import com.logistic.client.user.presentation.requestDto.UpdateDeliveryManagerDTO;
 import com.logistic.client.user.application.dto.responseDto.DeliveryManagerResDTO;
 import com.logistic.client.user.domain.model.DeliveryManager;
 import com.logistic.client.user.domain.model.DeliveryManagerType;
@@ -14,6 +17,7 @@ import com.logistic.client.user.infrastructure.repository.DeliveryManagerReposit
 import com.logistic.client.user.infrastructure.repository.UserRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,6 +28,8 @@ import java.util.UUID;
 public class DeliveryManagerService {
     private final UserRepositoryImpl userRepository;
     private final DeliveryManagerRepositoryImpl deliveryManagerRepository;
+
+    private final HubClient hubClient;
 
     public DeliveryManagerResDTO createDeliveryManager(DeliveryManagerDTO requestDto, String userRole, String signInUsername) {
         try {
@@ -37,9 +43,17 @@ public class DeliveryManagerService {
                     throw new AccessDeniedException("담당 허브가 아니므로 배송 담당자를 등록할 수 없습니다.");
                 }
 
+                User user = userRepository.findByUsernameAndIsDeletedFalse(requestDto.getUsername())
+                        .orElseThrow(() -> new IllegalArgumentException("배송 담당자로 등록하려는 유저가 존재하지 않는 유저입니다."));
+
+                if(!user.getRole().equals(UserRole.DELIVERY_MANAGER)) {
+                    throw new NotDeliveryManagerException("등록하려는 유저의 권한이 배송 담당자가 아닙니다.");
+                }
+
                 int assignmentOrder = 1;
+
                 if(requestDto.getDeliveryManagerType().equals(DeliveryManagerType.COMPANY_DELIVERY_MANAGER)) {
-                    //허브 아이디로 허브 존재 유무 체크 필요
+                    HubResDTO hub = hubClient.getHubById(requestDto.getHubId());
 
                     List<DeliveryManager> existCompanyManagers = deliveryManagerRepository.findAllByHubIdAndDeliveryManagerTypeAndIsDeletedFalse(requestDto.getHubId(), requestDto.getDeliveryManagerType());
                     if(existCompanyManagers.size() == 10)
@@ -55,8 +69,7 @@ public class DeliveryManagerService {
 
                     assignmentOrder = getHubAssignmentOrder();
                 }
-                User user = userRepository.findByUsernameAndIsDeletedFalse(requestDto.getUsername())
-                        .orElseThrow(() -> new IllegalArgumentException("배송 담당자로 등록하려는 유저가 존재하지 않는 유저입니다."));
+
                 DeliveryManager manager = requestDto.toDeliveryManager(user, assignmentOrder);
                 manager.setCreatedAt(LocalDateTime.now());
                 manager.setCreatedBy(signInUsername);
@@ -98,6 +111,7 @@ public class DeliveryManagerService {
         }
     }
 
+    @Transactional
     public DeliveryManagerResDTO updateDeliveryManagers(String deliveryManagerId, UpdateDeliveryManagerDTO requestDto, String userRole, String signInUsername) {
         try {
             UserRole role = UserRole.valueOf(userRole);
@@ -114,7 +128,7 @@ public class DeliveryManagerService {
                 }
 
                 if(requestDto.getDeliveryManagerType().equals(DeliveryManagerType.COMPANY_DELIVERY_MANAGER)) {
-                    //허브 아이디로 허브 존재 유무 체크 필요
+                    HubResDTO hub = hubClient.getHubById(requestDto.getHubId());
 
                     List<DeliveryManager> existCompanyManagers = deliveryManagerRepository.findAllByHubIdAndDeliveryManagerTypeAndIsDeletedFalse(requestDto.getHubId(), requestDto.getDeliveryManagerType());
                     if(existCompanyManagers.size() == 10)
@@ -133,7 +147,6 @@ public class DeliveryManagerService {
                 if(requestDto.getHubId() != null)
                     deliveryManager.setHubId(requestDto.getHubId());
 
-                deliveryManagerRepository.save(deliveryManager);
                 return DeliveryManagerResDTO.to(deliveryManager);
             }
             else {
@@ -145,6 +158,7 @@ public class DeliveryManagerService {
         }
     }
 
+    @Transactional
     public void deleteDeliveryManager(String deliveryManagerId, String userRole, String signInUsername) {
         try {
             UserRole role = UserRole.valueOf(userRole);
@@ -162,7 +176,6 @@ public class DeliveryManagerService {
 
                 deliveryManager.setDeletedAt(LocalDateTime.now());
                 deliveryManager.setDeletedBy(signInUsername);
-                deliveryManagerRepository.save(deliveryManager);
             }
             else {
                 throw new AccessDeniedException("배송 관리자 정보에 대해 삭제 권한이 존재하지 않습니다.");

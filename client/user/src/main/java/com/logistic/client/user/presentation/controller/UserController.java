@@ -1,9 +1,9 @@
 package com.logistic.client.user.presentation.controller;
 
-import com.logistic.client.user.application.dto.requestDto.SignInRequestDTO;
-import com.logistic.client.user.application.dto.requestDto.UpdateUserDTO;
-import com.logistic.client.user.application.dto.requestDto.UpdateUserRoleDTO;
-import com.logistic.client.user.application.dto.requestDto.UserDTO;
+import com.logistic.client.user.presentation.requestDto.SignInRequestDTO;
+import com.logistic.client.user.presentation.requestDto.UpdateUserDTO;
+import com.logistic.client.user.presentation.requestDto.UpdateUserRoleDTO;
+import com.logistic.client.user.presentation.requestDto.UserDTO;
 import com.logistic.client.user.application.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;

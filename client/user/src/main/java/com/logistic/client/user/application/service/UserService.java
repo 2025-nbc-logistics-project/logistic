@@ -1,9 +1,13 @@
 package com.logistic.client.user.application.service;
 
-import com.logistic.client.user.application.dto.requestDto.SignInRequestDTO;
-import com.logistic.client.user.application.dto.requestDto.UpdateUserDTO;
-import com.logistic.client.user.application.dto.requestDto.UpdateUserRoleDTO;
-import com.logistic.client.user.application.dto.requestDto.UserDTO;
+import com.logistic.client.user.application.dto.responseDto.CompanyResDTO;
+import com.logistic.client.user.application.dto.responseDto.HubResDTO;
+import com.logistic.client.user.infrastructure.client.CompanyClient;
+import com.logistic.client.user.infrastructure.client.HubClient;
+import com.logistic.client.user.presentation.requestDto.SignInRequestDTO;
+import com.logistic.client.user.presentation.requestDto.UpdateUserDTO;
+import com.logistic.client.user.presentation.requestDto.UpdateUserRoleDTO;
+import com.logistic.client.user.presentation.requestDto.UserDTO;
 import com.logistic.client.user.application.dto.responseDto.UserResDTO;
 import com.logistic.client.user.domain.model.User;
 import com.logistic.client.user.domain.model.UserRole;
@@ -28,12 +32,23 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthService authService;
 
+    private final HubClient hubClient;
+    private final CompanyClient companyClient;
+
     public UserResDTO signUp(UserDTO requestUser) {
         try {
             if(userRepository.existsByUsernameAndIsDeletedFalse(requestUser.getUsername())) {
                 throw new UserAlreadyExistException("이미 존재하는 유저 이름입니다.");
             }
-            //업체 & 허브 관리자의 경우 해당 업체나 허브가 존재하는지 확인 필요
+
+            if(requestUser.getRole().equals(UserRole.HUB_MANAGER))  {
+                HubResDTO hub = hubClient.getHubById(requestUser.getHubId());
+            }
+
+            if(requestUser.getRole().equals(UserRole.COMPANY_MANAGER))  {
+                CompanyResDTO company = companyClient.getCompany(requestUser.getCompanyId());
+            }
+
             User user = requestUser.toUser(passwordEncoder.encode(requestUser.getPassword()));
             user.setCreatedAt(LocalDateTime.now());
             user.setCreatedBy(requestUser.getUsername());
@@ -138,6 +153,14 @@ public class UserService {
             user.setRole(requestDto.getUserRole());
             user.setUpdatedAt(LocalDateTime.now());
             user.setUpdatedBy(signInUsername);
+
+            if(requestDto.getUserRole().equals(UserRole.HUB_MANAGER))  {
+                HubResDTO hub = hubClient.getHubById(requestDto.getHubId());
+            }
+
+            if(requestDto.getUserRole().equals(UserRole.COMPANY_MANAGER))  {
+                CompanyResDTO company = companyClient.getCompany(requestDto.getCompanyId());
+            }
 
             return UserResDTO.from(user);
         }

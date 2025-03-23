@@ -59,6 +59,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(status).body(response);
     }
 
+    @ExceptionHandler(NotDeliveryManagerException.class)
+    public ResponseEntity<ExceptionResponse> notDeliveryManagerException(NotDeliveryManagerException ex) {
+        int status = HttpServletResponse.SC_BAD_REQUEST;
+        ExceptionResponse response = new ExceptionResponse("NOT_DELIVERY_MANAGER", ex.getMessage(), status);
+        return ResponseEntity.status(status).body(response);
+    }
+
     @ExceptionHandler(UserAlreadyExistException.class)
     public ResponseEntity<ExceptionResponse> userAlreadyExistException(UserAlreadyExistException ex) {
         int status = HttpServletResponse.SC_BAD_REQUEST;

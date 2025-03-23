@@ -1,7 +1,7 @@
 package com.logistic.client.user.presentation.controller;
 
-import com.logistic.client.user.application.dto.requestDto.DeliveryManagerDTO;
-import com.logistic.client.user.application.dto.requestDto.UpdateDeliveryManagerDTO;
+import com.logistic.client.user.presentation.requestDto.DeliveryManagerDTO;
+import com.logistic.client.user.presentation.requestDto.UpdateDeliveryManagerDTO;
 import com.logistic.client.user.application.service.DeliveryManagerService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
