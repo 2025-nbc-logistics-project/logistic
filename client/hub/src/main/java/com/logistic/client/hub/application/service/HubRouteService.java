@@ -104,7 +104,7 @@ public class HubRouteService {
     // 5. 도착 허브에 도달할 수 없는 경우 처리
     Integer endDistance = distances.get(endHubId) == null ? Integer.MAX_VALUE : distances.get(endHubId);
     if (endDistance == Integer.MAX_VALUE) {
-      return new FindRouteResponse(Collections.emptyList(), -1);
+      return new FindRouteResponse(Collections.emptyList(), -1,0);
     }
 
     // 6. previous 맵을 이용해 최적 경로 재구성 (시작 -> ... -> 도착)
@@ -116,21 +116,40 @@ public class HubRouteService {
 
     // 7. 경로에 따른 RouteStepDto 생성 (각 단계별 누적 거리 포함)
     List<RouteStepResponse> routeSteps = new ArrayList<>();
-    int cumulative = 0;
-    Iterator<UUID> iter = path.iterator(); // Iterator는 뭐지..?
+    int cumulativeDistance = 0;
+    int cumulativeTime = 0;
+    int stepOrder = 1; // 순서 초기값 1
+    Iterator<UUID> iter = path.iterator();
     UUID prevUUID = iter.next();
     Hub startHub = uuidToHub.get(prevUUID);
-    routeSteps.add(new RouteStepResponse(startHub.getId(), startHub.getName(), cumulative));
+    routeSteps.add(new RouteStepResponse(
+        stepOrder++,
+        startHub.getId(),
+        startHub.getName(),
+        0.0,
+        0.0
+    ));
 
     while (iter.hasNext()) {
       UUID curUUID = iter.next();
       int edgeDistance = graph.get(prevUUID).get(curUUID);
-      cumulative += edgeDistance;
+      cumulativeDistance += edgeDistance;
+
+      double kmEdge = edgeDistance / 100.0;
+      int edgeTime = (int) Math.round(kmEdge * (60.0 / 80.0));
+      cumulativeTime += edgeTime;
+
       Hub curHub = uuidToHub.get(curUUID);
-      routeSteps.add(new RouteStepResponse(curHub.getId(), curHub.getName(), cumulative));
+      double stepEstimatedTimeHours = Math.round((cumulativeTime / 60.0) * 10) / 10.0;
+      double stepDistanceKm = Math.round((cumulativeDistance / 100.0) * 10) / 10.0;
+
+      routeSteps.add(new RouteStepResponse(stepOrder++, curHub.getId(), curHub.getName(), stepDistanceKm, stepEstimatedTimeHours));
       prevUUID = curUUID;
     }
 
-    return new FindRouteResponse(routeSteps, cumulative);
+    double displayDistance = Math.round((cumulativeDistance / 100.0) * 10) / 10.0;
+    double displayEstimatedTime = Math.round((cumulativeTime / 60.0) * 10) / 10.0;
+
+    return new FindRouteResponse(routeSteps, displayDistance, displayEstimatedTime);
   }
 }
