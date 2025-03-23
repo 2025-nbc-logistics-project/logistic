@@ -93,9 +93,9 @@ public class HubController {
 
   @GetMapping("/routes")
   public ResponseEntity<ApiResponse<FindRouteResponse>> getHubRoutes(
-      @RequestParam UUID startHubId,
-      @RequestParam UUID endHubId) {
-    FindRouteResponse route = hubRouteService.findOptimalRoute(startHubId, endHubId);
+      @RequestParam UUID departHubId,
+      @RequestParam UUID arriveHubId) {
+    FindRouteResponse route = hubRouteService.findOptimalRoute(departHubId, arriveHubId);
     return ResponseUtil.success(route);
   }
 

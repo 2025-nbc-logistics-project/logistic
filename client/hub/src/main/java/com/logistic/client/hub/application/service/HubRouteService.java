@@ -39,7 +39,7 @@ public class HubRouteService {
     return (int) Math.round(distance);
   }
 
-  public FindRouteResponse findOptimalRoute(UUID startHubId, UUID endHubId) {
+  public FindRouteResponse findOptimalRoute(UUID departHubId, UUID arriveHubId) {
     // 1. DB에서 모든 허브 데이터를 가져와 UUID -> Hub 매핑 생성
     List<Hub> allHubs = hubRepository.findAll();
     Map<UUID, Hub> uuidToHub = new HashMap<>();
@@ -74,15 +74,15 @@ public class HubRouteService {
       distances.put(node, Integer.MAX_VALUE);
       previous.put(node, null);
     }
-    distances.put(startHubId, 0);
+    distances.put(departHubId, 0);
 
     // 4. 우선순위 큐를 이용해 최단 경로 탐색
     PriorityQueue<UUID> queue = new PriorityQueue<>(Comparator.comparingInt(distances::get));
-    queue.add(startHubId);
+    queue.add(departHubId);
 
     while (!queue.isEmpty()) {
       UUID cur = queue.poll();
-      if (cur.equals(endHubId)) {
+      if (cur.equals(arriveHubId)) {
         break;
       }
       if (!graph.containsKey(cur)) {
@@ -102,15 +102,16 @@ public class HubRouteService {
     }
 
     // 5. 도착 허브에 도달할 수 없는 경우 처리
-    Integer endDistance = distances.get(endHubId) == null ? Integer.MAX_VALUE : distances.get(endHubId);
+    Integer endDistance =
+        distances.get(arriveHubId) == null ? Integer.MAX_VALUE : distances.get(arriveHubId);
     if (endDistance == Integer.MAX_VALUE) {
-      return new FindRouteResponse(Collections.emptyList(), -1,0);
+      return new FindRouteResponse(Collections.emptyList(), -1, 0);
     }
 
     // 6. previous 맵을 이용해 최적 경로 재구성 (시작 -> ... -> 도착)
     LinkedList<UUID> path = new LinkedList<>();
     // previous를 순회하면서 모든 uuid 를 path 에 추가한다(???? 잘모르겠음)
-    for (UUID at = endHubId; at != null; at = previous.get(at)) {
+    for (UUID at = arriveHubId; at != null; at = previous.get(at)) {
       path.addFirst(at);
     }
 
@@ -143,7 +144,9 @@ public class HubRouteService {
       double stepEstimatedTimeHours = Math.round((cumulativeTime / 60.0) * 10) / 10.0;
       double stepDistanceKm = Math.round((cumulativeDistance / 100.0) * 10) / 10.0;
 
-      routeSteps.add(new RouteStepResponse(stepOrder++, curHub.getId(), curHub.getName(), stepDistanceKm, stepEstimatedTimeHours));
+      routeSteps.add(
+          new RouteStepResponse(stepOrder++, curHub.getId(), curHub.getName(), stepDistanceKm,
+              stepEstimatedTimeHours));
       prevUUID = curUUID;
     }
 
