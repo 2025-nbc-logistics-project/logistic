@@ -19,6 +19,7 @@ import com.logistic.client.user.infrastructure.configuration.customException.Sam
 import com.logistic.client.user.infrastructure.configuration.customException.UserAlreadyExistException;
 import com.logistic.client.user.infrastructure.repository.UserRepositoryImpl;
 import com.querydsl.core.BooleanBuilder;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+
 
 @Service
 @RequiredArgsConstructor

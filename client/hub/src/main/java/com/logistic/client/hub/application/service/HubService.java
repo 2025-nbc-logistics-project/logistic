@@ -18,6 +18,7 @@ import com.logistic.client.hub.presentation.request.UpdateHubRequest;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.*;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -31,18 +32,10 @@ public class HubService {
 
   private final HubRepository hubRepository;
 
-  public Hub createHub(CreateHubRequest hubDto, UserResponseDto user) {
-    if (!"MASTER".equals(user.getRole())) {
-      throw new UnauthorizedAccessException(AuthExceptionCode.UNAUTHORIZED_ACCESS);
-    }
-
-    if (hubRepository.existsByName(hubDto.getName())) {
-      throw new HubAlreadyExistsException(HubExceptionCode.HUB_ALREADY_EXISTS);
-    }
-    Hub hub = convertToHubEntity(hubDto);
-    return hubRepository.save(hub);
-  }
-
+  @Caching(evict = {
+    @CacheEvict(cacheNames = "hubCache", key = "#hubId"),
+    @CacheEvict(cacheNames = "allHubsCache", allEntries = true)
+  })
   public void deleteHub(UUID hubId, UserResponseDto user) {
     if (!"MASTER".equals(user.getRole())) {
       throw new UnauthorizedAccessException(AuthExceptionCode.UNAUTHORIZED_ACCESS);
@@ -57,10 +50,27 @@ public class HubService {
     hubRepository.delete(hub);
   }
 
+  @CachePut(cacheNames = "hubCache", key = "#result.id")
+  @CacheEvict(cacheNames = "allHubsCache", allEntries = true)
+  public Hub createHub(CreateHubRequest hubDto, UserResponseDto user) {
+    if (!"MASTER".equals(user.getRole())) {
+      throw new UnauthorizedAccessException(AuthExceptionCode.UNAUTHORIZED_ACCESS);
+    }
+
+    if (hubRepository.existsByName(hubDto.getName())) {
+      throw new HubAlreadyExistsException(HubExceptionCode.HUB_ALREADY_EXISTS);
+    }
+    Hub hub = convertToHubEntity(hubDto);
+    return hubRepository.save(hub);
+  }
+
+  @Cacheable(cacheNames = "hubCache", key = "#hubId")
   public Hub getHub(UUID hubId) {
     return getHubOrThrow(hubId);
   }
 
+  @CachePut(cacheNames = "hubCache", key = "#hubId")
+  @CacheEvict(cacheNames = "allHubsCache", allEntries = true)
   public Hub updateHub(UUID hubId, UpdateHubRequest request, UserResponseDto user) {
     if (!"MASTER".equals(user.getRole())) {
       throw new UnauthorizedAccessException(AuthExceptionCode.UNAUTHORIZED_ACCESS);
@@ -80,6 +90,7 @@ public class HubService {
     return hubRepository.save(hub);
   }
 
+  @Cacheable(cacheNames = "allHubsCache", key = "'all'")
   @Transactional(readOnly = true)
   public List<Hub> getAllHubs() {
     return hubRepository.findAll();

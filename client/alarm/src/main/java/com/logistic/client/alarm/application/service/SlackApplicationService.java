@@ -32,11 +32,12 @@ public class SlackApplicationService {
         // 유저 서비스를 호출하여 발송지 허브 담당자의 슬랙 Id 조회
         String hubManagerSlackId = userClient.getHubManagerSlackId(requestDto.getDepartureHubId());
 
-        // AI 서비스를 호출하여 주문 정보를 토대로 AI 응답을 반환 받음
-        String aiResponse = aiClient.createSlackMsg(requestDto);
-
         // 허브 서비스를 호출하여 경유 허브 Id를 통해 허브 이름 리스트를 반환 받음
         TransitHubResponse transitHubNames = hubClient.getHubNames(new TransitHubRequest(requestDto.getTransitHubs()));
+
+        // AI 서비스를 호출하여 주문 정보를 토대로 AI 응답을 반환 받음
+        AiRequestDto aiRequestDto = new AiRequestDto(requestDto, transitHubNames.getHubNames());
+        String aiResponse = aiClient.createSlackMsg(aiRequestDto);
 
         // 전달 형식에 맞게 메시지 가공
         String finalMessage = buildSlackMessage(requestDto, transitHubNames, aiResponse);
@@ -138,7 +139,7 @@ public class SlackApplicationService {
                 도착지 : %s
                 배송담당자 : %s
 
-                위 내용을 기반으로 도출된 최종 발송 시한은 %s 입니다.
+                %s
                 """,
             dto.getOrderId(),
             dto.getUsername(),
