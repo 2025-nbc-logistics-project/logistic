@@ -134,13 +134,9 @@ public class ProductController {
     @PostMapping("/deduct-stock")
     public List<ProductPriceResponseDto> checkAndDeductStock(
             @Parameter(description = "주문 상품 리스트")
-            @RequestBody List<OrderItemRequestDto> orderItems,
-            @Parameter(description = "현재 사용자 userId")
-            @RequestHeader("userId") UUID userId,
-            @Parameter(description = "등록할 사용자 role")
-            @RequestHeader("role") String role
+            @RequestBody List<OrderItemRequestDto> orderItems
     ) {
-        return productService.checkAndDeductStock(orderItems, role);
+        return productService.checkAndDeductStock(orderItems);
     }
 
     //주문 취소시 상품 수량 변경

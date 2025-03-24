@@ -1,5 +1,6 @@
 package com.logistic.client.company.application.service;
 
+import com.logistic.client.company.application.dto.FeignCompanyResponse;
 import com.logistic.client.company.application.dto.common.CompanyExistResponseDto;
 import com.logistic.client.company.application.dto.common.UserDto;
 import com.logistic.client.company.application.dto.company.*;
@@ -77,6 +78,11 @@ public class CompanyService {
     public CompanyResponseDto getCompany(UUID companyId) {
         Company company = findByCompanyId(companyId);
         return new CompanyResponseDto(company);
+    }
+
+    public FeignCompanyResponse feignGetCompany(UUID companyId) {
+        Company company = findByCompanyId(companyId);
+        return new FeignCompanyResponse(company);
     }
 
     public Page<CompanyListResponseDto> getCompanies(int page, int limit, String sortBy, String order) {
@@ -204,5 +210,4 @@ public class CompanyService {
         Company company = findByCompanyId(companyId);
         return new CompanyExistResponseDto(company);
     }
-
 }

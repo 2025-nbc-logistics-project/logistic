@@ -11,12 +11,12 @@ import java.util.UUID;
 
 @FeignClient(name = "company")
 public interface CompanyClient {
-    @PostMapping("/api/products/deduct-stock")
+    @PostMapping("/api/v1/products/deduct-stock")
     List<ProductPriceResponse> checkAndDeductStock(@RequestBody List<OrderItemRequestDto> orderItems);
 
-    @GetMapping("/api/companies/{companyId}")
+    @GetMapping("/api/v1/companies/feign/{companyId}")
     CompanyResponse getCompany(@PathVariable("companyId") UUID companyId);
 
-    @PostMapping("/api/products/restore-stock")
+    @PostMapping("/api/v1/products/restore-stock")
     void restoreStock(@RequestBody List<OrderItemRequestDto> restoreList);
 }
