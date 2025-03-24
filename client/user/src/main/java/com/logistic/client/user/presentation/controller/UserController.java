@@ -8,6 +8,7 @@ import com.logistic.client.user.presentation.requestDto.UserDTO;
 import com.logistic.client.user.application.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -56,7 +57,7 @@ public class UserController {
     }
 
     @GetMapping("/{hubId}")
-    public ResponseEntity<?> getUserByHubId(@PathVariable String hubId) {
+    public ResponseEntity<?> getUserByHubId(@PathVariable UUID hubId) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserByHubId(hubId));
     }
 

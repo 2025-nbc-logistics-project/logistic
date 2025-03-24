@@ -3,6 +3,7 @@ package com.logistic.client.user.infrastructure.repository;
 import com.logistic.client.user.domain.model.User;
 import com.logistic.client.user.domain.repository.UserRepository;
 import com.querydsl.core.BooleanBuilder;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,7 +43,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Optional<User> findByHubIdAndIsDeletedFalse(String hubId) {
+    public Optional<User> findByHubIdAndIsDeletedFalse(UUID hubId) {
         return jpaUserRepository.findByHubIdAndIsDeletedFalse(hubId);
     }
 }
