@@ -36,7 +36,12 @@ public class HubController {
   public ResponseEntity<ApiResponse<HubResponse>> createHub(
       @Valid @RequestBody CreateHubRequest createHubRequest,
       HttpServletRequest request) {
-    UserResponseDto user = userClient.getUser(UUID.fromString(request.getHeader("userId")));
+
+    String authorization = request.getHeader("Authorization"); // 가져오기
+    String role          = request.getHeader("role");
+    String username = request.getHeader("username");
+
+    UserResponseDto user = userClient.getUser(authorization,role, username); // 넘기기
     Hub hub = hubService.createHub(createHubRequest, user);
     HubResponse hubResponse = toHubResponse(hub);
     return ResponseUtil.success(hubResponse);
@@ -45,7 +50,10 @@ public class HubController {
   @PatchMapping("/{hubId}/delete")
   public ResponseEntity<ApiResponse<Void>> deleteHub(@PathVariable UUID hubId,
       HttpServletRequest request) {
-    UserResponseDto user = userClient.getUser(UUID.fromString(request.getHeader("userId")));
+    String authorization = request.getHeader("Authorization"); // 가져오기
+    String role          = request.getHeader("role");
+    String username = request.getHeader("username");
+    UserResponseDto user = userClient.getUser(authorization,role, username); // 넘기기
     hubService.deleteHub(hubId, user);
     return ResponseUtil.noContent();
   }
@@ -72,7 +80,10 @@ public class HubController {
       @Valid @RequestBody UpdateHubRequest updateHubRequest,
       HttpServletRequest request
   ) {
-    UserResponseDto user = userClient.getUser(UUID.fromString(request.getHeader("userId")));
+    String authorization = request.getHeader("Authorization"); // 가져오기
+    String role          = request.getHeader("role");
+    String username = request.getHeader("username");
+    UserResponseDto user = userClient.getUser(authorization,role, username); // 넘기기
     Hub updatedHub = hubService.updateHub(hubId, updateHubRequest, user);
     HubResponse hubResponse = toHubResponse(updatedHub);
     return ResponseUtil.success(hubResponse);
