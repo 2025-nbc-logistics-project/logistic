@@ -115,7 +115,13 @@ public class UserService {
                 throw new AccessDeniedException("유저 정보에 대해 접근 권한이 존재하지 않습니다.");
             }
 
-            Page<User> userList = userRepository.findAllByRoleAndIsDeletedFalse(searchRole, pageable);
+            Page<User> userList;
+            if (searchRole == null) {
+                userList = userRepository.findAllByIsDeletedFalse(pageable);
+            }
+            else {
+                userList = userRepository.findAllByRoleAndIsDeletedFalse(searchRole, pageable);
+            }
 
             if(userList.isEmpty()) {
                 throw new IllegalArgumentException("조건에 맞는 유저가 존재하지 않습니다.");
