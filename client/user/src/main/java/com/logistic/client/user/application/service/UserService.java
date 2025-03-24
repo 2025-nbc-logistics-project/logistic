@@ -103,11 +103,11 @@ public class UserService {
         return UserResDTO.from(user);
     }
 
-    public UserSlackResDTO getUserByHubId(UUID hubId) {
+    public String getUserByHubId(UUID hubId) {
         try {
             User user = userRepository.findByHubIdAndIsDeletedFalse(hubId)
                     .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
-            return new UserSlackResDTO(user.getSlackId());
+            return user.getSlackId();
         }
         catch(Exception e) {
             throw e;
