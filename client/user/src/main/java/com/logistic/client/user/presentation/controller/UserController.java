@@ -1,19 +1,17 @@
 package com.logistic.client.user.presentation.controller;
 
+import com.logistic.client.user.application.service.UserService;
 import com.logistic.client.user.domain.model.UserRole;
 import com.logistic.client.user.presentation.requestDto.SignInRequestDTO;
 import com.logistic.client.user.presentation.requestDto.UpdateUserDTO;
 import com.logistic.client.user.presentation.requestDto.UpdateUserRoleDTO;
 import com.logistic.client.user.presentation.requestDto.UserDTO;
-import com.logistic.client.user.application.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

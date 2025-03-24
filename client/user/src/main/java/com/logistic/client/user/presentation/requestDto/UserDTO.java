@@ -32,19 +32,16 @@ public class UserDTO {
     private UserRole role;
 
     //허브 관리자용
-    private UUID hubId;
+    private String adminCode;
 
-    //업체 관리자용
-    private UUID companyId;
-
-    @AssertTrue(message = "HUB_MANAGER 타입일 경우 허브 아이디는 필수 입력값입니다.")
-    public boolean isHubIdValid() {
-        return role != UserRole.HUB_MANAGER || hubId != null;
+    @AssertTrue(message = "MASTER 타입일 경우 관리자 코드는 필수 입력값입니다.")
+    public boolean isMasterValid() {
+        return role != UserRole.MASTER || adminCode != null;
     }
 
-    @AssertTrue(message = "COMPANY_MANAGER 타입일 경우 업체 아이디는 필수 입력값입니다.")
-    public boolean isCompanyValid() {
-        return role != UserRole.COMPANY_MANAGER || companyId != null;
+    @AssertTrue(message = "MASTER 또는 GENERAL 권한으로만 회원가입 가능합니다.")
+    public boolean isHubIdValid() {
+        return role == UserRole.MASTER || role == UserRole.GENERAL;
     }
 
     //기본값 일반 유저로 회원가입
@@ -54,8 +51,6 @@ public class UserDTO {
                 .password(encodePassword)
                 .slackId(slackId)
                 .role(role)
-                .hubId(hubId)
-                .companyId(companyId)
                 .build();
     }
 }
