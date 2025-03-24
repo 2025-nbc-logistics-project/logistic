@@ -37,7 +37,7 @@ public class HubController {
       @Valid @RequestBody CreateHubRequest createHubRequest,
       HttpServletRequest request) {
 
-    String authorization = request.getHeader("Authorization"); // 가져오기
+    String authorization = request.getHeader("Authorization");
     String role          = request.getHeader("role");
     String username = request.getHeader("username");
 
@@ -50,10 +50,10 @@ public class HubController {
   @PatchMapping("/{hubId}/delete")
   public ResponseEntity<ApiResponse<Void>> deleteHub(@PathVariable UUID hubId,
       HttpServletRequest request) {
-    String authorization = request.getHeader("Authorization"); // 가져오기
+    String authorization = request.getHeader("Authorization");
     String role          = request.getHeader("role");
     String username = request.getHeader("username");
-    UserResponseDto user = userClient.getUser(authorization,role, username); // 넘기기
+    UserResponseDto user = userClient.getUser(authorization,role, username);
     hubService.deleteHub(hubId, user);
     return ResponseUtil.noContent();
   }
@@ -80,10 +80,10 @@ public class HubController {
       @Valid @RequestBody UpdateHubRequest updateHubRequest,
       HttpServletRequest request
   ) {
-    String authorization = request.getHeader("Authorization"); // 가져오기
+    String authorization = request.getHeader("Authorization");
     String role          = request.getHeader("role");
     String username = request.getHeader("username");
-    UserResponseDto user = userClient.getUser(authorization,role, username); // 넘기기
+    UserResponseDto user = userClient.getUser(authorization,role, username);
     Hub updatedHub = hubService.updateHub(hubId, updateHubRequest, user);
     HubResponse hubResponse = toHubResponse(updatedHub);
     return ResponseUtil.success(hubResponse);
