@@ -2,10 +2,13 @@ package com.logistic.client.hub.domain.model;
 
 import jakarta.persistence.*;
 import java.util.UUID;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "p_hub_route")
 public class HubRoute extends BaseEntity {
 
