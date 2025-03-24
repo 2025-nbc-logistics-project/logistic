@@ -2,6 +2,7 @@ package com.logistic.client.user.domain.repository;
 
 import com.logistic.client.user.domain.model.User;
 import com.querydsl.core.BooleanBuilder;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -14,6 +15,6 @@ public interface UserRepository {
     User save(User user);
     Boolean existsByUsernameAndIsDeletedFalse(String username);
     Page<User> findAll(BooleanBuilder builder, Pageable pageable);
-    Optional<User> findByHubIdAndIsDeletedFalse(String username);
+    Optional<User> findByHubIdAndIsDeletedFalse(UUID username);
 
 }

@@ -19,6 +19,7 @@ import com.logistic.client.user.infrastructure.configuration.customException.Sam
 import com.logistic.client.user.infrastructure.configuration.customException.UserAlreadyExistException;
 import com.logistic.client.user.infrastructure.repository.UserRepositoryImpl;
 import com.querydsl.core.BooleanBuilder;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -97,7 +98,7 @@ public class UserService {
         }
     }
 
-    public UserResDTO getUserByHubId(String hubId) {
+    public UserResDTO getUserByHubId(UUID hubId) {
         try {
             User user = userRepository.findByHubIdAndIsDeletedFalse(hubId)
                     .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
