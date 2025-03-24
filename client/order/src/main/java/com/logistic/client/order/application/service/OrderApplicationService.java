@@ -66,19 +66,24 @@ public class OrderApplicationService {
         orderRepository.save(order);
 
         // (5) 배송 담당자 서비스 호출 (허브 Id → 업체 배송 담당자 Id)
-        DeliveryManagerResponse supplierDeliveryManagerResponse = // 여기서 업체 배송 담당자명도 같이 전달 받음
+        List<DeliveryManagerResponse> supplierDeliveryManagerResponses = // 여기서 업체 배송 담당자명도 같이 전달 받음
             deliveryManagerClient.getDeliveryManagerIdByHubId(supplierResponse.getHubId());
-        DeliveryManagerResponse receiverDeliveryManagerResponse =
+        List<DeliveryManagerResponse> receiverDeliveryManagerResponses =
             deliveryManagerClient.getDeliveryManagerIdByHubId(receiverResponse.getHubId());
+
+        Random random1 = new Random();
+        int sequence1 = random1.nextInt(supplierDeliveryManagerResponses.size());
+        Random random2 = new Random();
+        int sequence2 = random2.nextInt(receiverDeliveryManagerResponses.size());
 
         // (6). 배송 엔티티를 생성하기 위해 필요한 Request 데이터 생성
         CreateDeliveryRequest createDeliveryRequest = new CreateDeliveryRequest(
             order.getOrderId(),
             supplierResponse.getHubId(),
-            supplierDeliveryManagerResponse.getDeliveryManagerId(),
+            supplierDeliveryManagerResponses.get(sequence1).getDeliveryManagerId(),
             supplierResponse.getAddress(),
             receiverResponse.getHubId(),
-            receiverDeliveryManagerResponse.getDeliveryManagerId(),
+            receiverDeliveryManagerResponses.get(sequence2).getDeliveryManagerId(),
             receiverResponse.getAddress()
         );
 
@@ -94,7 +99,7 @@ public class OrderApplicationService {
             deliveryResponse,
             productNameQuantities,
             receiverResponse.getCompanyName(),
-            supplierDeliveryManagerResponse.getDeliveryManagerName()
+            supplierDeliveryManagerResponses.get(sequence1).getUsername()
         );
         slackClient.createSlackMessage(slackRequestDto);
 

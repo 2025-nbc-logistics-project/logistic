@@ -39,7 +39,7 @@ public class SecurityContextFilter extends OncePerRequestFilter {
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/api/v1/users/feign/**",
-            "/api/v1/delivery-managers/hub/**"
+            "/api/v1/users/delivery-managers/hub/**"
     );
 
     @Override
