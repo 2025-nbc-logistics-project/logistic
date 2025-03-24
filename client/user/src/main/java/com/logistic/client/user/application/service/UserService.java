@@ -3,6 +3,7 @@ package com.logistic.client.user.application.service;
 import com.logistic.client.user.application.dto.responseDto.CompanyResDTO;
 import com.logistic.client.user.application.dto.responseDto.HubResDTO;
 import com.logistic.client.user.application.dto.responseDto.UserResDTO;
+import com.logistic.client.user.application.dto.responseDto.UserSlackResDTO;
 import com.logistic.client.user.domain.model.User;
 import com.logistic.client.user.domain.model.UserRole;
 import com.logistic.client.user.infrastructure.Security.AuthService;
@@ -102,11 +103,11 @@ public class UserService {
         return UserResDTO.from(user);
     }
 
-    public UserResDTO getUserByHubId(UUID hubId) {
+    public UserSlackResDTO getUserByHubId(UUID hubId) {
         try {
             User user = userRepository.findByHubIdAndIsDeletedFalse(hubId)
                     .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
-            return UserResDTO.from(user);
+            return new UserSlackResDTO(user.getSlackId());
         }
         catch(Exception e) {
             throw e;
