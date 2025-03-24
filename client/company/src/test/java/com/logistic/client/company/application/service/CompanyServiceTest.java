@@ -3,11 +3,13 @@ package com.logistic.client.company.application.service;
 import static org.mockito.BDDMockito.*;
 
 import com.logistic.client.company.application.dto.common.HubDto;
+import com.logistic.client.company.application.dto.common.UserDto;
 import com.logistic.client.company.application.dto.company.*;
 import com.logistic.client.company.domain.model.company.Company;
 import com.logistic.client.company.domain.model.company.CompanyType;
 import com.logistic.client.company.domain.repository.CompanyRepository;
 import com.logistic.client.company.infrastructure.client.HubClient;
+import com.logistic.client.company.infrastructure.client.UserClient;
 import com.logistic.client.company.presentation.request.CompanyCreateRequestDto;
 import com.logistic.client.company.presentation.request.CompanyUpdateRequestDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,12 +40,16 @@ class CompanyServiceTest {
     @Mock
     private HubClient hubClient;
 
+    @Mock
+    private UserClient userClient;
+
     @InjectMocks
     CompanyService companyService;
 
     private Company company;
     private UUID companyId;
     private String role = "HUB_MANAGER";
+    private String username = "test";
 
     @BeforeEach
     void setUp() {
@@ -58,9 +64,9 @@ class CompanyServiceTest {
         String detailAddress = "1층";
 
         CompanyCreateRequestDto requestDto = new CompanyCreateRequestDto(
-                hubId, userId, companyType, companyName, companyTel, postalCode, streetAddress, detailAddress);
+                hubId, companyType, companyName, companyTel, postalCode, streetAddress, detailAddress);
 
-        company = new Company(requestDto);
+        company = new Company(requestDto, userId);
         companyId = UUID.randomUUID();
         ReflectionTestUtils.setField(company, "companyId", companyId);
     }
@@ -71,7 +77,6 @@ class CompanyServiceTest {
 
         CompanyCreateRequestDto requestDto = new CompanyCreateRequestDto(
                 company.getHubId(),
-                company.getUserId(),
                 company.getCompanyType(),
                 company.getCompanyName(),
                 company.getCompanyTel(),
@@ -83,12 +88,16 @@ class CompanyServiceTest {
         ReflectionTestUtils.setField(hubDto, "id", company.getHubId());
         ReflectionTestUtils.setField(hubDto, "name", "허브1");
 
+        UserDto userDto = new UserDto();
+        ReflectionTestUtils.setField(userDto, "hubId", company.getHubId());
+
         given(companyRepository.isDuplicateStore(anyString(), anyString())).willReturn(false);
         given(hubClient.getHub(requestDto.getHubId())).willReturn(hubDto);
+        given(userClient.getHubId(username)).willReturn(userDto);
         doNothing().when(companyRepository).save(any(Company.class));
 
         CompanyCreateResponseDto responseDto = companyService.createCompany(
-                requestDto, company.getUserId(), company.getHubId(), role);
+                requestDto, company.getUserId(), username, role);
 
         assertNotNull(responseDto);
         assertEquals("업체1", responseDto.getCompanyName());
@@ -164,10 +173,14 @@ class CompanyServiceTest {
                 "2층"
         );
 
+        UserDto userDto = new UserDto();
+        ReflectionTestUtils.setField(userDto, "hubId", company.getHubId());
+
+        given(userClient.getHubId(username)).willReturn(userDto);
         given(companyRepository.findByCompanyIdAndDeletedAtIsNull(companyId)).willReturn(Optional.of(company));
 
         CompanyUpdateResponseDto responseDto = companyService.updateCompany(
-                companyId, requestDto, company.getUserId(), company.getHubId(), role);
+                companyId, requestDto, company.getUserId(), username, role);
 
         assertNotNull(responseDto);
         assertEquals("업체2", responseDto.getCompanyName());
@@ -177,10 +190,14 @@ class CompanyServiceTest {
     @DisplayName("업체 삭제 성공")
     void deleteCompanySuccess() {
 
+        UserDto userDto = new UserDto();
+        ReflectionTestUtils.setField(userDto, "hubId", company.getHubId());
+
+        given(userClient.getHubId(username)).willReturn(userDto);
         given(companyRepository.findByCompanyIdAndDeletedAtIsNull(companyId)).willReturn(Optional.of(company));
 
         CompanyDeleteResponseDto responseDto = companyService.deleteCompany(
-                companyId, company.getUserId(), company.getHubId(), role);
+                companyId, company.getUserId(), username, role);
 
         assertNotNull(responseDto);
         assertEquals(company.getUserId(), responseDto.getDeletedBy());

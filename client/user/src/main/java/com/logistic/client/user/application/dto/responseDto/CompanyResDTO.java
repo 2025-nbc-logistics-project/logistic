@@ -1,7 +1,10 @@
 package com.logistic.client.user.application.dto.responseDto;
 
+import lombok.Getter;
+
 import java.util.UUID;
 
+@Getter
 public class CompanyResDTO {
     private UUID companyId;
     private UUID hudId;

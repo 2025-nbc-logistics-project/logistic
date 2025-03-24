@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @Tag(name ="DeliveryManager API", description = "배송담당자 관련 API")
 @RestController
-@RequestMapping("/api/v1/delivery-managers")
+@RequestMapping("/api/v1/users/delivery-managers")
 @RequiredArgsConstructor
 public class DeliveryManagerController {
     private final DeliveryManagerService deliveryManagerService;
@@ -45,12 +45,11 @@ public class DeliveryManagerController {
         return ResponseEntity.status(HttpStatus.OK).body(deliveryManagerService.getDeliveryManager(deliveryManagerId, userRole, signInUsername));
     }
 
+    //내부 호출 전용
     @Operation(summary = "업체 배송 담당자 검색", description = "허브 아이디를 통해 해당 허브의 업체 배송 담당자 조회")
     @GetMapping("/hub/{hubId}")
     public ResponseEntity<?> getDeliveryManagersByHubId(@PathVariable UUID hubId, HttpServletRequest request) {
-        String signInUsername = request.getHeader("username");
-        String userRole = request.getHeader("role");
-        return ResponseEntity.status(HttpStatus.OK).body(deliveryManagerService.getDeliveryManagersByHubId(hubId, userRole, signInUsername));
+        return ResponseEntity.status(HttpStatus.OK).body(deliveryManagerService.getDeliveryManagersByHubId(hubId));
     }
 
     @Operation(summary = "배송 담당자 수정", description = "파라미터를 통해 들어온 배송 담당자 정보 수정")

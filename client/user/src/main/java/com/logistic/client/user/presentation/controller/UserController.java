@@ -1,18 +1,17 @@
 package com.logistic.client.user.presentation.controller;
 
+import com.logistic.client.user.application.service.UserService;
 import com.logistic.client.user.domain.model.UserRole;
 import com.logistic.client.user.presentation.requestDto.SignInRequestDTO;
 import com.logistic.client.user.presentation.requestDto.UpdateUserDTO;
 import com.logistic.client.user.presentation.requestDto.UpdateUserRoleDTO;
 import com.logistic.client.user.presentation.requestDto.UserDTO;
-import com.logistic.client.user.application.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -62,8 +61,16 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(username, signInUsername, userRole));
     }
 
+    //내부 호출용
+    @Operation(summary = "유저 단일 조회", description = "파라미터로 받아온 유저 네임을 통해 유저 단일 조회 - Feign 호출용")
+    @GetMapping("/feign/{username}")
+    public ResponseEntity<?> getUserForFeign(@PathVariable String username) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserForFeign(username));
+    }
+
+    //내부 호출용
     @Operation(summary = "허브 담당자 조회", description = "허브 아이디를 통해 허브 담당자 조회")
-    @GetMapping("/{hubId}")
+    @GetMapping("/feign/hub/{hubId}")
     public ResponseEntity<?> getUserByHubId(@PathVariable UUID hubId) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserByHubId(hubId));
     }
@@ -82,7 +89,7 @@ public class UserController {
             size = 10;
         }
         Sort.Direction direction = orderBy.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
-        PageRequest pageable = PageRequest.of(page, size, Sort.by(direction, orderBy));
+        PageRequest pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUsers(userRole, pageable, searchRole));
     }

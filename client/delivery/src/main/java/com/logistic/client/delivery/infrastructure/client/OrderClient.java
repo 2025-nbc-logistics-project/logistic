@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.UUID;
 
-@FeignClient(name = "order-service")
+@FeignClient(name = "order")
 public interface OrderClient {
 
     @PatchMapping("/api/v1/orders/status/{orderId}")

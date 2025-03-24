@@ -17,6 +17,7 @@ import java.util.UUID;
 public interface JpaUserRepository extends JpaRepository<User, UUID>, QuerydslPredicateExecutor<User> {
     Optional<User> findByUsernameAndIsDeletedFalse(String username);
     List<User> findAllByIsDeletedFalse();
+    Page<User> findAllByIsDeletedFalse(PageRequest pageable);
     Boolean existsByUsernameAndIsDeletedFalse(String username);
     Page<User> findAllByRoleAndIsDeletedFalse(UserRole role, PageRequest pageable);
     Optional<User> findByHubIdAndIsDeletedFalse(UUID hubId);

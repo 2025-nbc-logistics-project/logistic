@@ -6,6 +6,7 @@ import com.logistic.client.user.domain.model.UserRole;
 import com.logistic.client.user.domain.repository.UserRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +31,11 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public List<User> findAllByIsDeletedFalse() {
         return jpaUserRepository.findAllByIsDeletedFalse();
+    }
+
+    @Override
+    public Page<User> findAllByIsDeletedFalse(PageRequest pageable) {
+        return jpaUserRepository.findAllByIsDeletedFalse(pageable);
     }
 
     @Override

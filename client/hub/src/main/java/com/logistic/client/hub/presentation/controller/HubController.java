@@ -36,7 +36,12 @@ public class HubController {
   public ResponseEntity<ApiResponse<HubResponse>> createHub(
       @Valid @RequestBody CreateHubRequest createHubRequest,
       HttpServletRequest request) {
-    UserResponseDto user = userClient.getUser(UUID.fromString(request.getHeader("userId")));
+
+    String authorization = request.getHeader("Authorization");
+    String role = request.getHeader("role");
+    String username = request.getHeader("username");
+
+    UserResponseDto user = userClient.getUser(authorization, role, username);
     Hub hub = hubService.createHub(createHubRequest, user);
     HubResponse hubResponse = toHubResponse(hub);
     return ResponseUtil.success(hubResponse);
@@ -45,13 +50,23 @@ public class HubController {
   @PatchMapping("/{hubId}/delete")
   public ResponseEntity<ApiResponse<Void>> deleteHub(@PathVariable UUID hubId,
       HttpServletRequest request) {
-    UserResponseDto user = userClient.getUser(UUID.fromString(request.getHeader("userId")));
+    String authorization = request.getHeader("Authorization");
+    String role = request.getHeader("role");
+    String username = request.getHeader("username");
+    UserResponseDto user = userClient.getUser(authorization, role, username);
     hubService.deleteHub(hubId, user);
     return ResponseUtil.noContent();
   }
 
   @GetMapping("/{hubId}")
   public ResponseEntity<ApiResponse<HubResponse>> getHubById(@PathVariable UUID hubId) {
+    Hub hub = hubService.getHub(hubId);
+    HubResponse hubResponse = toHubResponse(hub);
+    return ResponseUtil.success(hubResponse);
+  }
+
+  @GetMapping("/feign/{hubId}")
+  public ResponseEntity<ApiResponse<HubResponse>> getHubByIdFeign(@PathVariable UUID hubId) {
     Hub hub = hubService.getHub(hubId);
     HubResponse hubResponse = toHubResponse(hub);
     return ResponseUtil.success(hubResponse);
@@ -72,7 +87,10 @@ public class HubController {
       @Valid @RequestBody UpdateHubRequest updateHubRequest,
       HttpServletRequest request
   ) {
-    UserResponseDto user = userClient.getUser(UUID.fromString(request.getHeader("userId")));
+    String authorization = request.getHeader("Authorization");
+    String role = request.getHeader("role");
+    String username = request.getHeader("username");
+    UserResponseDto user = userClient.getUser(authorization, role, username);
     Hub updatedHub = hubService.updateHub(hubId, updateHubRequest, user);
     HubResponse hubResponse = toHubResponse(updatedHub);
     return ResponseUtil.success(hubResponse);
@@ -93,7 +111,7 @@ public class HubController {
     return ResponseUtil.success(responseList);
   }
 
-  @GetMapping("/routes")
+  @GetMapping("/feign/routes")
   public ResponseEntity<ApiResponse<FindRouteResponse>> getHubRoutes(
       @RequestParam UUID departHubId,
       @RequestParam UUID arriveHubId) {
@@ -101,7 +119,7 @@ public class HubController {
     return ResponseUtil.success(route);
   }
 
-  @PostMapping("/names")
+  @PostMapping("/feign/names")
   public ResponseEntity<ApiResponse<List<GetHubNameResponse>>> getHubNames(
       @RequestBody List<UUID> hubIds) {
     List<GetHubNameResponse> hubNames = hubService.getHubNames(hubIds);

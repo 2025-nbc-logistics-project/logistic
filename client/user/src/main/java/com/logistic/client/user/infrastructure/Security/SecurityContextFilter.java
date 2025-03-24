@@ -34,7 +34,12 @@ public class SecurityContextFilter extends OncePerRequestFilter {
 
     private static final List<String> excludeUrls = List.of(
             "/api/v1/users/signup",
-            "/api/v1/users/signin"
+            "/api/v1/users/signin",
+            "/api/v1/auth/validate",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/api/v1/users/feign/**",
+            "/api/v1/delivery-managers/hub/**"
     );
 
     @Override

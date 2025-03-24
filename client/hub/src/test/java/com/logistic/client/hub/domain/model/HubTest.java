@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 public class HubTest {
 
   private Hub hub;
-  private final UUID deleterId = UUID.fromString("11111111-1111-1111-1111-111111111111");
+  private final String deleterName = "master123";
 
   @BeforeEach
   void setUp() {
@@ -46,7 +46,7 @@ public class HubTest {
     // given
 
     // when
-    hub.deleteHub(deleterId);
+    hub.deleteHub(deleterName);
 
     // then
     assertThat(hub.isDeleted()).isTrue();
@@ -56,10 +56,10 @@ public class HubTest {
   @DisplayName("이미 삭제된 허브를 다시 삭제 시 예외 발생")
   void alwaysDeleteHub(){
     // given
-    hub.deleteHub(deleterId);
+    hub.deleteHub(deleterName);
 
     // when & then
-    assertThatThrownBy(() -> hub.deleteHub(deleterId))
+    assertThatThrownBy(() -> hub.deleteHub(deleterName))
         .isInstanceOf(HubAlreadyDeletedException.class)
         .hasMessageContaining("Hub Already Deleted");
   }
