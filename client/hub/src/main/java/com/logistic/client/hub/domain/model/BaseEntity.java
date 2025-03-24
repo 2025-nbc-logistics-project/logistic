@@ -41,18 +41,18 @@ public abstract class BaseEntity {
   private LocalDateTime deletedAt;
 
   @Column(name = "deleted_by")
-  private UUID deletedBy;
+  private String deletedBy;
 
   @Column(name = "is_deleted")
   private Boolean isDeleted = false;
 
-  public void markAsDeleted(UUID userId) {
+  public void markAsDeleted(String username) {
     if (Boolean.TRUE.equals(isDeleted)) {
       return;
     }
     this.isDeleted = true;
     this.deletedAt = LocalDateTime.now();
-    this.deletedBy = userId;
+    this.deletedBy = username;
   }
 
   public boolean isDeleted() {
