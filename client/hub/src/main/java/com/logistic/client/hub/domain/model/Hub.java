@@ -1,5 +1,6 @@
 package com.logistic.client.hub.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.logistic.client.hub.application.exception.HubExceptionCode;
 import com.logistic.client.hub.domain.exception.HubAlreadyDeletedException;
 import java.util.UUID;
@@ -23,6 +24,7 @@ import jakarta.persistence.*;
         WHERE id = ?
     """)
 @Where(clause = "is_deleted = false")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Hub extends BaseEntity {
 
   @Id
