@@ -14,9 +14,14 @@ import com.logistic.client.hub.domain.model.HubLocation;
 import com.logistic.client.hub.domain.repository.HubRepository;
 import com.logistic.client.hub.domain.spec.HubSpecifications;
 import com.logistic.client.hub.presentation.request.CreateHubRequest;
+import com.logistic.client.hub.presentation.request.HubIdsRequest;
 import com.logistic.client.hub.presentation.request.UpdateHubRequest;
+
+import java.util.ArrayList;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import com.logistic.client.hub.presentation.response.HubNamesResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.*;
 import org.springframework.data.domain.*;
@@ -113,19 +118,22 @@ public class HubService {
     return hubRepository.findAll(spec, pageable);
   }
 
-  public List<GetHubNameResponse> getHubNames(List<UUID> hubIds) {
+  public HubNamesResponse getHubNames(HubIdsRequest hubIds) {
 
-    List<Hub> hubs = hubRepository.findAllById(hubIds);
+    List<Hub> hubs = hubRepository.findAllById(hubIds.getHubIds());
 
-    for(UUID hubId : hubIds) {
+    for(UUID hubId : hubIds.getHubIds()) {
       if(getHub(hubId).isDeleted()){
         throw new HubNotFoundException(HubExceptionCode.HUB_NOT_FOUND);
       }
     }
+    List<String> hubNames = new ArrayList<>();
 
-    return hubs.stream()
-        .map(hub -> new GetHubNameResponse(hub.getId(), hub.getName()))
-        .collect(Collectors.toList());
+    for (Hub hub : hubs) {
+      hubNames.add(hub.getName());
+    }
+
+    return new HubNamesResponse(hubNames);
   }
 
   private Hub convertToHubEntity(CreateHubRequest hubDto) {

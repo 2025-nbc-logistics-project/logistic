@@ -1,15 +1,15 @@
-package com.logistic.client.alarm.application.dto;
+package com.logistic.client.hub.presentation.request;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.UUID;
 
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransitHubRequest {
-    private List<UUID> hubIds;
+public class HubIdsRequest {
+    List<UUID> hubIds;
 }

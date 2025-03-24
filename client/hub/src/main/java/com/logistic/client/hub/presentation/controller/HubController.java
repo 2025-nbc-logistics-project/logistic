@@ -10,7 +10,9 @@ import com.logistic.client.hub.presentation.common.ApiResponse;
 import com.logistic.client.hub.presentation.common.ResponseUtil;
 import com.logistic.client.hub.domain.model.Hub;
 import com.logistic.client.hub.presentation.request.CreateHubRequest;
+import com.logistic.client.hub.presentation.request.HubIdsRequest;
 import com.logistic.client.hub.presentation.request.UpdateHubRequest;
+import com.logistic.client.hub.presentation.response.HubNamesResponse;
 import com.logistic.client.hub.presentation.response.HubResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -120,10 +122,10 @@ public class HubController {
   }
 
   @PostMapping("/feign/names")
-  public ResponseEntity<ApiResponse<List<GetHubNameResponse>>> getHubNames(
-      @RequestBody List<UUID> hubIds) {
-    List<GetHubNameResponse> hubNames = hubService.getHubNames(hubIds);
-    return ResponseUtil.success(hubNames);
+  public ResponseEntity<HubNamesResponse> getHubNames(
+      @RequestBody HubIdsRequest hubIds) {
+    HubNamesResponse hubNames = hubService.getHubNames(hubIds);
+    return ResponseEntity.ok(hubNames);
   }
 
   private HubResponse toHubResponse(Hub hub) {
