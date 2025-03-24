@@ -28,6 +28,9 @@ ext {
 }
 
 dependencies {
+	// swagger
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.4'
+
 	// JUnit BOM(5.9.3 예시)을 사용해 JUnit 라이브러리를 한꺼번에 맞춤
 	testImplementation platform("org.junit:junit-bom:5.9.3")
 

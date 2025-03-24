@@ -1,0 +1,40 @@
+package com.logistic.client.hub.infrastructure.config;
+
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.security.SecuritySchemes;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@SecuritySchemes({
+    @SecurityScheme(
+        name = "Authorization",
+        type = SecuritySchemeType.APIKEY,
+        in = SecuritySchemeIn.HEADER
+    ),
+    @SecurityScheme(
+        name = "role",
+        type = SecuritySchemeType.APIKEY,
+        in = SecuritySchemeIn.HEADER
+    ),
+    @SecurityScheme(
+        name = "username",
+        type = SecuritySchemeType.APIKEY,
+        in = SecuritySchemeIn.HEADER
+    )
+})
+public class SwaggerConfig {
+
+  @Bean
+  public OpenAPI OpenAPI() {
+    Info info = new Info()
+        .title("허브(Hub) API 문서")
+        .version("1.0.0")
+        .description("물류 허브 관련 API 명세");
+    return new OpenAPI().info(info);
+  }
+}
