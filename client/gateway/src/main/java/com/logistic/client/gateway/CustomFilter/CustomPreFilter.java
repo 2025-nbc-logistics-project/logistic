@@ -28,7 +28,8 @@ public class CustomPreFilter implements GlobalFilter, Ordered {
         logger.info("URI:  " + request.getURI());
 
         // 회원가입 요청은 인증 제외
-        if (request.getURI().getPath().equals("/api/v1/users/signup") || request.getURI().getPath().equals("/api/v1/users/signin")) {
+        if (request.getURI().getPath().equals("/api/v1/users/signup") || request.getURI().getPath().equals("/api/v1/users/signin")
+        || request.getURI().getPath().equals("/swagger-ui/**")) {
             return chain.filter(exchange);
         }
 

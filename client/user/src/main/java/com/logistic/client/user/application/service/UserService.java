@@ -2,32 +2,31 @@ package com.logistic.client.user.application.service;
 
 import com.logistic.client.user.application.dto.responseDto.CompanyResDTO;
 import com.logistic.client.user.application.dto.responseDto.HubResDTO;
-import com.logistic.client.user.domain.model.QUser;
-import com.logistic.client.user.infrastructure.client.CompanyClient;
-import com.logistic.client.user.infrastructure.client.HubClient;
-import com.logistic.client.user.presentation.requestDto.SignInRequestDTO;
-import com.logistic.client.user.presentation.requestDto.UpdateUserDTO;
-import com.logistic.client.user.presentation.requestDto.UpdateUserRoleDTO;
-import com.logistic.client.user.presentation.requestDto.UserDTO;
 import com.logistic.client.user.application.dto.responseDto.UserResDTO;
 import com.logistic.client.user.domain.model.User;
 import com.logistic.client.user.domain.model.UserRole;
 import com.logistic.client.user.infrastructure.Security.AuthService;
 import com.logistic.client.user.infrastructure.Security.dto.CreateTokenDTO;
+import com.logistic.client.user.infrastructure.client.CompanyClient;
+import com.logistic.client.user.infrastructure.client.HubClient;
 import com.logistic.client.user.infrastructure.configuration.customException.AccessDeniedException;
 import com.logistic.client.user.infrastructure.configuration.customException.SamePasswordException;
 import com.logistic.client.user.infrastructure.configuration.customException.UserAlreadyExistException;
 import com.logistic.client.user.infrastructure.repository.UserRepositoryImpl;
-import com.querydsl.core.BooleanBuilder;
-import java.util.UUID;
+import com.logistic.client.user.presentation.requestDto.SignInRequestDTO;
+import com.logistic.client.user.presentation.requestDto.UpdateUserDTO;
+import com.logistic.client.user.presentation.requestDto.UpdateUserRoleDTO;
+import com.logistic.client.user.presentation.requestDto.UserDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 
 @Service
@@ -40,18 +39,17 @@ public class UserService {
     private final HubClient hubClient;
     private final CompanyClient companyClient;
 
+    @Value("${service.admin.code}")
+    private String adminCode;
+
     public UserResDTO signUp(UserDTO requestUser) {
         try {
             if(userRepository.existsByUsernameAndIsDeletedFalse(requestUser.getUsername())) {
                 throw new UserAlreadyExistException("이미 존재하는 유저 이름입니다.");
             }
 
-            if(requestUser.getRole().equals(UserRole.HUB_MANAGER))  {
-                HubResDTO hub = hubClient.getHubById(requestUser.getHubId());
-            }
-
-            if(requestUser.getRole().equals(UserRole.COMPANY_MANAGER))  {
-                CompanyResDTO company = companyClient.getCompany(requestUser.getCompanyId());
+            if(requestUser.getRole().equals(UserRole.MASTER) && !requestUser.getAdminCode().equals(adminCode)) {
+                throw new AccessDeniedException("관리자 코드가 일치하지 않으므로 마스터 권한으로 회원가입 하실 수 없습니다.");
             }
 
             User user = requestUser.toUser(passwordEncoder.encode(requestUser.getPassword()));
@@ -109,7 +107,7 @@ public class UserService {
         }
     }
 
-    public Page<UserResDTO> getUsers(String userRole, Pageable pageable, UserRole searchRole) {
+    public Page<UserResDTO> getUsers(String userRole, PageRequest pageable, UserRole searchRole) {
         try {
             UserRole role = UserRole.valueOf(userRole);
 
@@ -117,14 +115,13 @@ public class UserService {
                 throw new AccessDeniedException("유저 정보에 대해 접근 권한이 존재하지 않습니다.");
             }
 
-            QUser qUser = QUser.user;
-            BooleanBuilder builder = new BooleanBuilder();
-            builder.and(qUser.isDeleted.eq(false));
-
-            if(searchRole != null) {
-                builder.and(qUser.role.eq(searchRole));
+            Page<User> userList;
+            if (searchRole == null) {
+                userList = userRepository.findAllByIsDeletedFalse(pageable);
             }
-            Page<User> userList = userRepository.findAll(builder, pageable);
+            else {
+                userList = userRepository.findAllByRoleAndIsDeletedFalse(searchRole, pageable);
+            }
 
             if(userList.isEmpty()) {
                 throw new IllegalArgumentException("조건에 맞는 유저가 존재하지 않습니다.");
@@ -179,17 +176,18 @@ public class UserService {
             User user = userRepository.findByUsernameAndIsDeletedFalse(username)
                     .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
 
-            user.setRole(requestDto.getUserRole());
-            user.setUpdatedAt(LocalDateTime.now());
-            user.setUpdatedBy(signInUsername);
-
             if(requestDto.getUserRole().equals(UserRole.HUB_MANAGER))  {
                 HubResDTO hub = hubClient.getHubById(requestDto.getHubId());
+                user.setHubId(hub.getHubId());
             }
 
             if(requestDto.getUserRole().equals(UserRole.COMPANY_MANAGER))  {
                 CompanyResDTO company = companyClient.getCompany(requestDto.getCompanyId());
+                user.setCompanyId(company.getCompanyId());
             }
+            user.setRole(requestDto.getUserRole());
+            user.setUpdatedAt(LocalDateTime.now());
+            user.setUpdatedBy(signInUsername);
 
             return UserResDTO.from(user);
         }

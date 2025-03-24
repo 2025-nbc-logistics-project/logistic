@@ -1,6 +1,7 @@
 package com.logistic.client.company.application.service;
 
 import com.logistic.client.company.application.dto.common.CompanyExistResponseDto;
+import com.logistic.client.company.application.dto.common.UserDto;
 import com.logistic.client.company.application.dto.company.*;
 import com.logistic.client.company.domain.exception.common.HubNotFoundException;
 import com.logistic.client.company.domain.exception.common.UnauthorizedAccessException;
@@ -10,6 +11,7 @@ import com.logistic.client.company.domain.model.company.Address;
 import com.logistic.client.company.domain.model.company.Company;
 import com.logistic.client.company.domain.repository.CompanyRepository;
 import com.logistic.client.company.infrastructure.client.HubClient;
+import com.logistic.client.company.infrastructure.client.UserClient;
 import com.logistic.client.company.presentation.request.CompanyCreateRequestDto;
 import com.logistic.client.company.presentation.request.CompanyUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -27,19 +29,26 @@ public class CompanyService {
 
     private final CompanyRepository companyRepository;
     private final HubClient hubClient;
+    private final UserClient userClient;
 
     @Transactional
     public CompanyCreateResponseDto createCompany(
             CompanyCreateRequestDto requestDto,
             UUID userId,
-            UUID hubId,
+            String username,
             String role
     ) {
+
+        UserDto userDto = userClient.getHubId(username);
+
+        if (userDto == null || userDto.getHubId() == null) {
+            throw new HubNotFoundException();
+        }
 
         if(
                 !("MASTER".equals(role))  //마스터 관리자가 아니고
                         && !("HUB_MANAGER".equals(role) //허브 관리자도 아니고
-                        && hubId.equals(requestDto.getHubId())) //허브 관리자여도 담당 허브가 아니라면
+                        && userDto.getHubId().equals(requestDto.getHubId())) //허브 관리자여도 담당 허브가 아니라면
         ) {
             throw new UnauthorizedAccessException();
         }
@@ -59,7 +68,7 @@ public class CompanyService {
             throw new HubNotFoundException();
         }
 
-        Company company = new Company(new CompanyCreateRequestDto(requestDto, userId));
+        Company company = new Company(new CompanyCreateRequestDto(requestDto), userId);
         companyRepository.save(company);
         return new CompanyCreateResponseDto(company);
 
@@ -93,16 +102,22 @@ public class CompanyService {
             UUID companyId,
             CompanyUpdateRequestDto requestDto,
             UUID userId,
-            UUID hubId,
+            String username,
             String role
     ) {
+
+        UserDto userDto = userClient.getHubId(username);
+
+        if (userDto == null || userDto.getHubId() == null) {
+            throw new HubNotFoundException();
+        }
 
         Company company = findByCompanyId(companyId);
 
         if(
                 !("MASTER".equals(role)) //마스터 관리자가 아니고
                         && !("HUB_MANAGER".equals(role) //허브 관리자도 아니고
-                        && hubId.equals(company.getHubId()))  //허브 관리자여도 담당 허브가 아니고
+                        && userDto.getHubId().equals(company.getHubId()))  //허브 관리자여도 담당 허브가 아니고
                         &&!userId.equals(company.getUserId()) //업체 담당자도 아니라면
         ) {
             throw new UnauthorizedAccessException();
@@ -154,15 +169,22 @@ public class CompanyService {
     public CompanyDeleteResponseDto deleteCompany(
             UUID companyId,
             UUID userId,
-            UUID hubId,
+            String username,
             String role
     ) {
+
+        UserDto userDto = userClient.getHubId(username);
+
+        if (userDto == null || userDto.getHubId() == null) {
+            throw new HubNotFoundException();
+        }
+
         Company company = findByCompanyId(companyId);
 
         if(
                 !("MASTER".equals(role)) //마스터 관리자가 아니고
                         && !("HUB_MANAGER".equals(role) //허브 관리자도 아니고
-                        && hubId.equals(company.getHubId()))  //허브 관리자여도 담당 허브가 아니라면
+                        && userDto.getHubId().equals(company.getHubId()))  //허브 관리자여도 담당 허브가 아니라면
         ) {
             throw new UnauthorizedAccessException();
         }

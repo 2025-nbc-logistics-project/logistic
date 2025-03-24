@@ -3,6 +3,7 @@ package com.logistic.client.user.infrastructure.repository;
 import com.logistic.client.user.domain.model.DeliveryManager;
 import com.logistic.client.user.domain.model.DeliveryManagerType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
