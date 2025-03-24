@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 @FeignClient(name = "user", url = "http://localhost:18082")
 public interface UserClient {
-  @GetMapping("/api/v1/users/{username}")
+  @GetMapping("/api/v1/feign/users/{username}")
   UserResponseDto getUser(
       @RequestHeader("Authorization") String authorization,
       @RequestHeader("role") String role,
