@@ -15,7 +15,7 @@ import jakarta.persistence.*;
 @Table(name = "p_hub")
 @Builder(toBuilder = true)
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @SQLDelete(sql = """
         UPDATE p_hub
