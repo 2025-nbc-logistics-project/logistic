@@ -1,8 +1,9 @@
 package com.logistic.client.user.application.service;
 
+import com.logistic.client.user.application.dto.responseDto.CompanyDeliveryManagerResDTO;
 import com.logistic.client.user.application.dto.responseDto.HubResDTO;
 import com.logistic.client.user.infrastructure.client.HubClient;
-import com.logistic.client.user.infrastructure.configuration.customException.NotDeliveryManagerException;
+import com.logistic.client.user.infrastructure.configuration.customException.*;
 import com.logistic.client.user.presentation.requestDto.DeliveryManagerDTO;
 import com.logistic.client.user.presentation.requestDto.UpdateDeliveryManagerDTO;
 import com.logistic.client.user.application.dto.responseDto.DeliveryManagerResDTO;
@@ -10,9 +11,6 @@ import com.logistic.client.user.domain.model.DeliveryManager;
 import com.logistic.client.user.domain.model.DeliveryManagerType;
 import com.logistic.client.user.domain.model.User;
 import com.logistic.client.user.domain.model.UserRole;
-import com.logistic.client.user.infrastructure.configuration.customException.AccessDeniedException;
-import com.logistic.client.user.infrastructure.configuration.customException.CompanyDeliveryManagerCountMaxException;
-import com.logistic.client.user.infrastructure.configuration.customException.HubDeliveryManagerCountMaxException;
 import com.logistic.client.user.infrastructure.repository.DeliveryManagerRepositoryImpl;
 import com.logistic.client.user.infrastructure.repository.UserRepositoryImpl;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +43,10 @@ public class DeliveryManagerService {
 
                 User user = userRepository.findByUsernameAndIsDeletedFalse(requestDto.getUsername())
                         .orElseThrow(() -> new IllegalArgumentException("배송 담당자로 등록하려는 유저가 존재하지 않는 유저입니다."));
+
+                if(deliveryManagerRepository.existsByUserAndIsDeletedFalse(user)) {
+                    throw new UserAlreadyExistException("이미 등록된 배송 담당자입니다.");
+                }
 
                 if(!user.getRole().equals(UserRole.DELIVERY_MANAGER)) {
                     throw new NotDeliveryManagerException("등록하려는 유저의 권한이 배송 담당자가 아닙니다.");
@@ -111,21 +113,10 @@ public class DeliveryManagerService {
         }
     }
 
-    public List<DeliveryManagerResDTO> getDeliveryManagersByHubId(UUID hubId, String userRole, String signInUsername) {
+    public List<CompanyDeliveryManagerResDTO> getDeliveryManagersByHubId(UUID hubId) {
         try {
-            UserRole role = UserRole.valueOf(userRole);
-            User user = userRepository.findByUsernameAndIsDeletedFalse(signInUsername)
-                    .orElseThrow(() -> new IllegalArgumentException("현재 로그인한 사용자가 존재하지 않는 유저입니다."));
-
-            if(role.equals(UserRole.COMPANY_MANAGER) || role.equals(UserRole.DELIVERY_MANAGER))
-                throw new AccessDeniedException("배송 담당자를 조회 할 수 있는 권한이 없습니다.");
-
-            if(role.equals(UserRole.HUB_MANAGER) && hubId != user.getHubId())
-                throw new AccessDeniedException("담당 허브의 배송 담당자만 조회 가능합니다.");
-
             List<DeliveryManager> deliveryManagerList = deliveryManagerRepository.findAllByHubIdAndDeliveryManagerTypeAndIsDeletedFalse(hubId, DeliveryManagerType.COMPANY_DELIVERY_MANAGER);
-
-            return deliveryManagerList.stream().map(deliveryManager -> DeliveryManagerResDTO.to(deliveryManager)).toList();
+            return deliveryManagerList.stream().map(deliveryManager -> CompanyDeliveryManagerResDTO.to(deliveryManager)).toList();
         }
         catch (Exception e) {
             throw e;

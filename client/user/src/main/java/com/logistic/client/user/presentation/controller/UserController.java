@@ -61,8 +61,16 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(username, signInUsername, userRole));
     }
 
+    //내부 호출용
+    @Operation(summary = "유저 단일 조회", description = "파라미터로 받아온 유저 네임을 통해 유저 단일 조회 - Feign 호출용")
+    @GetMapping("/feign/{username}")
+    public ResponseEntity<?> getUserForFeign(@PathVariable String username) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserForFeign(username));
+    }
+
+    //내부 호출용
     @Operation(summary = "허브 담당자 조회", description = "허브 아이디를 통해 허브 담당자 조회")
-    @GetMapping("/hub/{hubId}")
+    @GetMapping("/feign/hub/{hubId}")
     public ResponseEntity<?> getUserByHubId(@PathVariable UUID hubId) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserByHubId(hubId));
     }

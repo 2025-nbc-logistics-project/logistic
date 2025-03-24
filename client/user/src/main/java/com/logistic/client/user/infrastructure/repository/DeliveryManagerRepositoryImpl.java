@@ -2,6 +2,7 @@ package com.logistic.client.user.infrastructure.repository;
 
 import com.logistic.client.user.domain.model.DeliveryManager;
 import com.logistic.client.user.domain.model.DeliveryManagerType;
+import com.logistic.client.user.domain.model.User;
 import com.logistic.client.user.domain.repository.DeliveryManagerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -14,6 +15,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class DeliveryManagerRepositoryImpl implements DeliveryManagerRepository {
     private final JpaDeliveryManagerRepository deliveryManagerRepository;
+
+    @Override
+    public Boolean existsByUserAndIsDeletedFalse(User user) {
+        return deliveryManagerRepository.existsByUserAndIsDeletedFalse(user);
+    }
 
     @Override
     public List<DeliveryManager> findAllByHubIdAndDeliveryManagerTypeAndIsDeletedFalse(UUID hubId, DeliveryManagerType type) {

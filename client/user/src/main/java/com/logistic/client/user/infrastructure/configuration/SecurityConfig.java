@@ -43,7 +43,9 @@ public class SecurityConfig {
                     "/api/v1/auth/validate",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
-                    "/swagger-ui.html"
+                    "/api/v1/users/feign/**",
+                    "/api/v1/users/delivery-managers/hub/**"
+
             ).permitAll();
 
             authorization.anyRequest().authenticated();

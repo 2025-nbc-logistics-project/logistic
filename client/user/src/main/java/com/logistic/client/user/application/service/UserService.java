@@ -96,6 +96,12 @@ public class UserService {
         }
     }
 
+    public UserResDTO getUserForFeign(String username) {
+        User user = userRepository.findByUsernameAndIsDeletedFalse(username)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+        return UserResDTO.from(user);
+    }
+
     public UserResDTO getUserByHubId(UUID hubId) {
         try {
             User user = userRepository.findByHubIdAndIsDeletedFalse(hubId)
