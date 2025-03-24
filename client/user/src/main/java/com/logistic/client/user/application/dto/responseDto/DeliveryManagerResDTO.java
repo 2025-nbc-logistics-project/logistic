@@ -12,6 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DeliveryManagerResDTO {
+    private UUID deliveryManagerId;
     private String username;
     private UUID hubId;
     private DeliveryManagerType deliveryManagerType;
@@ -19,6 +20,7 @@ public class DeliveryManagerResDTO {
 
     public static DeliveryManagerResDTO to(User user, DeliveryManager manager) {
         return DeliveryManagerResDTO.builder()
+                .deliveryManagerId(manager.getDeliveryManagerId())
                 .username(user.getUsername())
                 .hubId(manager.getHubId())
                 .deliveryManagerType(manager.getDeliveryManagerType())
@@ -28,6 +30,7 @@ public class DeliveryManagerResDTO {
 
     public static DeliveryManagerResDTO to(DeliveryManager manager) {
         return DeliveryManagerResDTO.builder()
+                .deliveryManagerId(manager.getDeliveryManagerId())
                 .username(manager.getUser().getUsername())
                 .hubId(manager.getHubId())
                 .deliveryManagerType(manager.getDeliveryManagerType())

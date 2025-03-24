@@ -2,6 +2,8 @@ package com.logistic.client.company.presentation.controller;
 
 import com.logistic.client.company.application.dto.company.*;
 import com.logistic.client.company.application.service.CompanyService;
+import com.logistic.client.company.presentation.request.CompanyCreateRequestDto;
+import com.logistic.client.company.presentation.request.CompanyUpdateRequestDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,12 +19,15 @@ public class CompanyController {
 
     private final CompanyService companyService;
 
-    //로그인, 권한 확인
-
     //업체 등록
     @PostMapping
-    public ResponseEntity<CompanyCreateResponseDto> createCompany(@RequestBody @Valid CompanyCreateRequestDto requestDto) {
-        CompanyCreateResponseDto responseDto = companyService.createCompany(requestDto);
+    public ResponseEntity<CompanyCreateResponseDto> createCompany(
+            @RequestBody @Valid CompanyCreateRequestDto requestDto,
+            @RequestHeader("userId") UUID userId,
+            @RequestHeader("hubId") UUID hubId,
+            @RequestHeader("role") String role
+    ) {
+        CompanyCreateResponseDto responseDto = companyService.createCompany(requestDto, userId, hubId, role);
         return ResponseEntity.ok(responseDto);
     }
 
@@ -61,16 +66,24 @@ public class CompanyController {
     @PatchMapping("/{companyId}")
     public ResponseEntity<CompanyUpdateResponseDto> updateCompany(
             @PathVariable UUID companyId,
-            @RequestBody CompanyUpdateRequestDto requestDto
+            @RequestBody CompanyUpdateRequestDto requestDto,
+            @RequestHeader("userId") UUID userId,
+            @RequestHeader("hubId") UUID hubId,
+            @RequestHeader("role") String role
     ) {
-        CompanyUpdateResponseDto responseDto = companyService.updateCompany(companyId, requestDto);
+        CompanyUpdateResponseDto responseDto = companyService.updateCompany(companyId, requestDto, userId, hubId, role);
         return ResponseEntity.ok(responseDto);
     }
 
     //업체 삭제
     @PatchMapping("/{companyId}/delete")
-    public ResponseEntity<CompanyDeleteResponseDto> deleteCompany(@PathVariable UUID companyId) {
-        CompanyDeleteResponseDto responseDto = companyService.deleteCompany(companyId);
+    public ResponseEntity<CompanyDeleteResponseDto> deleteCompany(
+            @PathVariable UUID companyId,
+            @RequestHeader("userId") UUID userId,
+            @RequestHeader("hubId") UUID hubId,
+            @RequestHeader("role") String role
+    ) {
+        CompanyDeleteResponseDto responseDto = companyService.deleteCompany(companyId, userId, hubId, role);
         return ResponseEntity.ok(responseDto);
     }
 

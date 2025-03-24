@@ -12,13 +12,13 @@ import java.util.UUID;
 public class CompanyListResponseDto {
 
     private UUID companyId;
-    private UUID hudId;
+    private UUID hubId;
     private CompanyType companyType;
     private String companyName;
 
     public CompanyListResponseDto(Company company) {
         this.companyId = company.getCompanyId();
-        this.hudId = company.getHudId();
+        this.hubId = company.getHubId();
         this.companyType = company.getCompanyType();
         this.companyName = company.getCompanyName();
     }

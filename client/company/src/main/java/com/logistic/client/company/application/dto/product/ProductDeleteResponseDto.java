@@ -13,7 +13,7 @@ public class ProductDeleteResponseDto {
 
     private UUID productId;
     private LocalDateTime deletedAt;
-    private long deletedBy;
+    private UUID deletedBy;
 
     public ProductDeleteResponseDto(Product product) {
         this.productId = product.getProductId();

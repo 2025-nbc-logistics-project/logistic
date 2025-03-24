@@ -12,7 +12,7 @@ public class ProductCreateResponseDto {
 
     private UUID productId;
     private UUID companyId;
-    private UUID hudId;
+    private UUID hubId;
     private String productName;
     //
     private int price;
@@ -21,7 +21,7 @@ public class ProductCreateResponseDto {
     public ProductCreateResponseDto(Product product) {
         this.productId = product.getProductId();
         this.companyId = product.getCompanyId();
-        this.hudId = product.getHubId();
+        this.hubId = product.getHubId();
         this.productName = product.getProductInfo().getProductName();
         //
         this.price = product.getProductInfo().getPrice();

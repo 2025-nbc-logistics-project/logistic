@@ -9,5 +9,6 @@ import java.util.List;
 public class FindRouteResponse {
 
   private List<RouteStepResponse> route;
-  private int totalDistance;
+  private double totalDistanceKm;
+  private double totalEstimatedTimeHours;
 }

@@ -1,12 +1,17 @@
 package com.logistic.client.company.application.service;
 
+import com.logistic.client.company.application.dto.common.CompanyExistResponseDto;
 import com.logistic.client.company.application.dto.company.*;
+import com.logistic.client.company.domain.exception.common.HubNotFoundException;
+import com.logistic.client.company.domain.exception.common.UnauthorizedAccessException;
 import com.logistic.client.company.domain.exception.company.CompanyDuplicatedException;
 import com.logistic.client.company.domain.exception.company.CompanyNotFoundException;
 import com.logistic.client.company.domain.model.company.Address;
 import com.logistic.client.company.domain.model.company.Company;
 import com.logistic.client.company.domain.repository.CompanyRepository;
 import com.logistic.client.company.infrastructure.client.HubClient;
+import com.logistic.client.company.presentation.request.CompanyCreateRequestDto;
+import com.logistic.client.company.presentation.request.CompanyUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,8 +29,20 @@ public class CompanyService {
     private final HubClient hubClient;
 
     @Transactional
-    public CompanyCreateResponseDto createCompany(CompanyCreateRequestDto requestDto) {
-        //이미 업체가 존재하는 유저인지 (??)
+    public CompanyCreateResponseDto createCompany(
+            CompanyCreateRequestDto requestDto,
+            UUID userId,
+            UUID hubId,
+            String role
+    ) {
+
+        if(
+                !("MASTER".equals(role))  //마스터 관리자가 아니고
+                        && !("HUB_MANAGER".equals(role) //허브 관리자도 아니고
+                        && hubId.equals(requestDto.getHubId())) //허브 관리자여도 담당 허브가 아니라면
+        ) {
+            throw new UnauthorizedAccessException();
+        }
 
         //중복된 업체인지 (업체명 + 전화번호로 확인)
         boolean isDuplicated = companyRepository.isDuplicateStore(
@@ -38,11 +55,11 @@ public class CompanyService {
         }
 
         //존재하는 허브인지
-//        if(!hubClient.existsHub(requestDto.getHudId())) {
-//            throw new HubNotFoundException();
-//        }
+        if(hubClient.getHub(requestDto.getHubId()) == null) {
+            throw new HubNotFoundException();
+        }
 
-        Company company = new Company(requestDto);
+        Company company = new Company(new CompanyCreateRequestDto(requestDto, userId));
         companyRepository.save(company);
         return new CompanyCreateResponseDto(company);
 
@@ -72,11 +89,29 @@ public class CompanyService {
     }
 
     @Transactional
-    public CompanyUpdateResponseDto updateCompany(UUID companyId, CompanyUpdateRequestDto requestDto) {
+    public CompanyUpdateResponseDto updateCompany(
+            UUID companyId,
+            CompanyUpdateRequestDto requestDto,
+            UUID userId,
+            UUID hubId,
+            String role
+    ) {
 
         Company company = findByCompanyId(companyId);
 
+        if(
+                !("MASTER".equals(role)) //마스터 관리자가 아니고
+                        && !("HUB_MANAGER".equals(role) //허브 관리자도 아니고
+                        && hubId.equals(company.getHubId()))  //허브 관리자여도 담당 허브가 아니고
+                        &&!userId.equals(company.getUserId()) //업체 담당자도 아니라면
+        ) {
+            throw new UnauthorizedAccessException();
+        }
+
         //허브
+        if(requestDto.getHubId() != null && hubClient.getHub(requestDto.getHubId()) != null) {
+            company.changeHub(requestDto.getHubId());
+        }
 
         if(requestDto.getCompanyType() != null) {
             company.changeCompanyType(requestDto.getCompanyType());
@@ -116,10 +151,23 @@ public class CompanyService {
     }
 
     @Transactional
-    public CompanyDeleteResponseDto deleteCompany(UUID companyId) {
+    public CompanyDeleteResponseDto deleteCompany(
+            UUID companyId,
+            UUID userId,
+            UUID hubId,
+            String role
+    ) {
         Company company = findByCompanyId(companyId);
-        //
-        company.delete(1L);
+
+        if(
+                !("MASTER".equals(role)) //마스터 관리자가 아니고
+                        && !("HUB_MANAGER".equals(role) //허브 관리자도 아니고
+                        && hubId.equals(company.getHubId()))  //허브 관리자여도 담당 허브가 아니라면
+        ) {
+            throw new UnauthorizedAccessException();
+        }
+
+        company.delete(userId);
 
         return new CompanyDeleteResponseDto(company);
     }
@@ -128,6 +176,11 @@ public class CompanyService {
         return companyRepository
                 .findByCompanyIdAndDeletedAtIsNull(companyId)
                 .orElseThrow(CompanyNotFoundException::new);
+    }
+
+    public CompanyExistResponseDto getCompanyById(UUID companyId) {
+        Company company = findByCompanyId(companyId);
+        return new CompanyExistResponseDto(company);
     }
 
 }

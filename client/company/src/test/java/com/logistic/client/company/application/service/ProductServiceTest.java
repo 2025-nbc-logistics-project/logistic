@@ -2,12 +2,18 @@ package com.logistic.client.company.application.service;
 
 import static org.mockito.BDDMockito.*;
 
-import com.logistic.client.company.application.dto.company.CompanyCreateRequestDto;
+import com.logistic.client.company.application.dto.common.CompanyExistResponseDto;
+import com.logistic.client.company.application.dto.common.HubDto;
+import com.logistic.client.company.infrastructure.client.HubClient;
+import com.logistic.client.company.presentation.request.CompanyCreateRequestDto;
 import com.logistic.client.company.application.dto.product.*;
 import com.logistic.client.company.domain.model.company.Company;
 import com.logistic.client.company.domain.model.company.CompanyType;
 import com.logistic.client.company.domain.model.product.Product;
 import com.logistic.client.company.domain.repository.ProductRepository;
+import com.logistic.client.company.presentation.request.OrderItemRequestDto;
+import com.logistic.client.company.presentation.request.ProductCreateRequestDto;
+import com.logistic.client.company.presentation.request.ProductUpdateRequestDto;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,17 +44,23 @@ class ProductServiceTest {
     @Mock
     private CompanyService companyService;
 
+    @Mock
+    private HubClient hubClient;
+
     @InjectMocks
     private ProductService productService;
 
     private Product product;
     private UUID productId;
     private Company company;
+    private UUID userId = UUID.randomUUID();
+    private String role = "HUB_MANAGER";
 
     @BeforeEach
     void setUp() {
 
         UUID hubId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
         CompanyType companyType = CompanyType.producer;
         String companyName = "업체1";
         String companyTel = "07012345678";
@@ -61,7 +73,7 @@ class ProductServiceTest {
         int quantity = 10;
 
         CompanyCreateRequestDto requestDto = new CompanyCreateRequestDto(
-                hubId, companyType, companyName, companyTel, postalCode, streetAddress, detailAddress);
+                hubId, userId, companyType, companyName, companyTel, postalCode, streetAddress, detailAddress);
 
         company = new Company(requestDto);
         product = new Product(new ProductCreateRequestDto(companyId, hubId, productName, price, quantity));
@@ -80,11 +92,15 @@ class ProductServiceTest {
                 product.getProductInfo().getPrice(),
                 product.getQuantity().getQuantity()
         );
+        HubDto hubDto = new HubDto();
+        ReflectionTestUtils.setField(hubDto, "id", product.getHubId());
+        ReflectionTestUtils.setField(hubDto, "name", "허브1");
 
-        given(companyService.findByCompanyId(requestDto.getCompanyId())).willReturn(company);
+        given(companyService.getCompanyById(requestDto.getCompanyId())).willReturn(new CompanyExistResponseDto(company));
+        given(hubClient.getHub(requestDto.getHubId())).willReturn(hubDto);
         doNothing().when(productRepository).save(any(Product.class));
 
-        ProductCreateResponseDto responseDto = productService.createProduct(requestDto);
+        ProductCreateResponseDto responseDto = productService.createProduct(requestDto, userId, product.getHubId(), role);
 
         assertNotNull(responseDto);
         assertEquals("연필", responseDto.getProductName());
@@ -160,7 +176,7 @@ class ProductServiceTest {
 
         given(entityManager.find(Product.class, requestDto.getProductId(), LockModeType.PESSIMISTIC_WRITE)).willReturn(product);
 
-        List<ProductPriceResponseDto> responseDtos = productService.checkAndDeductStock(orderItems);
+        List<ProductPriceResponseDto> responseDtos = productService.checkAndDeductStock(orderItems, role);
 
         assertNotNull(responseDtos);
         assertEquals(7, product.getQuantity().getQuantity());
@@ -179,7 +195,7 @@ class ProductServiceTest {
 
         given(entityManager.find(Product.class, requestDto.getProductId(), LockModeType.PESSIMISTIC_WRITE)).willReturn(product);
 
-        productService.restoreStock(restoreItems);
+        productService.restoreStock(restoreItems, role);
 
         assertEquals(13, product.getQuantity().getQuantity());
     }
@@ -197,7 +213,7 @@ class ProductServiceTest {
                 15
         );
 
-        ProductUpdateResponseDto responseDto = productService.updateProduct(productId, requestDto);
+        ProductUpdateResponseDto responseDto = productService.updateProduct(productId, requestDto, userId, product.getHubId(), role);
 
         assertNotNull(responseDto);
         assertEquals("볼펜", responseDto.getProductName());
@@ -210,10 +226,10 @@ class ProductServiceTest {
 
         given(productRepository.findByProductIdAndDeletedAtIsNull(productId)).willReturn(Optional.ofNullable(product));
 
-        ProductDeleteResponseDto responseDto = productService.deleteProduct(productId);
+        ProductDeleteResponseDto responseDto = productService.deleteProduct(productId, userId, product.getHubId(), role);
 
         assertNotNull(responseDto);
-        assertEquals(1L, responseDto.getDeletedBy());
+        assertEquals(userId, responseDto.getDeletedBy());
     }
 
     @Test

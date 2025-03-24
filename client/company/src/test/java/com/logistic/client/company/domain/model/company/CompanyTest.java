@@ -1,6 +1,6 @@
 package com.logistic.client.company.domain.model.company;
 
-import com.logistic.client.company.application.dto.company.CompanyCreateRequestDto;
+import com.logistic.client.company.presentation.request.CompanyCreateRequestDto;
 import com.logistic.client.company.domain.exception.company.CompanyUpdateException;
 import com.logistic.client.company.domain.exception.company.CompanyValidationException;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +19,7 @@ class CompanyTest {
     void setUp() {
 
         UUID hubId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
         CompanyType companyType = CompanyType.producer;
         String companyName = "업체1";
         String companyTel = "07012345678";
@@ -26,7 +27,7 @@ class CompanyTest {
         String streetAddress = "서울시 중구";
         String detailAddress = "1층";
 
-        company = new Company(new CompanyCreateRequestDto(hubId, companyType, companyName, companyTel, postalCode, streetAddress, detailAddress));
+        company = new Company(new CompanyCreateRequestDto(hubId, userId, companyType, companyName, companyTel, postalCode, streetAddress, detailAddress));
     }
 
     @Test
