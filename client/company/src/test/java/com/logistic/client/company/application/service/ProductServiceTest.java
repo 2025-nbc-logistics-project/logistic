@@ -4,7 +4,9 @@ import static org.mockito.BDDMockito.*;
 
 import com.logistic.client.company.application.dto.common.CompanyExistResponseDto;
 import com.logistic.client.company.application.dto.common.HubDto;
+import com.logistic.client.company.application.dto.common.UserDto;
 import com.logistic.client.company.infrastructure.client.HubClient;
+import com.logistic.client.company.infrastructure.client.UserClient;
 import com.logistic.client.company.presentation.request.CompanyCreateRequestDto;
 import com.logistic.client.company.application.dto.product.*;
 import com.logistic.client.company.domain.model.company.Company;
@@ -47,6 +49,9 @@ class ProductServiceTest {
     @Mock
     private HubClient hubClient;
 
+    @Mock
+    private UserClient userClient;
+
     @InjectMocks
     private ProductService productService;
 
@@ -55,6 +60,7 @@ class ProductServiceTest {
     private Company company;
     private UUID userId = UUID.randomUUID();
     private String role = "HUB_MANAGER";
+    private String username = "test";
 
     @BeforeEach
     void setUp() {
@@ -73,9 +79,9 @@ class ProductServiceTest {
         int quantity = 10;
 
         CompanyCreateRequestDto requestDto = new CompanyCreateRequestDto(
-                hubId, userId, companyType, companyName, companyTel, postalCode, streetAddress, detailAddress);
+                hubId, companyType, companyName, companyTel, postalCode, streetAddress, detailAddress);
 
-        company = new Company(requestDto);
+        company = new Company(requestDto, userId);
         product = new Product(new ProductCreateRequestDto(companyId, hubId, productName, price, quantity));
         productId = UUID.randomUUID();
         ReflectionTestUtils.setField(product, "productId", productId);
@@ -96,11 +102,15 @@ class ProductServiceTest {
         ReflectionTestUtils.setField(hubDto, "id", product.getHubId());
         ReflectionTestUtils.setField(hubDto, "name", "허브1");
 
+        UserDto userDto = new UserDto();
+        ReflectionTestUtils.setField(userDto, "hubId", company.getHubId());
+
         given(companyService.getCompanyById(requestDto.getCompanyId())).willReturn(new CompanyExistResponseDto(company));
         given(hubClient.getHub(requestDto.getHubId())).willReturn(hubDto);
+        given(userClient.getHubId(username)).willReturn(userDto);
         doNothing().when(productRepository).save(any(Product.class));
 
-        ProductCreateResponseDto responseDto = productService.createProduct(requestDto, userId, product.getHubId(), role);
+        ProductCreateResponseDto responseDto = productService.createProduct(requestDto, userId, username, role);
 
         assertNotNull(responseDto);
         assertEquals("연필", responseDto.getProductName());
@@ -213,7 +223,12 @@ class ProductServiceTest {
                 15
         );
 
-        ProductUpdateResponseDto responseDto = productService.updateProduct(productId, requestDto, userId, product.getHubId(), role);
+        UserDto userDto = new UserDto();
+        ReflectionTestUtils.setField(userDto, "hubId", company.getHubId());
+
+        given(userClient.getHubId(username)).willReturn(userDto);
+
+        ProductUpdateResponseDto responseDto = productService.updateProduct(productId, requestDto, userId, username, role);
 
         assertNotNull(responseDto);
         assertEquals("볼펜", responseDto.getProductName());
@@ -224,9 +239,13 @@ class ProductServiceTest {
     @DisplayName("상품 삭제 성공")
     void deleteProductSuccess() {
 
+        UserDto userDto = new UserDto();
+        ReflectionTestUtils.setField(userDto, "hubId", company.getHubId());
+
+        given(userClient.getHubId(username)).willReturn(userDto);
         given(productRepository.findByProductIdAndDeletedAtIsNull(productId)).willReturn(Optional.ofNullable(product));
 
-        ProductDeleteResponseDto responseDto = productService.deleteProduct(productId, userId, product.getHubId(), role);
+        ProductDeleteResponseDto responseDto = productService.deleteProduct(productId, userId, username, role);
 
         assertNotNull(responseDto);
         assertEquals(userId, responseDto.getDeletedBy());

@@ -27,7 +27,7 @@ class CompanyTest {
         String streetAddress = "서울시 중구";
         String detailAddress = "1층";
 
-        company = new Company(new CompanyCreateRequestDto(hubId, userId, companyType, companyName, companyTel, postalCode, streetAddress, detailAddress));
+        company = new Company(new CompanyCreateRequestDto(hubId, companyType, companyName, companyTel, postalCode, streetAddress, detailAddress), userId);
     }
 
     @Test

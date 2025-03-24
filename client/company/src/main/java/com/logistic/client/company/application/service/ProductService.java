@@ -1,6 +1,7 @@
 package com.logistic.client.company.application.service;
 
 import com.logistic.client.company.application.dto.common.CompanyExistResponseDto;
+import com.logistic.client.company.application.dto.common.UserDto;
 import com.logistic.client.company.application.dto.product.*;
 import com.logistic.client.company.domain.exception.common.HubNotFoundException;
 import com.logistic.client.company.domain.exception.common.UnauthorizedAccessException;
@@ -10,6 +11,7 @@ import com.logistic.client.company.domain.model.product.ProductInfo;
 import com.logistic.client.company.domain.model.product.Quantity;
 import com.logistic.client.company.domain.repository.ProductRepository;
 import com.logistic.client.company.infrastructure.client.HubClient;
+import com.logistic.client.company.infrastructure.client.UserClient;
 import com.logistic.client.company.presentation.request.OrderItemRequestDto;
 import com.logistic.client.company.presentation.request.ProductCreateRequestDto;
 import com.logistic.client.company.presentation.request.ProductUpdateRequestDto;
@@ -38,14 +40,21 @@ public class ProductService {
     private EntityManager entityManager;
     private final CompanyService companyService;
     private final HubClient hubClient;
+    private final UserClient userClient;
 
     @Transactional
     public ProductCreateResponseDto createProduct(
             ProductCreateRequestDto requestDto,
             UUID userId,
-            UUID hubId,
+            String username,
             String role
     ) {
+
+        UserDto userDto = userClient.getHubId(username);
+
+        if (userDto == null || userDto.getHubId() == null) {
+            throw new HubNotFoundException();
+        }
 
         //존재하는 업체인지
         CompanyExistResponseDto company = companyService.getCompanyById(requestDto.getCompanyId());
@@ -53,7 +62,7 @@ public class ProductService {
         if(
                 !("MASTER".equals(role)) //마스터 관리자가 아니고
                         && !("HUB_MANAGER".equals(role) //허브 관리자도 아니고
-                        && hubId.equals(requestDto.getHubId())) //허브 관리자여도 담당 허브가 아니고
+                        && userDto.getHubId().equals(requestDto.getHubId())) //허브 관리자여도 담당 허브가 아니고
                         && !("COMPANY_MANAGER".equals(role)) //업체 담당자도 아니고
                         && !userId.equals(company.getUserId()) //업체 담당자여도 담당 업체가 아니라면
         ){
@@ -185,10 +194,16 @@ public class ProductService {
             UUID productId,
             ProductUpdateRequestDto requestDto,
             UUID userId,
-            UUID hubId,
+            String username,
             String role
 
     ) {
+
+        UserDto userDto = userClient.getHubId(username);
+
+        if (userDto == null || userDto.getHubId() == null) {
+            throw new HubNotFoundException();
+        }
 
         //존재하는 상품인지
         Product product = findByProductId(productId);
@@ -197,7 +212,7 @@ public class ProductService {
         if(
                 !("MASTER".equals(role)) //마스터 관리자가 아니고
                         && !("HUB_MANAGER".equals(role) //허브 관리자도 아니고
-                        && hubId.equals(product.getHubId())) //허브 관리자여도 담당 허브가 아니고
+                        && userDto.getHubId().equals(product.getHubId())) //허브 관리자여도 담당 허브가 아니고
                         && !("COMPANY_MANAGER".equals(role)) //업체 담당자도 아니고
                         && !userId.equals(company.getUserId()) //업체 담당자여도 담당 업체가 아니라면
         ) {
@@ -236,16 +251,22 @@ public class ProductService {
     public ProductDeleteResponseDto deleteProduct(
             UUID productId,
             UUID userId,
-            UUID hubId,
+            String username,
             String role
     ) {
+
+        UserDto userDto = userClient.getHubId(username);
+
+        if (userDto == null || userDto.getHubId() == null) {
+            throw new HubNotFoundException();
+        }
 
         Product product = findByProductId(productId);
 
         if(
                 !("MASTER".equals(role)) //마스터 관리자가 아니고
                         && !("HUB_MANAGER".equals(role) //허브 관리자도 아니고
-                        && hubId.equals(product.getHubId())) //허브 관리자여도 담당 허브가 아니라면
+                        && userDto.getHubId().equals(product.getHubId())) //허브 관리자여도 담당 허브가 아니라면
         ){
             throw new UnauthorizedAccessException();
         }
