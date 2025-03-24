@@ -29,14 +29,8 @@ public class DeliveryApplicationService {
     private final HubClient hubClient;
     private final OrderClient orderClient;
 
-    public FeignDeliveryResponse createDelivery(CreateDeliveryRequest request, String role) {
-
-        // (1). 권한 검증
-        if (!role.equals("MASTER")) {
-            throw new UnauthorizedException("생성 권한이 없습니다.");
-        }
-
-        // (2). request 를 기반으로 delivery 엔티티 생성
+    public FeignDeliveryResponse createDelivery(CreateDeliveryRequest request) {
+        // (1). request 를 기반으로 delivery 엔티티 생성
         Delivery delivery = new Delivery(
             request.getOrderId(),
             new DeliveryManagerId(request.getReceiverDeliveryManager(), request.getSupplierDeliveryManager()),
@@ -44,19 +38,22 @@ public class DeliveryApplicationService {
             deliveryDomainService.buildShippingInfo(request.getReceiverAddress(), request.getSupplierAddress())
         );
 
-        // (3). Hub 서비스를 호출하여 출발 허브부터 최종 목적지 허브까지의 경로 계산 요청, 각 허브 간의 이동 경로를 List 로 반환 받음
-        List<HubRouteResponse> routeResponses = hubClient.getHubRoutes(
+        // (2). Hub 서비스를 호출하여 출발 허브부터 최종 목적지 허브까지의 경로 계산 요청, 각 허브 간의 이동 경로를 List 로 반환 받음
+        FindRouteResponse findRouteResponses = hubClient.getHubRoutes(
             request.getDepartureHubId(),
             request.getDestinationHubId()
         );
 
-        // (4). 허브 간의 이동 경로 List 를 기반으로 DeliveryRoute 생성 및 delivery 엔티티에 추가
+        List<HubRouteResponse> routeResponses =
+            HubRouteMapper.toHubRouteResponses(findRouteResponses, null);
+
+        // (3). 허브 간의 이동 경로 List 를 기반으로 DeliveryRoute 생성 및 delivery 엔티티에 추가
         deliveryDomainService.addRoutesToDelivery(delivery, routeResponses);
 
-        // (5). DB에 저장
+        // (4). DB에 저장
         deliveryRepository.save(delivery);
 
-        // 이벤트 발행 또는 Order 서비스를 호출하여 배송 데이터 업데이트 및 슬랙 메시지 발송 요청 (추후 반영 예정)
+        // TODO : 이벤트 발행 또는 Order 서비스를 호출하여 배송 데이터 업데이트 및 슬랙 메시지 발송 요청 (추후 반영 예정)
         return new FeignDeliveryResponse(delivery);
     }
 

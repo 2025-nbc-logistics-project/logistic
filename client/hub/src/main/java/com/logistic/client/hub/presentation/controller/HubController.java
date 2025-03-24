@@ -112,11 +112,11 @@ public class HubController {
   }
 
   @GetMapping("/feign/routes")
-  public ResponseEntity<ApiResponse<FindRouteResponse>> getHubRoutes(
+  public ResponseEntity<FindRouteResponse> getHubRoutes(
       @RequestParam UUID departHubId,
       @RequestParam UUID arriveHubId) {
     FindRouteResponse route = hubRouteService.findOptimalRoute(departHubId, arriveHubId);
-    return ResponseUtil.success(route);
+    return ResponseEntity.ok(route);
   }
 
   @PostMapping("/feign/names")

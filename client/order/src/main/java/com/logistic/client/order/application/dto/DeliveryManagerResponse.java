@@ -1,15 +1,15 @@
 package com.logistic.client.order.application.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
-@Getter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class DeliveryManagerResponse {
     private UUID deliveryManagerId;
-    private String deliveryManagerName;
+    private String username;
 }

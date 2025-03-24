@@ -19,7 +19,7 @@ public class DeliveryRoute extends BaseEntity {
     @JoinColumn(name = "delivery_id")
     private Delivery delivery;
 
-    private int sequence;
+    private Integer sequence;
 
     @Embedded
     private DeliveryHubInfo deliveryHubInfo;
