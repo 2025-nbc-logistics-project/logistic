@@ -59,7 +59,7 @@ public class Hub extends BaseEntity {
     this.location = location;
   }
 
-  public void deleteHub(UUID deleterId) {
+  public void deleteHub(String deleterId) {
     if (super.isDeleted()) {
       throw new HubAlreadyDeletedException(HubExceptionCode.HUB_ALREADY_DELETED);
     }

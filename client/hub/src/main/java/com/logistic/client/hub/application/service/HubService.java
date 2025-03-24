@@ -46,7 +46,7 @@ public class HubService {
       throw new HubAlreadyDeletedException(HubExceptionCode.HUB_ALREADY_DELETED);
     }
 
-    hub.deleteHub(user.getUserId());
+    hub.deleteHub(user.getUsername());
     hubRepository.delete(hub);
   }
 

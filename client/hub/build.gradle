@@ -38,6 +38,9 @@ dependencies {
 	// (Optional) AssertJ
 	testImplementation "org.assertj:assertj-core:3.24.2"
 
+	// 직렬화
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.postgresql:postgresql:42.7.2'
