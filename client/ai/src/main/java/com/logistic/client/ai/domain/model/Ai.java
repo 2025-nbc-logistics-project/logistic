@@ -22,10 +22,10 @@ public class Ai extends BaseEntity {
     @Column(name = "ai_id", nullable = false, updatable = false, unique = true)
     private UUID aiId;
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String request_text;
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String response_text;
 
     public Ai(String request_text, String response_text) {

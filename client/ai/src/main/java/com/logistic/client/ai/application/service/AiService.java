@@ -3,7 +3,6 @@ package com.logistic.client.ai.application.service;
 import com.logistic.client.ai.application.dto.*;
 import com.logistic.client.ai.domain.model.Ai;
 import com.logistic.client.ai.domain.repository.AiRepository;
-import com.logistic.client.ai.infrastructure.client.SlackClient;
 import com.logistic.client.ai.presentation.request.AiRequestDto;
 import lombok.RequiredArgsConstructor;
 
@@ -23,28 +22,25 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AiService {
 
-    @Value("${gemini.uri}")
+    @Value("${GEMINI_URL}")
     private String geminiUrl;
 
-    @Value("${gemini.key}")
+    @Value("${GEMINI_KEY}")
     private String apiKey;
 
     private final AiRepository aiRepository;
-    private final SlackClient slackClient;
 
     @Transactional
-    public AiResponseDto createAi(AiRequestDto requestDto) {
+    public String createAi(AiRequestDto requestDto) {
 
-        String text = String.format("1. 상품 및 수량정보: %s%n"
-                + "2. 주문 요청 사항: %s%n"
-                + "3. 발송지: %s%n"
-                + "4. 경유지: %s%n"
-                + "5. 도착지: %s%n"
-                + "배송 담당자의 근무시간은 오전 9시부터 오후 6시까지야. %n"
-                + "센터에서 센터까지 24시간 걸린다고 가정하고, 같은 도시 내의 센터에서 도착지까지는 6시간 걸린다고 가정하자.%n"
-                + "이 데이터들을 모두 고려해서 상품이 주문한 업체가 원하는 시간에 도착할 수 있도록 언제까지 발송해야 하는지,즉 최종 발송 시한을 계산해줘. %n"
-                + "그리고 대답은 '위 내용을 기반으로 도출된 최종 발송 시한은 몇 월 며칠 몇 시 입니다'라고만 대답해줘.",
-                requestDto.getSlackOrderItems(),
+        String text = String.format("1. 주문 요청 사항: %s%n"
+                + "2. 발송지: %s%n"
+                + "3. 경유지: %s%n"
+                + "4. 도착지: %s%n"
+                + "5. 배송 담당자 근무시간: 오전 9시부터 오후 6시까지 근무함.%n"
+                + "발송지와 경유지에 있는 각 센터들의 이동 시간은 하루입니다. 그리고 경유지의 마지막 센터에서 도착지까지 이동 시간은 6시간 입니다.%n"
+                + "위의 조건을 모두 고려해서 상품이 주문한 업체가 원하는 시간에 도착할 수 있도록 언제까지 발송해야 하는지,즉 최종 발송 시한을 계산해주는데 역산을 이용해서 계산해주세요. %n"
+                + "그리고 마지막에 '위 내용을 기반으로 도출된 최종 발송 시한은 몇 월 며칠 몇 시 입니다'라는 문장을 추가해주세요.",
                 requestDto.getOrderRequest(),
                 requestDto.getDepartureHubName(),
                 requestDto.getTransitHubs(),
@@ -75,18 +71,16 @@ public class AiService {
                 && !response.getBody().getCandidates().get(0).getContent().getParts().isEmpty()
                 && response.getBody().getCandidates().get(0).getContent().getParts().get(0).getText() != null
         ) {
-            String finalShippingDeadline = response.getBody().getCandidates().get(0).getContent().getParts().get(0).getText();
+            String responseText = response.getBody().getCandidates().get(0).getContent().getParts().get(0).getText();
+            String finalShippingDeadline = getFianlDeadling(responseText);
 
             Ai ai = new Ai(text, finalShippingDeadline);
             aiRepository.save(ai);
 
-            SlackRequestDto slackRequestDto = new SlackRequestDto(finalShippingDeadline);
-            slackClient.createOrderSlack(slackRequestDto);
-
-            return new AiResponseDto(finalShippingDeadline);
+            return finalShippingDeadline;
         }
 
-        return new AiResponseDto("최종 발송 시한을 계산할 수 없습니다.");
+        return "최종 발송 시한을 계산할 수 없습니다.";
     }
 
     public Page<AiListResponseDto> getAis(int page, int limit, String sortBy, String order, String role) {
@@ -101,5 +95,18 @@ public class AiService {
         Pageable pageable = PageRequest.of(page, limit);
         Page<Ai> ais = aiRepository.getAis(pageable, sortBy, order);
         return ais.map(AiListResponseDto::new);
+    }
+
+    public String getFianlDeadling(String responseText) {
+
+        String keyword = "위 내용을 기반으로 도출된 최종 발송 시한은";
+
+        if(responseText.contains(keyword)) {
+            String result = responseText.substring(responseText.indexOf(keyword));
+            result = result.replace("**", "");
+            return result.trim();
+        }
+
+        return "최종 발송 시한을 계산할 수 없습니다.";
     }
 }
