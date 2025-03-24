@@ -15,6 +15,7 @@ import java.util.UUID;
 public interface UserRepository {
     Optional<User> findByUsernameAndIsDeletedFalse(String username);
     List<User> findAllByIsDeletedFalse();
+    Page<User> findAllByIsDeletedFalse(PageRequest pageable);
     User save(User user);
     Boolean existsByUsernameAndIsDeletedFalse(String username);
     Page<User> findAllByRoleAndIsDeletedFalse(UserRole role, PageRequest pageable);

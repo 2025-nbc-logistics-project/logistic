@@ -34,6 +34,11 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public Page<User> findAllByIsDeletedFalse(PageRequest pageable) {
+        return jpaUserRepository.findAllByIsDeletedFalse(pageable);
+    }
+
+    @Override
     public User save(User user) {
         return jpaUserRepository.save(user);
     }

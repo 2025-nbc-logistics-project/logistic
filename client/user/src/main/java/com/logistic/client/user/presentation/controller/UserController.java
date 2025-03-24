@@ -62,7 +62,7 @@ public class UserController {
     }
 
     @Operation(summary = "허브 담당자 조회", description = "허브 아이디를 통해 허브 담당자 조회")
-    @GetMapping("/{hubId}")
+    @GetMapping("/hub/{hubId}")
     public ResponseEntity<?> getUserByHubId(@PathVariable UUID hubId) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserByHubId(hubId));
     }
@@ -81,7 +81,7 @@ public class UserController {
             size = 10;
         }
         Sort.Direction direction = orderBy.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
-        PageRequest pageable = PageRequest.of(page, size, Sort.by(direction, orderBy));
+        PageRequest pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUsers(userRole, pageable, searchRole));
     }
