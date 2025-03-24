@@ -22,12 +22,15 @@ import com.querydsl.core.BooleanBuilder;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 
 @Service
@@ -109,7 +112,7 @@ public class UserService {
         }
     }
 
-    public Page<UserResDTO> getUsers(String userRole, Pageable pageable, UserRole searchRole) {
+    public Page<UserResDTO> getUsers(String userRole, PageRequest pageable, UserRole searchRole) {
         try {
             UserRole role = UserRole.valueOf(userRole);
 
@@ -117,14 +120,7 @@ public class UserService {
                 throw new AccessDeniedException("유저 정보에 대해 접근 권한이 존재하지 않습니다.");
             }
 
-            QUser qUser = QUser.user;
-            BooleanBuilder builder = new BooleanBuilder();
-            builder.and(qUser.isDeleted.eq(false));
-
-            if(searchRole != null) {
-                builder.and(qUser.role.eq(searchRole));
-            }
-            Page<User> userList = userRepository.findAll(builder, pageable);
+            Page<User> userList = userRepository.findAllByRoleAndIsDeletedFalse(searchRole, pageable);
 
             if(userList.isEmpty()) {
                 throw new IllegalArgumentException("조건에 맞는 유저가 존재하지 않습니다.");

@@ -40,7 +40,10 @@ public class SecurityConfig {
             authorization.requestMatchers(
                     "/api/v1/users/signup",
                     "/api/v1/users/signin",
-                    "/api/v1/auth/validate"
+                    "/api/v1/auth/validate",
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**",
+                    "/swagger-ui.html"
             ).permitAll();
 
             authorization.anyRequest().authenticated();

@@ -7,13 +7,13 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/logistic
-    username: logistic
-    password: logistic
+    url: jdbc:postgresql://localhost:5432/db_user
+    username: postgres
+    password: 5432
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
 
 service:
