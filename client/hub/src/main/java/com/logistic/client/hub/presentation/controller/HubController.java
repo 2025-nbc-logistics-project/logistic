@@ -12,6 +12,8 @@ import com.logistic.client.hub.domain.model.Hub;
 import com.logistic.client.hub.presentation.request.CreateHubRequest;
 import com.logistic.client.hub.presentation.request.UpdateHubRequest;
 import com.logistic.client.hub.presentation.response.HubResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.UUID;
@@ -22,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Hub API")
 @RestController
 @RequestMapping("api/v1/hubs")
 @AllArgsConstructor
@@ -31,7 +34,7 @@ public class HubController {
   private final HubRouteService hubRouteService;
   private final UserClient userClient;
 
-
+  @Operation(summary = "허브 생성", description = "새로운 허브를 생성합니다.")
   @PostMapping()
   public ResponseEntity<ApiResponse<HubResponse>> createHub(
       @Valid @RequestBody CreateHubRequest createHubRequest,
@@ -47,6 +50,7 @@ public class HubController {
     return ResponseUtil.success(hubResponse);
   }
 
+  @Operation(summary = "허브 삭제", description = "기존 허브를 삭제합니다.")
   @PatchMapping("/{hubId}/delete")
   public ResponseEntity<ApiResponse<Void>> deleteHub(@PathVariable UUID hubId,
       HttpServletRequest request) {
@@ -58,6 +62,10 @@ public class HubController {
     return ResponseUtil.noContent();
   }
 
+  @Operation(
+      summary = "허브 단일 조회 (내부)",
+      description = "허브 ID로 특정 허브의 상세 정보를 조회합니다."
+  )
   @GetMapping("/{hubId}")
   public ResponseEntity<ApiResponse<HubResponse>> getHubById(@PathVariable UUID hubId) {
     Hub hub = hubService.getHub(hubId);
@@ -65,6 +73,10 @@ public class HubController {
     return ResponseUtil.success(hubResponse);
   }
 
+  @Operation(
+      summary = "허브 단일 조회 (Feign)",
+      description = "Feign 클라이언트에서 사용하기 위한 허브 단일 조회 API입니다."
+  )
   @GetMapping("/feign/{hubId}")
   public ResponseEntity<ApiResponse<HubResponse>> getHubByIdFeign(@PathVariable UUID hubId) {
     Hub hub = hubService.getHub(hubId);
@@ -72,6 +84,10 @@ public class HubController {
     return ResponseUtil.success(hubResponse);
   }
 
+  @Operation(
+      summary = "허브 목록 조회",
+      description = "전체 허브 목록을 조회합니다."
+  )
   @GetMapping()
   public ResponseEntity<ApiResponse<List<HubResponse>>> getAllHubs() {
     List<Hub> hubs = hubService.getAllHubs();
@@ -81,6 +97,10 @@ public class HubController {
 
   }
 
+  @Operation(
+      summary = "허브 수정",
+      description = "허브 ID와 수정 요청 정보를 받아 허브 정보를 업데이트합니다."
+  )
   @PatchMapping("/{hubId}")
   public ResponseEntity<ApiResponse<HubResponse>> updateHub(
       @PathVariable UUID hubId,
@@ -96,6 +116,10 @@ public class HubController {
     return ResponseUtil.success(hubResponse);
   }
 
+  @Operation(
+      summary = "허브 검색",
+      description = "검색 키워드, 페이지, 정렬 옵션 등을 통해 허브 목록을 검색합니다."
+  )
   @GetMapping("/search")
   public ResponseEntity<ApiResponse<List<HubResponse>>> searchHubs(
       @RequestParam(required = false) String key,
@@ -111,6 +135,10 @@ public class HubController {
     return ResponseUtil.success(responseList);
   }
 
+  @Operation(
+      summary = "허브 경로 조회 (Feign)",
+      description = "출발 허브와 도착 허브 ID를 이용해 최적 경로를 조회합니다."
+  )
   @GetMapping("/feign/routes")
   public ResponseEntity<ApiResponse<FindRouteResponse>> getHubRoutes(
       @RequestParam UUID departHubId,
@@ -119,6 +147,10 @@ public class HubController {
     return ResponseUtil.success(route);
   }
 
+  @Operation(
+      summary = "허브 이름 조회 (Feign)",
+      description = "허브 ID 목록에 해당하는 허브들의 이름을 반환합니다."
+  )
   @PostMapping("/feign/names")
   public ResponseEntity<ApiResponse<List<GetHubNameResponse>>> getHubNames(
       @RequestBody List<UUID> hubIds) {
