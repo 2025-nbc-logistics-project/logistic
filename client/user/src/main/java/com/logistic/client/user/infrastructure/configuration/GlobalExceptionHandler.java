@@ -61,7 +61,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotDeliveryManagerException.class)
     public ResponseEntity<ExceptionResponse> notDeliveryManagerException(NotDeliveryManagerException ex) {
-        int status = HttpServletResponse.SC_BAD_REQUEST;
+        int status = HttpServletResponse.SC_NOT_FOUND;
         ExceptionResponse response = new ExceptionResponse("NOT_DELIVERY_MANAGER", ex.getMessage(), status);
         return ResponseEntity.status(status).body(response);
     }
