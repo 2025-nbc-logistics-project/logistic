@@ -42,9 +42,9 @@ public class Company extends BaseEntity {
     @Embedded
     private Address address;
 
-    public Company(CompanyCreateRequestDto requestDto){
+    public Company(CompanyCreateRequestDto requestDto, UUID userId){
         this.hubId = requestDto.getHubId();
-        this.userId = requestDto.getUserId();
+        this.userId = userId;
         this.companyType = requestDto.getCompanyType();
         this.companyName = requestDto.getCompanyName();
         this.companyTel = requestDto.getCompanyTel();

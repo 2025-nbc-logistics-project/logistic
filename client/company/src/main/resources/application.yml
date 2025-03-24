@@ -4,13 +4,13 @@ spring:
   config:
     import: optional:file:.env[.properties]
   datasource:
-    url: jdbc:postgresql://localhost:5432/logistic_company
+    url: jdbc:postgresql://localhost:5432/db_company
     username: postgres
     password: 5432
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
     properties:
       hibernate:
@@ -27,3 +27,10 @@ logging:
 
 server:
   port: 18085
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  default-produces-media-type: application/json
+  default-consumes-media-type: application/json
+
