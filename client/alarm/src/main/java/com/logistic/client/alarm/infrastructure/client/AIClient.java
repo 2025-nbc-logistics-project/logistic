@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(name = "ai")
 public interface AIClient {
-    @PostMapping("/api/v1/ai/slack")
+    @PostMapping("/api/v1/ai")
     String createSlackMsg(@RequestBody AiRequestDto request);
 }

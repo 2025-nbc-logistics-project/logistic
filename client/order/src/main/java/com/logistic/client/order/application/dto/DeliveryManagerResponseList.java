@@ -1,15 +1,17 @@
-package com.logistic.client.alarm.application.dto;
+package com.logistic.client.order.application.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.UUID;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransitHubRequest {
-    private List<UUID> hubIds;
+public class DeliveryManagerResponseList {
+    List<DeliveryManagerResponse> deliveryManagers;
 }

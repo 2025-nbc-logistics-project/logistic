@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class OrderDomainService {
@@ -66,14 +67,14 @@ public class OrderDomainService {
 
         // 경유 허브 Id 리스트
         List<UUID> transitHubs = delivery.getDeliveryRoutes().stream()
-            .map(FeignDeliveryRouteResponse::getDestinationHubId)
+            .flatMap(route -> Stream.of(route.getDepartureHubId(), route.getDestinationHubId()))
             .toList();
 
         // 수령 업체의 주소
         AddressResponse destinationAddress = new AddressResponse(
             delivery.getReceiverPostalCode(),
-            delivery.getReceiverDetailAddress(),
-            delivery.getReceiverStreetAddress()
+            delivery.getReceiverStreetAddress(),
+            delivery.getReceiverDetailAddress()
         );
 
 

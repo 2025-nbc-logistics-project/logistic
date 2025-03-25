@@ -23,11 +23,9 @@ public class DeliveryController {
     private final DeliveryApplicationService deliveryApplicationService;
 
     @PostMapping("")
-    public FeignDeliveryResponse createDelivery(@RequestBody CreateDeliveryRequest requestDto,
-                                                HttpServletRequest request) {
-        String role = request.getHeader("role");
+    public FeignDeliveryResponse createDelivery(@RequestBody CreateDeliveryRequest requestDto) {
 
-        return deliveryApplicationService.createDelivery(requestDto, role);
+        return deliveryApplicationService.createDelivery(requestDto);
     }
 
     @GetMapping("/{deliveryId}")

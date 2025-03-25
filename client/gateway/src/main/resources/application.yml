@@ -37,12 +37,12 @@ spring:
         - id: ai
           uri: lb://ai
           predicates:
-            - Path=/ai/**
+            - Path=/api/v1/ai/**
 
         - id: alarm
           uri: lb://alarm
           predicates:
-            - Path=/alarm/**
+            - Path=/api/v1/slack/**
 
 server:
   port: 18081

@@ -10,10 +10,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HubRouteResponse {
-    private int sequence;
+    private Integer sequence;
     private UUID departureHubId;
     private UUID destinationHubId;
     private UUID deliveryManagerId;
-    private Integer distance;
-    private Integer time;
+    private double distance;
+    private double time;
 }

@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.UUID;
 
-@FeignClient(name = "user")
+@FeignClient(name = "users")
 public interface UserClient {
-    @GetMapping("/api/v1/users/hub/{hubId}")
+    @GetMapping("/api/v1/users/feign/hub/{hubId}")
     String getHubManagerSlackId(@PathVariable("hubId") UUID hubId);
 
 }

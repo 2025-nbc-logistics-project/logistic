@@ -111,18 +111,8 @@ public class ProductService {
 
     @Transactional
     public List<ProductPriceResponseDto> checkAndDeductStock(
-            List<OrderItemRequestDto> orderItems,
-            String role
+            List<OrderItemRequestDto> orderItems
     ) {
-
-        if(
-                !("MASTER".equals(role)) //마스터 관리자가 아니고
-                        && !("HUB_MANAGER".equals(role)) //허브 관리자도 아니고
-                        && !("COMPANY_MANAGER".equals(role)) //업체 담당자도 아니라면
-        ){
-            throw new UnauthorizedAccessException();
-        }
-
         List<ProductPriceResponseDto> responseDtoList = new ArrayList<>();
 
         for(OrderItemRequestDto orderItem : orderItems) {

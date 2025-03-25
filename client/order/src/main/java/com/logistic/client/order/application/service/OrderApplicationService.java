@@ -15,6 +15,7 @@ import com.logistic.client.order.presentation.request.OrderRequestDto;
 import com.logistic.client.order.presentation.request.OrderSearchDto;
 import com.logistic.client.order.presentation.request.OrderUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderApplicationService {
 
     private final CompanyClient companyClient;
@@ -66,24 +68,32 @@ public class OrderApplicationService {
         orderRepository.save(order);
 
         // (5) 배송 담당자 서비스 호출 (허브 Id → 업체 배송 담당자 Id)
-        DeliveryManagerResponse supplierDeliveryManagerResponse = // 여기서 업체 배송 담당자명도 같이 전달 받음
+        List<DeliveryManagerResponse> supplierDeliveryManagerResponses = // 여기서 업체 배송 담당자명도 같이 전달 받음
             deliveryManagerClient.getDeliveryManagerIdByHubId(supplierResponse.getHubId());
-        DeliveryManagerResponse receiverDeliveryManagerResponse =
+        List<DeliveryManagerResponse> receiverDeliveryManagerResponses =
             deliveryManagerClient.getDeliveryManagerIdByHubId(receiverResponse.getHubId());
+
+        Random random1 = new Random();
+        int sequence1 = random1.nextInt(supplierDeliveryManagerResponses.size());
+        Random random2 = new Random();
+        int sequence2 = random2.nextInt(receiverDeliveryManagerResponses.size());
 
         // (6). 배송 엔티티를 생성하기 위해 필요한 Request 데이터 생성
         CreateDeliveryRequest createDeliveryRequest = new CreateDeliveryRequest(
             order.getOrderId(),
             supplierResponse.getHubId(),
-            supplierDeliveryManagerResponse.getDeliveryManagerId(),
+            supplierDeliveryManagerResponses.get(sequence1).getDeliveryManagerId(),
             supplierResponse.getAddress(),
             receiverResponse.getHubId(),
-            receiverDeliveryManagerResponse.getDeliveryManagerId(),
+            receiverDeliveryManagerResponses.get(sequence2).getDeliveryManagerId(),
             receiverResponse.getAddress()
         );
 
         // (7). 배송 엔티티 생성 요청
         FeignDeliveryResponse deliveryResponse = deliveryClient.createDelivery(createDeliveryRequest);
+
+        log.debug(deliveryResponse.getReceiverDetailAddress());
+        log.debug(deliveryResponse.getReceiverStreetAddress());
 
         // (8). 배송 데이터 업데이트
         order.addDelivery(deliveryResponse.getDeliveryId());
@@ -94,10 +104,11 @@ public class OrderApplicationService {
             deliveryResponse,
             productNameQuantities,
             receiverResponse.getCompanyName(),
-            supplierDeliveryManagerResponse.getDeliveryManagerName()
+            supplierDeliveryManagerResponses.get(sequence1).getUsername()
         );
         slackClient.createSlackMessage(slackRequestDto);
 
+        log.debug(slackRequestDto.getDestinationAddress().getDetailAddress());
         return new OrderResponseDto(order);
     }
 

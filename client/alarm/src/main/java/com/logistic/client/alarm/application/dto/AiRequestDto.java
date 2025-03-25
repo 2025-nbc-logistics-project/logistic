@@ -10,13 +10,13 @@ import java.util.UUID;
 @NoArgsConstructor
 public class AiRequestDto {
     private String orderRequest;  // 주문 요청 사항
-    private UUID departureHubId;  // 출발 허브 Id
+    private String departureHubName;  // 출발 허브명
     private List<String> transitHubs;  // 경유 허브명 리스트
     private AddressResponse destinationAddress; // 수령 업체 주소
 
-    public AiRequestDto(OrderInfoDto orderInfoDto, List<String> transitHubs) {
+    public AiRequestDto(OrderInfoDto orderInfoDto, String departureHubName, List<String> transitHubs) {
         this.orderRequest = orderInfoDto.getOrderRequest();
-        this. departureHubId = orderInfoDto.getDepartureHubId();
+        this.departureHubName = departureHubName;
         this.transitHubs = transitHubs;
         this.destinationAddress = orderInfoDto.getDestinationAddress();
     }

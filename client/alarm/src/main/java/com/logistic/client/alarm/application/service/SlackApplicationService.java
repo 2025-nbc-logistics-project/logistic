@@ -15,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -33,14 +35,23 @@ public class SlackApplicationService {
         String hubManagerSlackId = userClient.getHubManagerSlackId(requestDto.getDepartureHubId());
 
         // 허브 서비스를 호출하여 경유 허브 Id를 통해 허브 이름 리스트를 반환 받음
-        TransitHubResponse transitHubNames = hubClient.getHubNames(new TransitHubRequest(requestDto.getTransitHubs()));
+        List<UUID> allHubsIds = new ArrayList<>();
+        allHubsIds.add(requestDto.getDepartureHubId());
+        allHubsIds.addAll(requestDto.getTransitHubs());
+        TransitHubResponse namesResponse = hubClient.getHubNames(new TransitHubRequest(allHubsIds));
+
+        String departureHubName = namesResponse.getHubNames().get(requestDto.getDepartureHubId());
+
+        List<String> transitHubNames = requestDto.getTransitHubs().stream()
+            .map(hubId -> namesResponse.getHubNames().get(hubId))
+            .toList();
 
         // AI 서비스를 호출하여 주문 정보를 토대로 AI 응답을 반환 받음
-        AiRequestDto aiRequestDto = new AiRequestDto(requestDto, transitHubNames.getHubNames());
+        AiRequestDto aiRequestDto = new AiRequestDto(requestDto, departureHubName, transitHubNames);
         String aiResponse = aiClient.createSlackMsg(aiRequestDto);
 
         // 전달 형식에 맞게 메시지 가공
-        String finalMessage = buildSlackMessage(requestDto, transitHubNames, aiResponse);
+        String finalMessage = buildSlackMessage(requestDto, departureHubName, transitHubNames, aiResponse);
 
         // Slack 엔티티 생성 및 저장
         Slack slack = new Slack(
@@ -102,7 +113,7 @@ public class SlackApplicationService {
             .orElseThrow(() -> new IllegalArgumentException("해당 Id를 가진 슬랙 메시지를 찾을 수 없습니다."));
     }
 
-    private String buildSlackMessage(OrderInfoDto dto, TransitHubResponse hubNames, String aiResponse) {
+    private String buildSlackMessage(OrderInfoDto dto, String departureHubName, List<String> hubNames, String aiResponse) {
         // (1). 상품 목록을 문자열로 만들기
         StringBuilder productsStr = new StringBuilder();
         for (ProductNameQuantity item : dto.getSlackOrderItems()) {
@@ -111,8 +122,8 @@ public class SlackApplicationService {
 
         // (2). 경유 허브 목록 문자열로 만들기
         StringBuilder transitStr = new StringBuilder();
-        if (!hubNames.getHubNames().isEmpty()) {
-            for (String hubName : hubNames.getHubNames()) {
+        if (!hubNames.isEmpty()) {
+            for (String hubName : hubNames) {
                 transitStr.append(hubName).append(", ");
             }
             if (transitStr.length() >= 2) {
@@ -132,8 +143,8 @@ public class SlackApplicationService {
             """
                 주문 번호 : %s
                 주문자명 : %s
-                상품 정보 :\s
-                %s요청 사항 : %s
+                상품 정보 :%s
+                요청 사항 : %s
                 발송지 : %s
                 경유지 : %s
                 도착지 : %s
@@ -145,7 +156,7 @@ public class SlackApplicationService {
             dto.getUsername(),
             productsStr.toString(),
             dto.getOrderRequest(),
-            dto.getDepartureHubId(),
+            departureHubName,
             transitStr.toString(),
             fullAddress,
             dto.getDeliveryManagerName(),

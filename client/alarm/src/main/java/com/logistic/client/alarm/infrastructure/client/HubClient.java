@@ -6,9 +6,11 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.List;
+
 @FeignClient(name = "hub")
 public interface HubClient {
 
-    @GetMapping("/api/v1/hubs/names")
-    TransitHubResponse getHubNames(@RequestBody TransitHubRequest transitHubs);
+    @GetMapping("/api/v1/hubs/feign/names")
+    TransitHubResponse getHubNames(@RequestBody TransitHubRequest hubIds);
 }

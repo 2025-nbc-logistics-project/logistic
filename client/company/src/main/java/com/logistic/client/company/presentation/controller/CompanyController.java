@@ -1,5 +1,6 @@
 package com.logistic.client.company.presentation.controller;
 
+import com.logistic.client.company.application.dto.FeignCompanyResponse;
 import com.logistic.client.company.application.dto.company.*;
 import com.logistic.client.company.application.service.CompanyService;
 import com.logistic.client.company.presentation.common.CommonResponse;
@@ -69,6 +70,14 @@ public class CompanyController {
     ) {
         CompanyResponseDto responseDto = companyService.getCompany(companyId);
         return ResponseEntity.ok(new CommonResponse<>(responseDto, HttpStatus.OK.value(), "특정 업체 조회 성공"));
+    }
+
+    @GetMapping("/feign/{companyId}")
+    public ResponseEntity<FeignCompanyResponse> FeignGetCompany(
+        @PathVariable UUID companyId
+    ) {
+        FeignCompanyResponse responseDto = companyService.feignGetCompany(companyId);
+        return ResponseEntity.ok(responseDto);
     }
 
     @Operation(summary = "업체 목록 조회", description = "업체 전체를 조회합니다.")

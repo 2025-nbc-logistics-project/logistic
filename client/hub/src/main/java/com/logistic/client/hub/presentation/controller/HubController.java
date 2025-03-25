@@ -10,7 +10,9 @@ import com.logistic.client.hub.presentation.common.ApiResponse;
 import com.logistic.client.hub.presentation.common.ResponseUtil;
 import com.logistic.client.hub.domain.model.Hub;
 import com.logistic.client.hub.presentation.request.CreateHubRequest;
+import com.logistic.client.hub.presentation.request.HubIdsRequest;
 import com.logistic.client.hub.presentation.request.UpdateHubRequest;
+import com.logistic.client.hub.presentation.response.HubNamesResponse;
 import com.logistic.client.hub.presentation.response.HubResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -140,11 +142,11 @@ public class HubController {
       description = "출발 허브와 도착 허브 ID를 이용해 최적 경로를 조회합니다."
   )
   @GetMapping("/feign/routes")
-  public ResponseEntity<ApiResponse<FindRouteResponse>> getHubRoutes(
+  public ResponseEntity<FindRouteResponse> getHubRoutes(
       @RequestParam UUID departHubId,
       @RequestParam UUID arriveHubId) {
     FindRouteResponse route = hubRouteService.findOptimalRoute(departHubId, arriveHubId);
-    return ResponseUtil.success(route);
+    return ResponseEntity.ok(route);
   }
 
   @Operation(
@@ -152,10 +154,10 @@ public class HubController {
       description = "허브 ID 목록에 해당하는 허브들의 이름을 반환합니다."
   )
   @PostMapping("/feign/names")
-  public ResponseEntity<ApiResponse<List<GetHubNameResponse>>> getHubNames(
-      @RequestBody List<UUID> hubIds) {
-    List<GetHubNameResponse> hubNames = hubService.getHubNames(hubIds);
-    return ResponseUtil.success(hubNames);
+  public ResponseEntity<HubNamesResponse> getHubNames(
+      @RequestBody HubIdsRequest hubIds) {
+    HubNamesResponse hubNames = hubService.getHubNames(hubIds);
+    return ResponseEntity.ok(hubNames);
   }
 
   private HubResponse toHubResponse(Hub hub) {

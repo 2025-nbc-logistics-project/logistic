@@ -22,8 +22,7 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
 
 gemini:
-  uri: ${GEMINI_URL}
+  uri: ${GEMINI_URI}
   key: ${GEMINI_KEY}
-
 server:
   port: 18086
