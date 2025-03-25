@@ -42,13 +42,10 @@ public class CompanyService {
 
         UserDto userDto = userClient.getHubId(username);
 
-        if (userDto == null || userDto.getHubId() == null) {
-            throw new HubNotFoundException();
-        }
-
         if(
                 !("MASTER".equals(role))  //마스터 관리자가 아니고
                         && !("HUB_MANAGER".equals(role) //허브 관리자도 아니고
+                        && userDto != null
                         && userDto.getHubId().equals(requestDto.getHubId())) //허브 관리자여도 담당 허브가 아니라면
         ) {
             throw new UnauthorizedAccessException();
@@ -114,15 +111,12 @@ public class CompanyService {
 
         UserDto userDto = userClient.getHubId(username);
 
-        if (userDto == null || userDto.getHubId() == null) {
-            throw new HubNotFoundException();
-        }
-
         Company company = findByCompanyId(companyId);
 
         if(
                 !("MASTER".equals(role)) //마스터 관리자가 아니고
                         && !("HUB_MANAGER".equals(role) //허브 관리자도 아니고
+                        && userDto != null
                         && userDto.getHubId().equals(company.getHubId()))  //허브 관리자여도 담당 허브가 아니고
                         &&!userId.equals(company.getUserId()) //업체 담당자도 아니라면
         ) {
@@ -181,15 +175,12 @@ public class CompanyService {
 
         UserDto userDto = userClient.getHubId(username);
 
-        if (userDto == null || userDto.getHubId() == null) {
-            throw new HubNotFoundException();
-        }
-
         Company company = findByCompanyId(companyId);
 
         if(
                 !("MASTER".equals(role)) //마스터 관리자가 아니고
                         && !("HUB_MANAGER".equals(role) //허브 관리자도 아니고
+                        && userDto != null
                         && userDto.getHubId().equals(company.getHubId()))  //허브 관리자여도 담당 허브가 아니라면
         ) {
             throw new UnauthorizedAccessException();

@@ -186,7 +186,7 @@ class ProductServiceTest {
 
         given(entityManager.find(Product.class, requestDto.getProductId(), LockModeType.PESSIMISTIC_WRITE)).willReturn(product);
 
-        List<ProductPriceResponseDto> responseDtos = productService.checkAndDeductStock(orderItems, role);
+        List<ProductPriceResponseDto> responseDtos = productService.checkAndDeductStock(orderItems);
 
         assertNotNull(responseDtos);
         assertEquals(7, product.getQuantity().getQuantity());
@@ -205,7 +205,7 @@ class ProductServiceTest {
 
         given(entityManager.find(Product.class, requestDto.getProductId(), LockModeType.PESSIMISTIC_WRITE)).willReturn(product);
 
-        productService.restoreStock(restoreItems, role);
+        productService.restoreStock(restoreItems);
 
         assertEquals(13, product.getQuantity().getQuantity());
     }
