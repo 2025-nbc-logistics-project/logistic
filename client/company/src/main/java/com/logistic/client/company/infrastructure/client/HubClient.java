@@ -10,8 +10,7 @@ import java.util.UUID;
 @FeignClient(name = "hub")
 public interface HubClient {
 
-    // 허브 존재 확인 메소드
-    @GetMapping("/api/v1/hubs/{hubId}")
+    @GetMapping("/api/v1/feign/hubs/{hubId}")
     HubDto getHub(@PathVariable("hubId") UUID hubId);
 
 }

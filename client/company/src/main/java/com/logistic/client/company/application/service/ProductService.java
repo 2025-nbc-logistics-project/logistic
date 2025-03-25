@@ -52,16 +52,13 @@ public class ProductService {
 
         UserDto userDto = userClient.getHubId(username);
 
-        if (userDto == null || userDto.getHubId() == null) {
-            throw new HubNotFoundException();
-        }
-
         //존재하는 업체인지
         CompanyExistResponseDto company = companyService.getCompanyById(requestDto.getCompanyId());
 
         if(
                 !("MASTER".equals(role)) //마스터 관리자가 아니고
                         && !("HUB_MANAGER".equals(role) //허브 관리자도 아니고
+                        && userDto != null
                         && userDto.getHubId().equals(requestDto.getHubId())) //허브 관리자여도 담당 허브가 아니고
                         && !("COMPANY_MANAGER".equals(role)) //업체 담당자도 아니고
                         && !userId.equals(company.getUserId()) //업체 담당자여도 담당 업체가 아니라면
@@ -181,10 +178,6 @@ public class ProductService {
 
         UserDto userDto = userClient.getHubId(username);
 
-        if (userDto == null || userDto.getHubId() == null) {
-            throw new HubNotFoundException();
-        }
-
         //존재하는 상품인지
         Product product = findByProductId(productId);
         CompanyExistResponseDto company = companyService.getCompanyById(product.getCompanyId());
@@ -192,6 +185,7 @@ public class ProductService {
         if(
                 !("MASTER".equals(role)) //마스터 관리자가 아니고
                         && !("HUB_MANAGER".equals(role) //허브 관리자도 아니고
+                        && userDto != null
                         && userDto.getHubId().equals(product.getHubId())) //허브 관리자여도 담당 허브가 아니고
                         && !("COMPANY_MANAGER".equals(role)) //업체 담당자도 아니고
                         && !userId.equals(company.getUserId()) //업체 담당자여도 담당 업체가 아니라면
@@ -237,15 +231,12 @@ public class ProductService {
 
         UserDto userDto = userClient.getHubId(username);
 
-        if (userDto == null || userDto.getHubId() == null) {
-            throw new HubNotFoundException();
-        }
-
         Product product = findByProductId(productId);
 
         if(
                 !("MASTER".equals(role)) //마스터 관리자가 아니고
                         && !("HUB_MANAGER".equals(role) //허브 관리자도 아니고
+                        && userDto != null
                         && userDto.getHubId().equals(product.getHubId())) //허브 관리자여도 담당 허브가 아니라면
         ){
             throw new UnauthorizedAccessException();

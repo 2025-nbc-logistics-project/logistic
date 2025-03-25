@@ -72,6 +72,20 @@ public class CompanyController {
         return ResponseEntity.ok(new CommonResponse<>(responseDto, HttpStatus.OK.value(), "특정 업체 조회 성공"));
     }
 
+    @Operation(summary = "업체 단일 조회(Feign)", description = "특정 업체를 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "업체 단일 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "업체를 찾을 수 없음")
+    })
+    @GetMapping("/feign/{companyId}")
+    public ResponseEntity<CommonResponse<CompanyResponseDto>> getCompanyForFeign(
+            @Parameter(description = "특정 업체 UUID")
+            @PathVariable UUID companyId
+    ) {
+        CompanyResponseDto responseDto = companyService.getCompany(companyId);
+        return ResponseEntity.ok(new CommonResponse<>(responseDto, HttpStatus.OK.value(), "특정 업체 조회 성공"));
+    }
+
     @GetMapping("/feign/{companyId}")
     public ResponseEntity<FeignCompanyResponse> FeignGetCompany(
         @PathVariable UUID companyId

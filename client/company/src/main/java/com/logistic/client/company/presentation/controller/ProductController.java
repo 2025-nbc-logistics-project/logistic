@@ -71,6 +71,20 @@ public class ProductController {
         return ResponseEntity.ok(new CommonResponse<>(responseDto, HttpStatus.OK.value(), "특정 상품 조회 성공"));
     }
 
+    @Operation(summary = "상품 단일 조회(Feign)", description = "특정 상품을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "상품 단일 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "상품를 찾을 수 없음")
+    })
+    @GetMapping("/feign/{productId}")
+    public ResponseEntity<CommonResponse<ProductResponseDto>> getProductForFeign(
+            @Parameter(description = "특정 상품 UUID")
+            @PathVariable UUID productId
+    ) {
+        ProductResponseDto responseDto = productService.getProduct(productId);
+        return ResponseEntity.ok(new CommonResponse<>(responseDto, HttpStatus.OK.value(), "특정 상품 조회 성공"));
+    }
+
     @Operation(summary = "상품 목록 조회", description = "상품 전체를 조회합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "상품 전체 조회 성공"),
