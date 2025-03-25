@@ -155,13 +155,9 @@ public class ProductController {
     @PostMapping("/restore-stock")
     public void restoreStock(
             @Parameter(description = "주문 취소 상품 리스트")
-            @RequestBody List<OrderItemRequestDto> restoreList,
-            @Parameter(description = "현재 사용자 userId")
-            @RequestHeader("userId") UUID userId,
-            @Parameter(description = "등록할 사용자 role")
-            @RequestHeader("role") String role
+            @RequestBody List<OrderItemRequestDto> restoreList
     ) {
-        productService.restoreStock(restoreList, role);
+        productService.restoreStock(restoreList);
     }
 
     @Operation(
