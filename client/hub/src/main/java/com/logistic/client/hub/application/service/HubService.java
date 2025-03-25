@@ -18,6 +18,7 @@ import com.logistic.client.hub.presentation.request.HubIdsRequest;
 import com.logistic.client.hub.presentation.request.UpdateHubRequest;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -127,13 +128,10 @@ public class HubService {
         throw new HubNotFoundException(HubExceptionCode.HUB_NOT_FOUND);
       }
     }
-    List<String> hubNames = new ArrayList<>();
+    Map<UUID, String> hubNameMap = hubs.stream()
+        .collect(Collectors.toMap(Hub::getId, Hub::getName));
 
-    for (Hub hub : hubs) {
-      hubNames.add(hub.getName());
-    }
-
-    return new HubNamesResponse(hubNames);
+    return new HubNamesResponse(hubNameMap);
   }
 
   private Hub convertToHubEntity(CreateHubRequest hubDto) {

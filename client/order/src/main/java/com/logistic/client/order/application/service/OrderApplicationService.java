@@ -15,6 +15,7 @@ import com.logistic.client.order.presentation.request.OrderRequestDto;
 import com.logistic.client.order.presentation.request.OrderSearchDto;
 import com.logistic.client.order.presentation.request.OrderUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderApplicationService {
 
     private final CompanyClient companyClient;
@@ -90,6 +92,9 @@ public class OrderApplicationService {
         // (7). 배송 엔티티 생성 요청
         FeignDeliveryResponse deliveryResponse = deliveryClient.createDelivery(createDeliveryRequest);
 
+        log.debug(deliveryResponse.getReceiverDetailAddress());
+        log.debug(deliveryResponse.getReceiverStreetAddress());
+
         // (8). 배송 데이터 업데이트
         order.addDelivery(deliveryResponse.getDeliveryId());
 
@@ -103,6 +108,7 @@ public class OrderApplicationService {
         );
         slackClient.createSlackMessage(slackRequestDto);
 
+        log.debug(slackRequestDto.getDestinationAddress().getDetailAddress());
         return new OrderResponseDto(order);
     }
 
