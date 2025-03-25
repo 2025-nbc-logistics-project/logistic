@@ -37,7 +37,7 @@ spring:
         - id: ai
           uri: lb://ai
           predicates:
-            - Path=/ai/**
+            - Path=/api/v1/ai/**
 
         - id: alarm
           uri: lb://alarm

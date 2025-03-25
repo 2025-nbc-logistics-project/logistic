@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AiService {
 
-    @Value("${GEMINI_URL}")
+    @Value("${GEMINI_URI}")
     private String geminiUrl;
 
     @Value("${GEMINI_KEY}")
