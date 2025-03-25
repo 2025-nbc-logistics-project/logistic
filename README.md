@@ -3,8 +3,8 @@
 ## 👥 팀원 역할분담
 - **[최호진](https://github.com/gentle-tiger):** 허브 컨텍스트
 - **[이종원](https://github.com/zapzookj):** 주문 컨텍스트, 알람 컨텍스트
-- **[이채연](https://github.com/dkki4887):** 유저 컨텍스트, API 게이트웨이, AI 컨텍스트
-- **[손세라](https://github.com/srrrn):** 업체 컨텍스트
+- **[이채연](https://github.com/dkki4887):** 유저 컨텍스트, API 게이트웨이
+- **[손세라](https://github.com/srrrn):** 업체 컨텍스트, AI 컨텍스트
 
 ## ⚙️ 서비스 구성 및 실행방법
 ### 서비스 엔드포인트
