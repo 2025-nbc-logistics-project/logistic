@@ -179,12 +179,8 @@ public class DeliveryApplicationService {
     }
 
     @Transactional
-    public void deleteDelivery(UUID deliveryId, UUID userId, String role) {
+    public void deleteDelivery(UUID deliveryId, UUID userId) {
         Delivery delivery = findDeliveryById(deliveryId);
-
-        if (!canDeleteDelivery(delivery, userId, role)) {
-            throw new UnauthorizedException("삭제 권한이 없습니다.");
-        }
 
         delivery.markAsDeleted(userId);
     }
