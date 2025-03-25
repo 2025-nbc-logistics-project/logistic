@@ -178,11 +178,7 @@ public class OrderApplicationService {
     }
 
     @Transactional
-    public OrderResponseDto updateOrderStatus(UUID orderId, OrderStatus newStatus, UUID userId, String role) {
-        if (!canUpdateOrder(role)) {
-            throw new UnauthorizedException("수정 및 삭제 권한이 없습니다.");
-        }
-
+    public OrderResponseDto updateOrderStatus(UUID orderId, OrderStatus newStatus) {
         Order order = findOrderById(orderId);
 
         order.updateStatus(newStatus);

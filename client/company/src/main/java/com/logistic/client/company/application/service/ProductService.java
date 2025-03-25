@@ -147,18 +147,8 @@ public class ProductService {
 
     @Transactional
     public void restoreStock(
-            List<OrderItemRequestDto> restoreList,
-            String role
+            List<OrderItemRequestDto> restoreList
     ) {
-
-        if(
-                !("MASTER".equals(role)) //마스터 관리자가 아니고
-                        && !("HUB_MANAGER".equals(role)) //허브 관리자도 아니고
-                        && !("COMPANY_MANAGER".equals(role)) //업체 담당자도 아니라면
-        ){
-            throw new UnauthorizedAccessException();
-        }
-
         for(OrderItemRequestDto restore : restoreList) {
             log.debug("주문 상품: {}, 재입고 개수: {}", restore.getProductId(), restore.getQuantity());
 
