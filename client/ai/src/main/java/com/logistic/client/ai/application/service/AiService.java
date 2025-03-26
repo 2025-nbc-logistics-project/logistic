@@ -23,7 +23,7 @@ import java.util.List;
 public class AiService {
 
     @Value("${GEMINI_URI}")
-    private String geminiUrl;
+    private String geminiUri;
 
     @Value("${GEMINI_KEY}")
     private String apiKey;
@@ -59,7 +59,7 @@ public class AiService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<GeminiRequestDto> entity = new HttpEntity<>(geminiRequestDto, headers);
-        String url = geminiUrl + "?key=" + apiKey;
+        String url = geminiUri + "?key=" + apiKey;
 
         ResponseEntity<GeminiResponseDto> response = restTemplate.exchange(url, HttpMethod.POST, entity, GeminiResponseDto.class);
 
